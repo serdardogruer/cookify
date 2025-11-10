@@ -18,6 +18,10 @@ export default function PantryPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  // Autocomplete state
+  const [ingredientSuggestions, setIngredientSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
   // Form state
   const [formData, setFormData] = useState({
     name: '',
@@ -57,6 +61,92 @@ export default function PantryPage() {
       setItems(response.data);
     }
     setLoading(false);
+  };
+
+  const searchIngredients = async (query: string) => {
+    if (query.length < 2) {
+      setIngredientSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    const response = await api.get<any[]>(`/api/categories/ingredients/search?q=${query}&limit=10`);
+    if (response.success && response.data) {
+      setIngredientSuggestions(response.data);
+      setShowSuggestions(true);
+    }
+  };
+
+  const getDefaultExpiryDate = (categoryName: string): string => {
+    const today = new Date();
+    let daysToAdd = 30; // Varsayılan 1 ay
+
+    // Kategoriye göre akıllı SKT önerisi
+    switch (categoryName) {
+      case 'SEBZELER':
+      case 'YEŞİLLİKLER':
+        daysToAdd = 7; // 1 hafta
+        break;
+      case 'MEYVELER':
+        daysToAdd = 10; // 10 gün
+        break;
+      case 'ET ÜRÜNLERİ':
+      case 'DENİZ ÜRÜNLERİ':
+        daysToAdd = 3; // 3 gün (taze)
+        break;
+      case 'SÜT ÜRÜNLERİ':
+        daysToAdd = 14; // 2 hafta
+        break;
+      case 'BAHARATLAR':
+      case 'KURUYEMİŞLER':
+      case 'TAHILLAR':
+      case 'BAKLİYATLAR':
+        daysToAdd = 365; // 1 yıl
+        break;
+      case 'HAMUR ÜRÜNLERİ':
+      case 'SOSLAR':
+        daysToAdd = 90; // 3 ay
+        break;
+      case 'TATLANDIRICILAR':
+        daysToAdd = 180; // 6 ay
+        break;
+      case 'İÇECEKLER':
+        daysToAdd = 60; // 2 ay
+        break;
+      case 'YAĞLAR':
+        daysToAdd = 180; // 6 ay
+        break;
+      case 'TEMEL MALZEMELER':
+        daysToAdd = 21; // 3 hafta
+        break;
+      default:
+        daysToAdd = 30; // 1 ay
+    }
+
+    const expiryDate = new Date(today);
+    expiryDate.setDate(today.getDate() + daysToAdd);
+    return expiryDate.toISOString().split('T')[0];
+  };
+
+  const selectIngredient = (ingredient: any) => {
+    const suggestedExpiryDate = getDefaultExpiryDate(ingredient.category.name);
+    
+    console.log('🔍 Seçilen malzeme:', {
+      name: ingredient.name,
+      category: ingredient.category.name,
+      unit: ingredient.defaultUnit,
+      suggestedSKT: suggestedExpiryDate
+    });
+    
+    setFormData({
+      ...formData,
+      name: ingredient.name,
+      category: ingredient.category.name,
+      unit: ingredient.defaultUnit,
+      expiryDate: suggestedExpiryDate,
+    });
+    setShowSuggestions(false);
+    setIngredientSuggestions([]);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -126,6 +216,47 @@ export default function PantryPage() {
       // Dolap listesini yenilemeye gerek yok çünkü malzeme hala dolabta
     } else {
       setError(response.error?.message || 'Ekleme başarısız');
+    }
+  };
+
+  const handleAddLowStockToMarket = async () => {
+    if (!token) return;
+
+    // %50'nin altındaki malzemeleri bul
+    const lowStockItems = items.filter((item) => {
+      const percentage = item.initialQuantity > 0 
+        ? (item.quantity / item.initialQuantity) * 100
+        : 100;
+      return percentage < 50;
+    });
+
+    if (lowStockItems.length === 0) {
+      setError('Azalan malzeme bulunamadı (%50\'nin altında)');
+      return;
+    }
+
+    if (!confirm(`${lowStockItems.length} adet azalan malzeme market listesine eklenecek. Devam edilsin mi?`)) {
+      return;
+    }
+
+    setError('');
+    let successCount = 0;
+    let errorCount = 0;
+
+    // Her malzemeyi market'e ekle
+    for (const item of lowStockItems) {
+      const response = await api.post(`/api/pantry/${item.id}/add-to-market`, {}, token);
+      if (response.success) {
+        successCount++;
+      } else {
+        errorCount++;
+      }
+    }
+
+    if (successCount > 0) {
+      setSuccess(`${successCount} malzeme market listesine eklendi${errorCount > 0 ? `, ${errorCount} hata` : ''}`);
+    } else {
+      setError('Malzemeler eklenemedi');
     }
   };
 
@@ -217,12 +348,21 @@ export default function PantryPage() {
                   <h2 className="text-xl font-semibold">
                     {selectedCategory || 'Tüm Malzemeler'} ({items.length})
                   </h2>
-                  <button
-                    onClick={() => setShowAddModal(true)}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
-                  >
-                    + Malzeme Ekle
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleAddLowStockToMarket}
+                      className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-md flex items-center gap-2"
+                      title="Azalan malzemeleri market'e ekle"
+                    >
+                      ⚠️ Azalanları Market'e Ekle
+                    </button>
+                    <button
+                      onClick={() => setShowAddModal(true)}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
+                    >
+                      + Malzeme Ekle
+                    </button>
+                  </div>
                 </div>
 
                 {items.length === 0 ? (
@@ -230,81 +370,204 @@ export default function PantryPage() {
                     Henüz malzeme eklenmemiş
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-gray-700">
-                          <th className="text-left py-3 px-4">Malzeme</th>
-                          <th className="text-left py-3 px-4">Kategori</th>
-                          <th className="text-left py-3 px-4">Miktar</th>
-                          <th className="text-left py-3 px-4">SKT</th>
-                          <th className="text-right py-3 px-4">İşlemler</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {items.map((item) => {
-                          const percentage = item.initialQuantity > 0 
-                            ? Math.round((item.quantity / item.initialQuantity) * 100)
-                            : 100;
+                  <div className="space-y-6">
+                    {/* Kategorilere göre grupla */}
+                    {(() => {
+                      // Birim dönüşüm fonksiyonu
+                      const convertToKg = (quantity: number, unit: string): number => {
+                        const unitLower = unit.toLowerCase();
+                        if (unitLower === 'gram' || unitLower === 'gr') return quantity / 1000;
+                        if (unitLower === 'kg') return quantity;
+                        if (unitLower === 'adet') return quantity * 0.2; // 1 adet = 200g ortalama
+                        return quantity;
+                      };
+
+                      // Kategorilere göre gruplandır
+                      const grouped = items.reduce((acc: any, item) => {
+                        if (!acc[item.category]) {
+                          acc[item.category] = [];
+                        }
+                        acc[item.category].push(item);
+                        return acc;
+                      }, {});
+
+                      // Her kategori için render et
+                      return Object.keys(grouped).sort().map((category) => {
+                        const categoryItems = grouped[category];
+                        const categoryIcon = categories.find(c => c.name === category)?.icon || '📦';
+
+                        // Aynı malzemeleri birleştir
+                        const mergedItems = categoryItems.reduce((acc: any, item: PantryItem) => {
+                          const existing = acc.find((i: any) => i.name.toLowerCase() === item.name.toLowerCase());
                           
-                          return (
-                            <tr key={item.id} className="border-b border-gray-700 hover:bg-gray-700/50">
-                              <td className="py-3 px-4">
-                                <div>
-                                  <div className="font-medium">{item.name}</div>
-                                  <div className="mt-1 w-full bg-gray-700 rounded-full h-2">
-                                    <div
-                                      className={`h-2 rounded-full transition-all ${
-                                        percentage > 50
-                                          ? 'bg-green-500'
-                                          : percentage > 20
-                                          ? 'bg-yellow-500'
-                                          : 'bg-red-500'
-                                      }`}
-                                      style={{ width: `${percentage}%` }}
-                                    ></div>
+                          if (existing) {
+                            // Aynı malzeme var, birleştir
+                            const existingKg = convertToKg(existing.totalQuantity, existing.unit);
+                            const newKg = convertToKg(item.quantity, item.unit);
+                            existing.totalQuantity = existingKg + newKg;
+                            existing.unit = 'kg';
+                            existing.items.push(item);
+                            
+                            // İlk eklenen malzemenin initial quantity'sini kullan
+                            if (item.initialQuantity > 0) {
+                              const initialKg = convertToKg(item.initialQuantity, item.unit);
+                              existing.totalInitialQuantity += initialKg;
+                            }
+                          } else {
+                            // Yeni malzeme
+                            const quantityInKg = convertToKg(item.quantity, item.unit);
+                            const initialInKg = item.initialQuantity > 0 ? convertToKg(item.initialQuantity, item.unit) : quantityInKg;
+                            
+                            acc.push({
+                              name: item.name,
+                              category: item.category,
+                              totalQuantity: quantityInKg,
+                              totalInitialQuantity: initialInKg,
+                              unit: 'kg',
+                              items: [item],
+                              expiryDate: item.expiryDate,
+                            });
+                          }
+                          return acc;
+                        }, []);
+
+                        return (
+                          <div key={category} className="bg-gray-700/30 rounded-lg p-4">
+                            {/* Kategori Başlığı */}
+                            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                              <span>{categoryIcon}</span>
+                              <span>{category}</span>
+                              <span className="text-sm text-gray-400">({mergedItems.length})</span>
+                            </h3>
+
+                            {/* Kategori İçindeki Malzemeler */}
+                            <div className="space-y-2">
+                              {mergedItems.map((merged: any, idx: number) => {
+                                const percentage = merged.totalInitialQuantity > 0 
+                                  ? Math.round((merged.totalQuantity / merged.totalInitialQuantity) * 100)
+                                  : 100;
+
+                                // Birden fazla kayıt varsa göster
+                                const hasMultiple = merged.items.length > 1;
+
+                                return (
+                                  <div
+                                    key={`${merged.name}-${idx}`}
+                                    className="bg-gray-800 rounded-lg p-4 hover:bg-gray-750 transition"
+                                  >
+                                    <div className="flex items-center justify-between gap-4">
+                                      {/* Malzeme Bilgisi */}
+                                      <div className="flex-1">
+                                        <div className="flex items-center gap-2 mb-2">
+                                          <div className="font-medium text-lg">{merged.name}</div>
+                                          {hasMultiple && (
+                                            <span className="text-xs bg-blue-600 px-2 py-1 rounded">
+                                              {merged.items.length} kayıt birleştirildi
+                                            </span>
+                                          )}
+                                        </div>
+                                        
+                                        {/* Progress Bar */}
+                                        <div className="w-full bg-gray-700 rounded-full h-2 mb-1">
+                                          <div
+                                            className={`h-2 rounded-full transition-all ${
+                                              percentage > 50
+                                                ? 'bg-green-500'
+                                                : percentage > 20
+                                                ? 'bg-yellow-500'
+                                                : 'bg-red-500'
+                                            }`}
+                                            style={{ width: `${percentage}%` }}
+                                          ></div>
+                                        </div>
+                                        
+                                        <div className="flex items-center gap-4 text-sm text-gray-400">
+                                          <span>%{percentage} kaldı</span>
+                                          <span>•</span>
+                                          {hasMultiple ? (
+                                            // Birden fazla kayıt varsa toplam kg göster
+                                            <span className="font-semibold text-white">
+                                              {merged.totalQuantity.toFixed(2)} kg
+                                            </span>
+                                          ) : (
+                                            // Tek kayıt varsa orijinal birim + tahmini ağırlık
+                                            <span className="font-semibold text-white">
+                                              {merged.items[0].quantity} {merged.items[0].unit}
+                                              {merged.items[0].unit.toLowerCase() === 'adet' && (
+                                                <span className="text-gray-500 font-normal">
+                                                  {' '}(~{merged.totalQuantity.toFixed(2)} kg)
+                                                </span>
+                                              )}
+                                              {merged.items[0].unit.toLowerCase() === 'gram' && merged.items[0].quantity >= 1000 && (
+                                                <span className="text-gray-500 font-normal">
+                                                  {' '}(~{merged.totalQuantity.toFixed(2)} kg)
+                                                </span>
+                                              )}
+                                            </span>
+                                          )}
+                                          {merged.expiryDate && (
+                                            <>
+                                              <span>•</span>
+                                              <span>SKT: {new Date(merged.expiryDate).toLocaleDateString('tr-TR')}</span>
+                                            </>
+                                          )}
+                                        </div>
+
+                                        {/* Detaylar (birden fazla kayıt varsa) */}
+                                        {hasMultiple && (
+                                          <div className="mt-2 text-xs text-gray-500">
+                                            Detay: {merged.items.map((item: PantryItem, i: number) => (
+                                              <span key={item.id}>
+                                                {item.quantity} {item.unit}
+                                                {item.unit.toLowerCase() === 'adet' && (
+                                                  <span className="text-gray-600">
+                                                    {' '}(~{(item.quantity * 0.2).toFixed(2)} kg)
+                                                  </span>
+                                                )}
+                                                {i < merged.items.length - 1 && ' + '}
+                                              </span>
+                                            ))}
+                                            {' = '}
+                                            <span className="font-semibold text-gray-400">
+                                              {merged.totalQuantity.toFixed(2)} kg toplam
+                                            </span>
+                                          </div>
+                                        )}
+                                      </div>
+
+                                      {/* İşlem Butonları */}
+                                      <div className="flex gap-2">
+                                        <button
+                                          onClick={() => handleEdit(merged.items[0])}
+                                          className="px-3 py-2 bg-yellow-600 hover:bg-yellow-700 rounded text-sm"
+                                          title="Düzenle"
+                                        >
+                                          ✏️
+                                        </button>
+                                        <button
+                                          onClick={() => handleMoveToMarket(merged.items[0].id)}
+                                          className="px-3 py-2 bg-green-600 hover:bg-green-700 rounded text-sm"
+                                          title="Market'e Ekle"
+                                        >
+                                          🛒
+                                        </button>
+                                        <button
+                                          onClick={() => handleDelete(merged.items[0].id)}
+                                          className="px-3 py-2 bg-red-600 hover:bg-red-700 rounded text-sm"
+                                          title="Sil"
+                                        >
+                                          🗑️
+                                        </button>
+                                      </div>
+                                    </div>
                                   </div>
-                                  <div className="text-xs text-gray-400 mt-1">
-                                    %{percentage} kaldı
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="py-3 px-4">{item.category}</td>
-                              <td className="py-3 px-4">
-                                {item.quantity} {item.unit}
-                              </td>
-                              <td className="py-3 px-4">
-                                {item.expiryDate
-                                  ? new Date(item.expiryDate).toLocaleDateString('tr-TR')
-                                  : '-'}
-                              </td>
-                              <td className="py-3 px-4 text-right">
-                                <div className="flex gap-2 justify-end">
-                                  <button
-                                    onClick={() => handleEdit(item)}
-                                    className="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 rounded text-sm"
-                                  >
-                                    Düzenle
-                                  </button>
-                                  <button
-                                    onClick={() => handleMoveToMarket(item.id)}
-                                    className="px-3 py-1 bg-green-600 hover:bg-green-700 rounded text-sm"
-                                  >
-                                    🛒 Market'e Ekle
-                                  </button>
-                                  <button
-                                    onClick={() => handleDelete(item.id)}
-                                    className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-sm"
-                                  >
-                                    Sil
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()}
                   </div>
                 )}
               </div>
@@ -321,17 +584,49 @@ export default function PantryPage() {
               {editingItem ? 'Malzeme Düzenle' : 'Yeni Malzeme Ekle'}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
+              <div className="relative">
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Malzeme Adı
                 </label>
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, name: e.target.value });
+                    searchIngredients(e.target.value);
+                  }}
+                  onFocus={() => {
+                    if (formData.name.length >= 2) {
+                      searchIngredients(formData.name);
+                    }
+                  }}
+                  onBlur={() => {
+                    // Delay to allow click on suggestion
+                    setTimeout(() => setShowSuggestions(false), 200);
+                  }}
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                  placeholder="Örn: domates, soğan..."
                   required
                 />
+                
+                {/* Autocomplete Suggestions */}
+                {showSuggestions && ingredientSuggestions.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-gray-700 border border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                    {ingredientSuggestions.map((ingredient) => (
+                      <button
+                        key={ingredient.id}
+                        type="button"
+                        onClick={() => selectIngredient(ingredient)}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-600 flex items-center justify-between"
+                      >
+                        <span className="font-medium">{ingredient.name}</span>
+                        <span className="text-sm text-gray-400">
+                          {ingredient.category.name} • {ingredient.defaultUnit}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div>

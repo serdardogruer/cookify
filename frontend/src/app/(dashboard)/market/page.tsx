@@ -18,6 +18,10 @@ export default function MarketPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  // Autocomplete state
+  const [ingredientSuggestions, setIngredientSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -55,6 +59,31 @@ export default function MarketPage() {
       setItems(response.data);
     }
     setLoading(false);
+  };
+
+  const searchIngredients = async (query: string) => {
+    if (query.length < 2) {
+      setIngredientSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    const response = await api.get<any[]>(`/api/categories/ingredients/search?q=${query}&limit=10`);
+    if (response.success && response.data) {
+      setIngredientSuggestions(response.data);
+      setShowSuggestions(true);
+    }
+  };
+
+  const selectIngredient = (ingredient: any) => {
+    setFormData({
+      ...formData,
+      name: ingredient.name,
+      category: ingredient.category.name,
+      unit: ingredient.defaultUnit,
+    });
+    setShowSuggestions(false);
+    setIngredientSuggestions([]);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -320,17 +349,49 @@ export default function MarketPage() {
               {editingItem ? 'Ürün Düzenle' : 'Yeni Ürün Ekle'}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
+              <div className="relative">
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Ürün Adı
                 </label>
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, name: e.target.value });
+                    searchIngredients(e.target.value);
+                  }}
+                  onFocus={() => {
+                    if (formData.name.length >= 2) {
+                      searchIngredients(formData.name);
+                    }
+                  }}
+                  onBlur={() => {
+                    // Delay to allow click on suggestion
+                    setTimeout(() => setShowSuggestions(false), 200);
+                  }}
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                  placeholder="Örn: domates, soğan..."
                   required
                 />
+                
+                {/* Autocomplete Suggestions */}
+                {showSuggestions && ingredientSuggestions.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-gray-700 border border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                    {ingredientSuggestions.map((ingredient) => (
+                      <button
+                        key={ingredient.id}
+                        type="button"
+                        onClick={() => selectIngredient(ingredient)}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-600 flex items-center justify-between"
+                      >
+                        <span className="font-medium">{ingredient.name}</span>
+                        <span className="text-sm text-gray-400">
+                          {ingredient.category.name} • {ingredient.defaultUnit}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div>
