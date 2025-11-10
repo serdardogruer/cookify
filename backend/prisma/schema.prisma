@@ -1,0 +1,169 @@
+// Prisma Schema for Cookify Core v2.0
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User Model
+model User {
+  id            Int             @id @default(autoincrement())
+  name          String
+  email         String          @unique
+  password      String
+  profileImage  String?
+  kitchenId     Int?
+  kitchen       Kitchen?        @relation("ActiveKitchen", fields: [kitchenId], references: [id])
+  ownedKitchens Kitchen[]       @relation("KitchenOwner")
+  memberships   KitchenMember[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@map("users")
+}
+
+// Kitchen Model
+model Kitchen {
+  id          Int             @id @default(autoincrement())
+  name        String
+  inviteCode  String          @unique
+  status      String          @default("ACTIVE")
+  ownerId     Int
+  owner       User            @relation("KitchenOwner", fields: [ownerId], references: [id])
+  activeUsers User[]          @relation("ActiveKitchen")
+  members     KitchenMember[]
+  pantryItems PantryItem[]
+  marketItems MarketItem[]
+  modules     KitchenModule[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@map("kitchens")
+}
+
+// enum KitchenStatus {
+//   ACTIVE
+//   PASSIVE
+// }
+
+// Kitchen Member Model
+model KitchenMember {
+  id        Int        @id @default(autoincrement())
+  kitchenId Int
+  kitchen   Kitchen    @relation(fields: [kitchenId], references: [id])
+  userId    Int
+  user      User       @relation(fields: [userId], references: [id])
+  role      String     @default("MEMBER")
+  joinedAt  DateTime   @default(now())
+
+  @@map("kitchen_members")
+}
+
+// enum MemberRole {
+//   OWNER
+//   MEMBER
+// }
+
+// Category Model
+model Category {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  icon        String?
+  ingredients Ingredient[]
+  createdAt   DateTime     @default(now())
+
+  @@map("categories")
+}
+
+// Ingredient Model
+model Ingredient {
+  id          Int      @id @default(autoincrement())
+  name        String
+  categoryId  Int
+  category    Category @relation(fields: [categoryId], references: [id])
+  defaultUnit String
+  createdAt   DateTime @default(now())
+
+  @@unique([name, categoryId], name: "name_categoryId")
+  @@map("ingredients")
+}
+
+// Pantry Item Model
+model PantryItem {
+  id              Int       @id @default(autoincrement())
+  kitchenId       Int
+  kitchen         Kitchen   @relation(fields: [kitchenId], references: [id])
+  name            String
+  category        String
+  quantity        Float
+  initialQuantity Float     @default(0)
+  unit            String
+  expiryDate      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("pantry_items")
+}
+
+// Market Item Model
+model MarketItem {
+  id        Int          @id @default(autoincrement())
+  kitchenId Int
+  kitchen   Kitchen      @relation(fields: [kitchenId], references: [id])
+  name      String
+  category  String
+  quantity  Float
+  unit      String
+  status    String       @default("PENDING")
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@map("market_items")
+}
+
+// enum MarketStatus {
+//   PENDING
+//   DONE
+// }
+
+// Module Model
+model Module {
+  id          Int             @id @default(autoincrement())
+  name        String          @unique
+  slug        String          @unique
+  description String
+  icon        String
+  isCore      Boolean         @default(false)
+  isActive    Boolean         @default(true)
+  kitchens    KitchenModule[]
+  createdAt   DateTime        @default(now())
+
+  @@map("modules")
+}
+
+// Kitchen Module Model
+model KitchenModule {
+  id        Int      @id @default(autoincrement())
+  kitchenId Int
+  kitchen   Kitchen  @relation(fields: [kitchenId], references: [id])
+  moduleId  Int
+  module    Module   @relation(fields: [moduleId], references: [id])
+  isEnabled Boolean  @default(true)
+  enabledAt DateTime @default(now())
+
+  @@map("kitchen_modules")
+}
+
+// Unit Conversion Model
+model UnitConversion {
+  id         Int    @id @default(autoincrement())
+  unitFrom   String
+  unitTo     String
+  multiplier Float
+
+  @@map("unit_conversions")
+}

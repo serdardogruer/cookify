@@ -1,0 +1,424 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import Header from '@/components/Header';
+import { useAuth } from '@/hooks/useAuth';
+import { api } from '@/lib/api';
+import { PantryItem } from '@/types/pantry';
+
+export default function PantryPage() {
+  const { token } = useAuth();
+  const [items, setItems] = useState<PantryItem[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingItem, setEditingItem] = useState<PantryItem | null>(null);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  // Form state
+  const [formData, setFormData] = useState({
+    name: '',
+    category: '',
+    quantity: '',
+    unit: 'adet',
+    expiryDate: '',
+  });
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  useEffect(() => {
+    loadPantryItems();
+  }, [selectedCategory, token]);
+
+  const loadCategories = async () => {
+    const response = await api.get<any>('/api/categories');
+    if (response.success && response.data) {
+      setCategories(response.data);
+    }
+  };
+
+  const loadPantryItems = async () => {
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    const url = selectedCategory
+      ? `/api/pantry?category=${selectedCategory}`
+      : '/api/pantry';
+
+    const response = await api.get<PantryItem[]>(url, token);
+    if (response.success && response.data) {
+      setItems(response.data);
+    }
+    setLoading(false);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    if (!token) return;
+
+    const data = {
+      ...formData,
+      quantity: parseFloat(formData.quantity),
+    };
+
+    let response;
+    if (editingItem) {
+      response = await api.put(`/api/pantry/${editingItem.id}`, data, token);
+    } else {
+      response = await api.post('/api/pantry', data, token);
+    }
+
+    if (response.success) {
+      setSuccess(editingItem ? 'Malzeme güncellendi' : 'Malzeme eklendi');
+      setShowAddModal(false);
+      setEditingItem(null);
+      resetForm();
+      loadPantryItems();
+    } else {
+      setError(response.error?.message || 'İşlem başarısız');
+    }
+  };
+
+  const handleEdit = (item: PantryItem) => {
+    setEditingItem(item);
+    setFormData({
+      name: item.name,
+      category: item.category,
+      quantity: item.quantity.toString(),
+      unit: item.unit,
+      expiryDate: item.expiryDate ? item.expiryDate.split('T')[0] : '',
+    });
+    setShowAddModal(true);
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Bu malzemeyi silmek istediğinize emin misiniz?')) return;
+
+    if (!token) return;
+
+    const response = await api.delete(`/api/pantry/${id}`, token);
+    
+    if (response.success) {
+      setSuccess('Malzeme silindi');
+      loadPantryItems();
+    } else {
+      setError(response.error?.message || 'Silme başarısız');
+    }
+  };
+
+  const handleMoveToMarket = async (id: number) => {
+    if (!token) return;
+
+    const response = await api.post(`/api/pantry/${id}/add-to-market`, {}, token);
+
+    if (response.success) {
+      setSuccess('Malzeme market listesine eklendi');
+      // Dolap listesini yenilemeye gerek yok çünkü malzeme hala dolabta
+    } else {
+      setError(response.error?.message || 'Ekleme başarısız');
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      category: '',
+      quantity: '',
+      unit: 'adet',
+      expiryDate: '',
+    });
+  };
+
+  const closeModal = () => {
+    setShowAddModal(false);
+    setEditingItem(null);
+    resetForm();
+    setError('');
+  };
+
+  if (loading) {
+    return (
+      <ProtectedRoute>
+        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+          <div className="text-white">Yükleniyor...</div>
+        </div>
+      </ProtectedRoute>
+    );
+  }
+
+  return (
+    <ProtectedRoute>
+      <Header />
+      <div className="min-h-screen bg-gray-900 text-white p-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Page Title */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold">🏠 Dolabım</h1>
+            <p className="text-gray-400 mt-2">Evdeki malzemelerinizi yönetin</p>
+          </div>
+
+          {/* Messages */}
+          {error && (
+            <div className="mb-4 bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="mb-4 bg-green-500/10 border border-green-500 text-green-500 px-4 py-3 rounded">
+              {success}
+            </div>
+          )}
+
+          <div className="flex gap-6">
+            {/* Sidebar - Categories */}
+            <div className="w-64 bg-gray-800 rounded-lg p-4">
+              <h2 className="text-lg font-semibold mb-4">Kategoriler</h2>
+              <div className="space-y-2">
+                <button
+                  onClick={() => setSelectedCategory('')}
+                  className={`w-full text-left px-3 py-2 rounded ${
+                    selectedCategory === ''
+                      ? 'bg-blue-600'
+                      : 'hover:bg-gray-700'
+                  }`}
+                >
+                  📦 Tümü ({items.length})
+                </button>
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.name)}
+                    className={`w-full text-left px-3 py-2 rounded ${
+                      selectedCategory === cat.name
+                        ? 'bg-blue-600'
+                        : 'hover:bg-gray-700'
+                    }`}
+                  >
+                    {cat.icon} {cat.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="flex-1">
+              <div className="bg-gray-800 rounded-lg p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-semibold">
+                    {selectedCategory || 'Tüm Malzemeler'} ({items.length})
+                  </h2>
+                  <button
+                    onClick={() => setShowAddModal(true)}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
+                  >
+                    + Malzeme Ekle
+                  </button>
+                </div>
+
+                {items.length === 0 ? (
+                  <div className="text-center py-12 text-gray-400">
+                    Henüz malzeme eklenmemiş
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-gray-700">
+                          <th className="text-left py-3 px-4">Malzeme</th>
+                          <th className="text-left py-3 px-4">Kategori</th>
+                          <th className="text-left py-3 px-4">Miktar</th>
+                          <th className="text-left py-3 px-4">SKT</th>
+                          <th className="text-right py-3 px-4">İşlemler</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {items.map((item) => {
+                          const percentage = item.initialQuantity > 0 
+                            ? Math.round((item.quantity / item.initialQuantity) * 100)
+                            : 100;
+                          
+                          return (
+                            <tr key={item.id} className="border-b border-gray-700 hover:bg-gray-700/50">
+                              <td className="py-3 px-4">
+                                <div>
+                                  <div className="font-medium">{item.name}</div>
+                                  <div className="mt-1 w-full bg-gray-700 rounded-full h-2">
+                                    <div
+                                      className={`h-2 rounded-full transition-all ${
+                                        percentage > 50
+                                          ? 'bg-green-500'
+                                          : percentage > 20
+                                          ? 'bg-yellow-500'
+                                          : 'bg-red-500'
+                                      }`}
+                                      style={{ width: `${percentage}%` }}
+                                    ></div>
+                                  </div>
+                                  <div className="text-xs text-gray-400 mt-1">
+                                    %{percentage} kaldı
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-3 px-4">{item.category}</td>
+                              <td className="py-3 px-4">
+                                {item.quantity} {item.unit}
+                              </td>
+                              <td className="py-3 px-4">
+                                {item.expiryDate
+                                  ? new Date(item.expiryDate).toLocaleDateString('tr-TR')
+                                  : '-'}
+                              </td>
+                              <td className="py-3 px-4 text-right">
+                                <div className="flex gap-2 justify-end">
+                                  <button
+                                    onClick={() => handleEdit(item)}
+                                    className="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 rounded text-sm"
+                                  >
+                                    Düzenle
+                                  </button>
+                                  <button
+                                    onClick={() => handleMoveToMarket(item.id)}
+                                    className="px-3 py-1 bg-green-600 hover:bg-green-700 rounded text-sm"
+                                  >
+                                    🛒 Market'e Ekle
+                                  </button>
+                                  <button
+                                    onClick={() => handleDelete(item.id)}
+                                    className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-sm"
+                                  >
+                                    Sil
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Add/Edit Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-xl font-semibold mb-4">
+              {editingItem ? 'Malzeme Düzenle' : 'Yeni Malzeme Ekle'}
+            </h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Malzeme Adı
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Kategori
+                </label>
+                <select
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                  required
+                >
+                  <option value="">Seçiniz</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.name}>
+                      {cat.icon} {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Miktar
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.quantity}
+                    onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Birim
+                  </label>
+                  <select
+                    value={formData.unit}
+                    onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                    required
+                  >
+                    <option value="adet">Adet</option>
+                    <option value="kg">Kg</option>
+                    <option value="gram">Gram</option>
+                    <option value="litre">Litre</option>
+                    <option value="ml">ML</option>
+                    <option value="paket">Paket</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Son Kullanma Tarihi (Opsiyonel)
+                </label>
+                <input
+                  type="date"
+                  value={formData.expiryDate}
+                  onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
+                >
+                  {editingItem ? 'Güncelle' : 'Ekle'}
+                </button>
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-md"
+                >
+                  İptal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </ProtectedRoute>
+  );
+}
