@@ -1,62 +1,70 @@
-# 🍳 Cookify Core v2.0
+# 🍳 Cookify - Akıllı Mutfak Yönetimi
 
-Aile mutfaklarını dijitalleştiren, kullanıcıların evdeki malzemelerini ve market alışverişlerini yönetmelerini sağlayan modüler web uygulaması.
+Cookify, evinizdeki malzemeleri takip eden, tarif paylaşmanıza olanak sağlayan ve market alışverişinizi kolaylaştıran modern bir mutfak yönetim platformudur.
 
-## 📋 Özellikler
+## ✨ Özellikler
 
-- **Çoklu Mutfak Sistemi**: Aile üyeleriyle ortak mutfak paylaşımı
-- **Dolabım Modülü**: Evdeki malzemeleri dijital olarak takip
-- **Market Modülü**: Alışveriş listesi yönetimi ve WhatsApp/PDF export
-- **Profil Yönetimi**: Kullanıcı profili ve mutfak ayarları
-- **Modüler Mimari**: Gelecekte yeni modüller eklenebilir yapı
+### 🏠 Dolabım
+- Evinizdeki tüm malzemeleri dijital olarak takip edin
+- Malzeme miktarlarını güncelleyin
+- Azalan malzemeler için otomatik uyarı alın
+- Kategorilere göre düzenleyin
+
+### � Market Liistesi
+- Eksik malzemeleri otomatik market listesine ekleyin
+- Alışveriş listesini WhatsApp ile paylaşın
+- Satın aldığınız ürünleri tek tıkla dolaba taşıyın
+
+### 📖 Tarif Yönetimi
+- Kendi tariflerinizi ekleyin ve paylaşın
+- Fotoğraf ve video ekleyin
+- Malzemeler, talimatlar ve soslar ekleyin
+- Zorluk seviyesi ve pişirme süresi belirtin
+
+### 🔍 Akıllı Tarif Arama
+- **Normal Arama:** Tarif adı, malzeme veya kategoriye göre arayın
+- **Dolabıma Göre Ara:** Evinizdeki malzemelerle yapabileceğiniz tarifleri bulun
+- **Malzemeye Göre Ara:** Belirli bir malzeme içeren tarifleri keşfedin
+
+### 👥 Mutfak Paylaşımı
+- Aile üyeleriyle aynı mutfağı paylaşın
+- Davet kodu ile kolayca ekip oluşturun
+- Herkes malzeme ve market listesini güncelleyebilir
+
+### 📱 Mobil Uyumlu
+- Telefon, tablet ve bilgisayarda mükemmel çalışır
+- Alt menü ile hızlı navigasyon
+- Soldan açılır menüler
+- Kompakt ve kullanıcı dostu tasarım
+
+## 🚀 Canlı Demo
+
+**Web Sitesi:** https://cookify-ecru-alpha.vercel.app
+
+**Test Hesabı:**
+- Email: test@example.com
+- Şifre: test123
 
 ## 🛠️ Teknolojiler
 
 ### Frontend
-- Next.js 14 (App Router)
-- React 18
-- TypeScript
-- TailwindCSS (Dark Theme)
-- React Query
+- **Next.js 14** - React framework
+- **TypeScript** - Tip güvenliği
+- **Tailwind CSS** - Modern styling
+- **Vercel** - Hosting
 
 ### Backend
-- Node.js
-- Express.js
-- TypeScript
-- Prisma ORM
-- PostgreSQL
-- JWT Authentication
-- bcrypt
+- **Node.js + Express** - API server
+- **TypeScript** - Tip güvenliği
+- **Prisma ORM** - Veritabanı yönetimi
+- **SQLite** - Veritabanı
+- **JWT** - Authentication
+- **Render** - Hosting
 
-## 📁 Proje Yapısı
-
-```
-cookify/
-├── frontend/          # Next.js frontend uygulaması
-│   ├── src/
-│   │   ├── app/      # App Router sayfaları
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── lib/
-│   │   └── types/
-│   └── package.json
-├── backend/           # Express.js backend API
-│   ├── src/
-│   │   ├── routes/
-│   │   ├── controllers/
-│   │   ├── services/
-│   │   ├── middleware/
-│   │   └── utils/
-│   ├── prisma/
-│   └── package.json
-└── README.md
-```
-
-## 🚀 Kurulum
+## 📦 Kurulum
 
 ### Gereksinimler
 - Node.js 18+
-- PostgreSQL 14+
 - npm veya yarn
 
 ### Backend Kurulumu
@@ -65,10 +73,8 @@ cookify/
 cd backend
 npm install
 cp .env.example .env
-# .env dosyasını düzenle (DATABASE_URL, JWT_SECRET vb.)
-npx prisma generate
+# .env dosyasını düzenleyin
 npx prisma migrate dev
-npx prisma db seed
 npm run dev
 ```
 
@@ -78,63 +84,45 @@ npm run dev
 cd frontend
 npm install
 cp .env.local.example .env.local
-# .env.local dosyasını düzenle (NEXT_PUBLIC_API_URL)
+# .env.local dosyasını düzenleyin
 npm run dev
 ```
 
-## 📝 Environment Variables
+## 🎯 Kullanım
 
-### Backend (.env)
-```
-DATABASE_URL="postgresql://user:password@localhost:5432/cookify"
-JWT_SECRET="your-secret-key"
-JWT_EXPIRES_IN="7d"
-PORT=5000
-FRONTEND_URL="http://localhost:3000"
-```
+1. **Kayıt Ol:** Yeni bir hesap oluşturun
+2. **Mutfak Oluştur:** İlk mutfağınızı oluşturun
+3. **Malzeme Ekle:** Dolabınızdaki malzemeleri ekleyin
+4. **Tarif Ara:** Malzemelerinizle yapabileceğiniz tarifleri keşfedin
+5. **Market Listesi:** Eksik malzemeleri market listesine ekleyin
 
-### Frontend (.env.local)
-```
-NEXT_PUBLIC_API_URL=http://localhost:5000
-```
+## 📱 Mobil Kullanım
 
-## 🧪 Test
+- **Alt Menü:** Ana Sayfa, Ara, Ekle, Dolap, Market
+- **Profil Menüsü:** Sağ üstteki profil fotoğrafına tıklayın
+- **Filtreler:** Her sayfada soldan açılır menüler
 
-```bash
-# Backend testleri
-cd backend
-npm test
+## 🤝 Katkıda Bulunma
 
-# Frontend testleri
-cd frontend
-npm test
-```
+1. Fork edin
+2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
+3. Commit edin (`git commit -m 'feat: Add amazing feature'`)
+4. Push edin (`git push origin feature/amazing-feature`)
+5. Pull Request açın
 
-## 📚 API Dokümantasyonu
+## �  Lisans
 
-API endpoint'leri için `.kiro/specs/cookify-core/design.md` dosyasına bakın.
+Bu proje MIT lisansı altında lisanslanmıştır.
 
-## 🗺️ Geliştirme Yol Haritası
+## �️‍💻 Geliştirici
 
-- [x] Proje yapısı ve konfigürasyon
-- [x] Authentication sistemi
-- [x] Profil yönetimi
-- [x] Mutfak yönetimi
-- [x] Dolap modülü
-- [x] Market modülü
-- [x] Modül sistemi
-- [x] Ortak mutfak senkronizasyonu
-- [ ] Test yazımı
-- [ ] Deployment
+**Serdar Doğruer**
+- GitHub: [@serdardogruer](https://github.com/serdardogruer)
 
-## 📄 Lisans
+## 🙏 Teşekkürler
 
-MIT
+Cookify'ı kullandığınız için teşekkürler! Sorularınız veya önerileriniz için issue açabilirsiniz.
 
-## 👥 Katkıda Bulunma
+---
 
-Katkılarınızı bekliyoruz! Lütfen pull request göndermeden önce issue açın.
-
-## 📞 İletişim
-
-Sorularınız için issue açabilirsiniz.
+⭐ Projeyi beğendiyseniz yıldız vermeyi unutmayın!
