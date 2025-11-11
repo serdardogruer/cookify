@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import Header from '@/components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 import { Recipe } from '@/types/recipe';
@@ -19,6 +18,7 @@ export default function RecipeDetailPage() {
   const [pantryItems, setPantryItems] = useState<any[]>([]);
   const [missingIngredients, setMissingIngredients] = useState<any[]>([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
 
   useEffect(() => {
     if (params.id) {
@@ -260,8 +260,7 @@ export default function RecipeDetailPage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <Header />
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+          <div className="min-h-screen bg-gray-900 flex items-center justify-center">
           <div className="text-white">Yükleniyor...</div>
         </div>
       </ProtectedRoute>
@@ -271,8 +270,7 @@ export default function RecipeDetailPage() {
   if (error || !recipe) {
     return (
       <ProtectedRoute>
-        <Header />
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+          <div className="min-h-screen bg-gray-900 flex items-center justify-center">
           <div className="text-center">
             <div className="text-6xl mb-4">😕</div>
             <div className="text-white text-xl mb-4">{error || 'Tarif bulunamadı'}</div>
@@ -304,19 +302,26 @@ export default function RecipeDetailPage() {
 
   return (
     <ProtectedRoute>
-      <Header />
-      <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           {/* Page Title */}
           <div className="mb-8">
-            <div className="flex items-center gap-4 mb-2">
+            <div className="flex items-center justify-between gap-4 mb-2">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => router.back()}
+                  className="text-white/80 hover:text-white"
+                >
+                  ← Geri
+                </button>
+                <h1 className="text-2xl md:text-3xl font-bold">{recipe.title}</h1>
+              </div>
               <button
-                onClick={() => router.back()}
-                className="text-white/80 hover:text-white"
+                onClick={() => setShowSidebar(true)}
+                className="md:hidden px-3 py-2 bg-gray-800 rounded-lg border border-gray-700 text-lg"
               >
-                ← Geri
+                ☰
               </button>
-              <h1 className="text-3xl font-bold">{recipe.title}</h1>
             </div>
             {recipe.description && (
               <p className="text-gray-400 mt-2">{recipe.description}</p>
@@ -335,9 +340,9 @@ export default function RecipeDetailPage() {
             </div>
           )}
 
-          <div className="flex gap-6">
-            {/* Sidebar - Sol taraf */}
-            <div className="w-64 space-y-6">
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* Sidebar - Desktop only */}
+            <div className="hidden md:block w-64 space-y-6">
               {/* Yazar Bilgisi */}
               <div className="bg-gray-800 rounded-lg p-6">
                 <h3 className="font-semibold mb-4">👤 Tarif Sahibi</h3>
@@ -612,6 +617,89 @@ export default function RecipeDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Mobile Sidebar Drawer */}
+      {showSidebar && (
+        <>
+          <div
+            className="md:hidden fixed inset-0 bg-black/50 z-40"
+            onClick={() => setShowSidebar(false)}
+          ></div>
+          
+          <div className="md:hidden fixed top-0 left-0 bottom-0 w-80 bg-gray-900 z-50 shadow-2xl overflow-y-auto">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold">Hızlı Menü</h2>
+                <button
+                  onClick={() => setShowSidebar(false)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {/* Tarif Sahibi */}
+                <div className="bg-gray-800 rounded-lg p-4">
+                  <h3 className="font-semibold mb-3 text-sm">👤 Tarif Sahibi</h3>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+                      {recipe.user.profileImage ? (
+                        <img src={recipe.user.profileImage} alt={recipe.user.name} className="w-full h-full rounded-full object-cover" />
+                      ) : (
+                        <span className="text-xl">👤</span>
+                      )}
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">{recipe.user.name}</div>
+                      <div className="text-xs text-gray-400">{new Date(recipe.createdAt).toLocaleDateString('tr-TR')}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Detaylar */}
+                <div className="bg-gray-800 rounded-lg p-4">
+                  <h3 className="font-semibold mb-3 text-sm">ℹ️ Detaylar</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Zorluk</span>
+                      <span>{recipe.difficulty === 'EASY' ? 'Kolay' : recipe.difficulty === 'MEDIUM' ? 'Orta' : 'Zor'}</span>
+                    </div>
+                    {recipe.category && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Kategori</span>
+                        <span>{recipe.category}</span>
+                      </div>
+                    )}
+                    {recipe.cuisine && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Mutfak</span>
+                        <span>{recipe.cuisine}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Etiketler */}
+                {recipe.tags.length > 0 && (
+                  <div className="bg-gray-800 rounded-lg p-4">
+                    <h3 className="font-semibold mb-3 text-sm">🏷️ Etiketler</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {recipe.tags.map((tag) => (
+                        <span key={tag.id} className="px-2 py-1 bg-blue-600/20 text-blue-400 rounded text-xs">
+                          {tag.tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </ProtectedRoute>
   );
 }

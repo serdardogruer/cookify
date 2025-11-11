@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import Header from '@/components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 import { Recipe } from '@/types/recipe';
@@ -16,6 +15,7 @@ export default function SearchRecipesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [ingredientSearch, setIngredientSearch] = useState('');
   const [searchMode, setSearchMode] = useState<'normal' | 'pantry' | 'ingredient'>('normal');
+  const [showSidebar, setShowSidebar] = useState(false);
   const [filters, setFilters] = useState({
     difficulty: '',
     category: '',
@@ -175,21 +175,30 @@ export default function SearchRecipesPage() {
 
   return (
     <ProtectedRoute>
-      <Header />
-      <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">🔍 Tarif Ara</h1>
-            <p className="text-gray-400">
-              {recipes.length} tarif bulundu
-              {searchMode === 'pantry' && ' (Dolabıma göre)'}
-              {searchMode === 'ingredient' && ` (${ingredientSearch} içeren)`}
-            </p>
+          <div className="mb-6 md:mb-8 flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">🔍 Tarif Ara</h1>
+              <p className="text-gray-400 text-sm md:text-base">
+                {recipes.length} tarif bulundu
+                {searchMode === 'pantry' && ' (Dolabıma göre)'}
+                {searchMode === 'ingredient' && ` (${ingredientSearch} içeren)`}
+              </p>
+            </div>
+            {/* Mobile Filter Button */}
+            <button
+              onClick={() => setShowSidebar(true)}
+              className="md:hidden px-4 py-2 bg-gray-800 rounded-lg border border-gray-700 flex items-center gap-2"
+            >
+              <span>🔧</span>
+              <span className="text-sm">Filtre</span>
+            </button>
           </div>
 
-          <div className="flex gap-6">
-            {/* Sidebar */}
-            <div className="w-64 space-y-4">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+            {/* Sidebar - Desktop only */}
+            <div className="hidden md:block w-64 space-y-4">
               <div className="bg-gray-800 rounded-lg p-4">
                 <h2 className="text-lg font-semibold mb-4">🔍 Arama Türü</h2>
                 <div className="space-y-2">
@@ -378,7 +387,7 @@ export default function SearchRecipesPage() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
               {recipes.map((recipe) => (
                 <div
                   key={recipe.id}
@@ -476,6 +485,111 @@ export default function SearchRecipesPage() {
           </div>
         </div>
       </div>
+
+      {/* Mobile Sidebar Drawer */}
+      {showSidebar && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="md:hidden fixed inset-0 bg-black/50 z-40"
+            onClick={() => setShowSidebar(false)}
+          ></div>
+          
+          {/* Drawer */}
+          <div className="md:hidden fixed top-0 left-0 bottom-0 w-80 bg-gray-900 z-50 shadow-2xl overflow-y-auto">
+            <div className="p-4">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold">Filtreler</h2>
+                <button
+                  onClick={() => setShowSidebar(false)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Sidebar Content */}
+              <div className="space-y-4">
+                <div className="bg-gray-800 rounded-lg p-4">
+                  <h2 className="text-lg font-semibold mb-4">🔍 Arama Türü</h2>
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => {
+                        setSearchMode('normal');
+                        loadAllRecipes();
+                        setShowSidebar(false);
+                      }}
+                      className={`w-full text-left px-4 py-3 rounded transition ${
+                        searchMode === 'normal'
+                          ? 'bg-blue-600'
+                          : 'bg-gray-700 hover:bg-gray-600'
+                      }`}
+                    >
+                      📝 Normal Arama
+                    </button>
+                    <button
+                      onClick={() => {
+                        searchByPantry();
+                        setShowSidebar(false);
+                      }}
+                      className={`w-full text-left px-4 py-3 rounded transition ${
+                        searchMode === 'pantry'
+                          ? 'bg-green-600'
+                          : 'bg-gray-700 hover:bg-gray-600'
+                      }`}
+                    >
+                      🏠 Dolabıma Göre Ara
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-gray-800 rounded-lg p-4">
+                  <h2 className="text-lg font-semibold mb-4">🥘 Malzemeye Göre</h2>
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      value={ingredientSearch}
+                      onChange={(e) => setIngredientSearch(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          searchByIngredient();
+                          setShowSidebar(false);
+                        }
+                      }}
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm"
+                      placeholder="Malzeme adı..."
+                    />
+                    <button
+                      onClick={() => {
+                        searchByIngredient();
+                        setShowSidebar(false);
+                      }}
+                      className="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-md text-sm"
+                    >
+                      Ara
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-gray-800 rounded-lg p-4">
+                  <h2 className="text-lg font-semibold mb-4">ℹ️ Bilgi</h2>
+                  <div className="text-sm text-gray-400 space-y-2">
+                    <p>
+                      <strong className="text-white">Dolabıma Göre:</strong> Dolabınızdaki
+                      malzemelerle yapabileceğiniz tarifler
+                    </p>
+                    <p>
+                      <strong className="text-white">Malzemeye Göre:</strong> Belirli bir
+                      malzeme içeren tarifler
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </ProtectedRoute>
   );
 }

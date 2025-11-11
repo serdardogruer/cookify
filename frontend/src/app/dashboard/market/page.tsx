@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import Header from '@/components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 import { MarketItem } from '@/types/market';
@@ -14,6 +13,7 @@ export default function MarketPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
   const [editingItem, setEditingItem] = useState<MarketItem | null>(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -202,13 +202,22 @@ export default function MarketPage() {
 
   return (
     <ProtectedRoute>
-      <Header />
-      <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           {/* Page Title */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold">🛒 Market Listesi</h1>
-            <p className="text-gray-400 mt-2">Alışveriş listenizi yönetin</p>
+          <div className="mb-6 md:mb-8 flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold">🛒 Market Listesi</h1>
+              <p className="text-gray-400 mt-2 text-sm md:text-base">Alışveriş listenizi yönetin</p>
+            </div>
+            {/* Mobile Category Button */}
+            <button
+              onClick={() => setShowSidebar(true)}
+              className="md:hidden px-4 py-2 bg-gray-800 rounded-lg border border-gray-700 flex items-center gap-2"
+            >
+              <span>📦</span>
+              <span className="text-sm">Kategori</span>
+            </button>
           </div>
 
           {/* Messages */}
@@ -223,9 +232,9 @@ export default function MarketPage() {
             </div>
           )}
 
-          <div className="flex gap-6">
-            {/* Sidebar - Categories */}
-            <div className="w-64 bg-gray-800 rounded-lg p-4">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+            {/* Sidebar - Desktop only */}
+            <div className="hidden md:block w-64 bg-gray-800 rounded-lg p-4">
               <h2 className="text-lg font-semibold mb-4">Kategoriler</h2>
               <div className="space-y-2">
                 <button
@@ -255,28 +264,28 @@ export default function MarketPage() {
             {/* Main Content */}
             <div className="flex-1">
               <div className="bg-gray-800 rounded-lg p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-xl font-semibold">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                  <h2 className="text-lg md:text-xl font-semibold">
                     {selectedCategory || 'Tüm Ürünler'} ({pendingItems.length})
                   </h2>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <button
                       onClick={handleWhatsAppExport}
-                      className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md"
+                      className="px-3 md:px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md text-sm md:text-base"
                     >
                       📱 WhatsApp
                     </button>
                     <button
                       onClick={handlePrint}
-                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md"
+                      className="px-3 md:px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-sm md:text-base hidden md:block"
                     >
                       🖨️ Yazdır
                     </button>
                     <button
                       onClick={() => setShowAddModal(true)}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
+                      className="px-3 md:px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-sm md:text-base"
                     >
-                      + Ürün Ekle
+                      + Ekle
                     </button>
                   </div>
                 </div>
@@ -466,6 +475,64 @@ export default function MarketPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Mobile Sidebar Drawer */}
+      {showSidebar && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="md:hidden fixed inset-0 bg-black/50 z-40"
+            onClick={() => setShowSidebar(false)}
+          ></div>
+          
+          {/* Drawer */}
+          <div className="md:hidden fixed top-0 left-0 bottom-0 w-80 bg-gray-900 z-50 shadow-2xl overflow-y-auto">
+            <div className="p-4">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold">Kategoriler</h2>
+                <button
+                  onClick={() => setShowSidebar(false)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Categories */}
+              <div className="space-y-2">
+                <button
+                  onClick={() => {
+                    setSelectedCategory('');
+                    setShowSidebar(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 rounded ${
+                    selectedCategory === '' ? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700'
+                  }`}
+                >
+                  📦 Tümü ({pendingItems.length})
+                </button>
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => {
+                      setSelectedCategory(cat.name);
+                      setShowSidebar(false);
+                    }}
+                    className={`w-full text-left px-4 py-3 rounded ${
+                      selectedCategory === cat.name
+                        ? 'bg-blue-600'
+                        : 'bg-gray-800 hover:bg-gray-700'
+                    }`}
+                  >
+                    {cat.icon} {cat.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </ProtectedRoute>
   );

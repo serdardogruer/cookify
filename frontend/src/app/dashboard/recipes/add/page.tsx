@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import Header from '@/components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 
@@ -39,6 +38,7 @@ export default function AddRecipePage() {
   const [tagInput, setTagInput] = useState('');
 
   const [showSauceSection, setShowSauceSection] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
   const [sauces, setSauces] = useState([
     { name: '', ingredients: '', instructions: '' },
   ]);
@@ -178,8 +178,7 @@ export default function AddRecipePage() {
 
   return (
     <ProtectedRoute>
-      <Header />
-      <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <button
@@ -188,15 +187,27 @@ export default function AddRecipePage() {
             >
               ← Geri
             </button>
-            <h1 className="text-3xl font-bold">➕ Yeni Tarif Ekle</h1>
-            <p className="text-gray-400 mt-2">
-              Lezzetli tariflerinizi paylaşın
-            </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold">➕ Yeni Tarif Ekle</h1>
+                <p className="text-gray-400 mt-2 text-sm md:text-base">
+                  Lezzetli tariflerinizi paylaşın
+                </p>
+              </div>
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setShowSidebar(true)}
+                className="md:hidden px-4 py-2 bg-gray-800 rounded-lg border border-gray-700 flex items-center gap-2"
+              >
+                <span>📋</span>
+                <span className="text-sm">İpuçları</span>
+              </button>
+            </div>
           </div>
 
-          <div className="flex gap-6">
-            {/* Sidebar */}
-            <div className="w-64 space-y-4">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+            {/* Sidebar - Desktop only */}
+            <div className="hidden md:block w-64 space-y-4">
               <div className="bg-gray-800 rounded-lg p-4">
                 <h2 className="text-lg font-semibold mb-4">📝 İpuçları</h2>
                 <div className="text-sm text-gray-400 space-y-3">
@@ -262,7 +273,7 @@ export default function AddRecipePage() {
 
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Temel Bilgiler */}
-            <div className="bg-gray-800 rounded-lg p-6">
+            <div className="bg-gray-800 rounded-lg p-4 md:p-6">
               <h2 className="text-xl font-semibold mb-4">📝 Temel Bilgiler</h2>
 
               <div className="space-y-4">
@@ -297,7 +308,7 @@ export default function AddRecipePage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       Görsel URL
@@ -329,7 +340,7 @@ export default function AddRecipePage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       Hazırlık (dk)
@@ -395,7 +406,7 @@ export default function AddRecipePage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       Kategori
@@ -430,54 +441,59 @@ export default function AddRecipePage() {
             </div>
 
             {/* Malzemeler */}
-            <div id="ingredients" className="bg-gray-800 rounded-lg p-6">
+            <div id="ingredients" className="bg-gray-800 rounded-lg p-4 md:p-6">
               <h2 className="text-xl font-semibold mb-4">🥘 Malzemeler</h2>
 
               <div className="space-y-3">
                 {ingredients.map((ingredient, index) => (
-                  <div key={index} className="flex gap-2">
+                  <div key={index} className="space-y-2 p-3 bg-gray-700/50 rounded-lg">
+                    {/* Malzeme Adı - Üstte */}
                     <input
                       type="text"
                       value={ingredient.name}
                       onChange={(e) =>
                         updateIngredient(index, 'name', e.target.value)
                       }
-                      className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
                       placeholder="Malzeme adı"
                     />
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={ingredient.quantity}
-                      onChange={(e) =>
-                        updateIngredient(index, 'quantity', e.target.value)
-                      }
-                      className="w-24 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      placeholder="Miktar"
-                    />
-                    <select
-                      value={ingredient.unit}
-                      onChange={(e) =>
-                        updateIngredient(index, 'unit', e.target.value)
-                      }
-                      className="w-32 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                    >
-                      <option value="adet">Adet</option>
-                      <option value="kg">Kg</option>
-                      <option value="gram">Gram</option>
-                      <option value="litre">Litre</option>
-                      <option value="ml">ML</option>
-                      <option value="su bardağı">Su Bardağı</option>
-                      <option value="çay kaşığı">Çay Kaşığı</option>
-                      <option value="yemek kaşığı">Yemek Kaşığı</option>
-                    </select>
-                    <button
-                      type="button"
-                      onClick={() => removeIngredient(index)}
-                      className="px-3 py-2 bg-red-600 hover:bg-red-700 rounded-md"
-                    >
-                      🗑️
-                    </button>
+                    
+                    {/* Miktar, Birim, Sil - Altta yan yana */}
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={ingredient.quantity}
+                        onChange={(e) =>
+                          updateIngredient(index, 'quantity', e.target.value)
+                        }
+                        className="w-20 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                        placeholder="Miktar"
+                      />
+                      <select
+                        value={ingredient.unit}
+                        onChange={(e) =>
+                          updateIngredient(index, 'unit', e.target.value)
+                        }
+                        className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                      >
+                        <option value="adet">Adet</option>
+                        <option value="kg">Kg</option>
+                        <option value="gram">Gram</option>
+                        <option value="litre">Litre</option>
+                        <option value="ml">ML</option>
+                        <option value="su bardağı">Su Bardağı</option>
+                        <option value="çay kaşığı">Çay Kaşığı</option>
+                        <option value="yemek kaşığı">Yemek Kaşığı</option>
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => removeIngredient(index)}
+                        className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-md"
+                      >
+                        🗑️
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -492,7 +508,7 @@ export default function AddRecipePage() {
             </div>
 
             {/* Talimatlar */}
-            <div id="instructions" className="bg-gray-800 rounded-lg p-6">
+            <div id="instructions" className="bg-gray-800 rounded-lg p-4 md:p-6">
               <h2 className="text-xl font-semibold mb-4">📋 Yapılışı</h2>
 
               <div className="space-y-4">
@@ -533,7 +549,7 @@ export default function AddRecipePage() {
             </div>
 
             {/* Soslar */}
-            <div id="sauces" className="bg-gray-800 rounded-lg p-6">
+            <div id="sauces" className="bg-gray-800 rounded-lg p-4 md:p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">🍯 Soslar (Opsiyonel)</h2>
                 <button
@@ -604,7 +620,7 @@ export default function AddRecipePage() {
             </div>
 
             {/* Etiketler */}
-            <div id="tags" className="bg-gray-800 rounded-lg p-6">
+            <div id="tags" className="bg-gray-800 rounded-lg p-4 md:p-6">
               <h2 className="text-xl font-semibold mb-4">🏷️ Etiketler</h2>
 
               <div className="flex gap-2 mb-4">
@@ -645,7 +661,7 @@ export default function AddRecipePage() {
             </div>
 
             {/* Submit */}
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <button
                 type="submit"
                 disabled={loading}
@@ -666,6 +682,47 @@ export default function AddRecipePage() {
           </div>
         </div>
       </div>
+
+      {/* Mobile Sidebar Drawer */}
+      {showSidebar && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="md:hidden fixed inset-0 bg-black/50 z-40"
+            onClick={() => setShowSidebar(false)}
+          ></div>
+          
+          {/* Drawer */}
+          <div className="md:hidden fixed top-0 left-0 bottom-0 w-80 bg-gray-900 z-50 shadow-2xl overflow-y-auto">
+            <div className="p-4">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold">İpuçları</h2>
+                <button
+                  onClick={() => setShowSidebar(false)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Tips */}
+              <div className="bg-gray-800 rounded-lg p-4">
+                <h3 className="text-lg font-semibold mb-4">📝 İpuçları</h3>
+                <ul className="space-y-2 text-sm text-gray-400">
+                  <li>• Tarif başlığı açık ve çekici olsun</li>
+                  <li>• Malzemeleri net bir şekilde belirtin</li>
+                  <li>• Adımları sıralı ve anlaşılır yazın</li>
+                  <li>• Fotoğraf eklemek tarifi daha çekici yapar</li>
+                  <li>• Video linki ekleyerek tarifi zenginleştirin</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </ProtectedRoute>
   );
 }
+
+

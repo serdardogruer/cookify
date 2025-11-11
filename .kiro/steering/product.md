@@ -2,9 +2,33 @@
 inclusion: always
 ---
 
-# Ürün Özeti
+# Ürün Özeti: Cookify
 
-Bu proje için henüz detaylı bilgi mevcut değil. Proje geliştikçe bu dosya güncellenecektir.
+Cookify, mutfak yönetimi ve tarif paylaşım platformudur.
+
+## Modül Yapısı ve Ücretlendirme
+
+### ✅ Temel Modüller (ÜCRETSİZ - Her kullanıcı için)
+
+Mevcut 7 modül temel modüllerdir ve tüm kullanıcılar ücretsiz kullanabilir:
+
+1. 🏠 **Dolabım** - Evdeki malzemeleri takip
+2. 🛒 **Market** - Alışveriş listesi yönetimi
+3. 👤 **Profil** - Profil ve mutfak ayarları
+4. 📖 **Tarifler** - Tarif yönetimi
+5. 🔍 **Tarif Ara** - Tarif arama ve filtreleme
+6. 📋 **Tarif Detay** - Tarif görüntüleme
+7. ➕ **Tarif Ekle** - Yeni tarif oluşturma
+
+### 💎 Premium Modüller (ÜCRETLİ)
+
+**ÖNEMLİ:** Bundan sonra eklenecek tüm yeni modüller ücretli olacaktır.
+
+Premium modül özellikleri:
+- `isCore: false` olarak işaretlenir
+- Kullanıcı satın almadan erişemez
+- Modül sayfasında "Premium" badge'i gösterilir
+- Satın alma sistemi entegre edilecek
 
 ## Genel Yaklaşım
 
@@ -19,3 +43,4 @@ Bu proje için henüz detaylı bilgi mevcut değil. Proje geliştikçe bu dosya 
 - Her adımda test edilebilir kod
 - Syntax hatalarından kaçınma
 - Kullanıcı onayı olmadan büyük değişiklik yapmama
+- Yeni modüller eklerken ücretlendirme sistemini unutma

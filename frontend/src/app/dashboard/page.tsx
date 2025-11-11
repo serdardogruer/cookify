@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import Header from '@/components/Header';
 import { api } from '@/lib/api';
 import { Recipe } from '@/types/recipe';
 
@@ -62,8 +61,7 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <Header />
-      <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
           <div className="mb-12 text-center">
@@ -97,7 +95,7 @@ export default function DashboardPage() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                 {recipes.map((recipe) => (
                   <div
                     key={recipe.id}

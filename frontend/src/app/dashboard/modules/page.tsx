@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import Header from '@/components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 import Link from 'next/link';
@@ -73,8 +72,7 @@ export default function ModulesPage() {
 
   return (
     <ProtectedRoute>
-      <Header />
-      <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
         <div className="max-w-6xl mx-auto">
           {/* Page Title */}
           <div className="mb-8">

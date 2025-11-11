@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import Header from '@/components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 import Link from 'next/link';
@@ -12,6 +11,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
@@ -125,12 +125,19 @@ export default function ProfilePage() {
 
   return (
     <ProtectedRoute>
-      <Header />
-      <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           {/* Page Title */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold">👤 Profil ve Ayarlar</h1>
+          <div className="mb-8 flex items-center justify-between">
+            <h1 className="text-2xl md:text-3xl font-bold">👤 Profil ve Ayarlar</h1>
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setShowSidebar(true)}
+              className="md:hidden px-4 py-2 bg-gray-800 rounded-lg border border-gray-700 flex items-center gap-2"
+            >
+              <span>☰</span>
+              <span className="text-sm">Menü</span>
+            </button>
           </div>
 
           {/* Messages */}
@@ -145,9 +152,9 @@ export default function ProfilePage() {
             </div>
           )}
 
-          <div className="flex gap-6">
-            {/* Sidebar */}
-            <div className="w-64 bg-gray-800 rounded-lg p-4">
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* Sidebar - Desktop only */}
+            <div className="hidden md:block w-64 bg-gray-800 rounded-lg p-4">
               <h2 className="text-lg font-semibold mb-4">Menü</h2>
               <div className="space-y-2">
                 <Link
@@ -337,6 +344,61 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Mobile Sidebar Drawer */}
+      {showSidebar && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="md:hidden fixed inset-0 bg-black/50 z-40"
+            onClick={() => setShowSidebar(false)}
+          ></div>
+          
+          {/* Drawer */}
+          <div className="md:hidden fixed top-0 left-0 bottom-0 w-80 bg-gray-900 z-50 shadow-2xl overflow-y-auto">
+            <div className="p-4">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold">Menü</h2>
+                <button
+                  onClick={() => setShowSidebar(false)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Menu Items */}
+              <div className="space-y-2">
+                <Link
+                  href="/dashboard/profile"
+                  className="w-full text-left px-4 py-3 rounded bg-blue-600 hover:bg-blue-700 flex items-center gap-3"
+                  onClick={() => setShowSidebar(false)}
+                >
+                  <span>👤</span>
+                  <span>Profil Bilgileri</span>
+                </Link>
+                <Link
+                  href="/dashboard/kitchen"
+                  className="w-full text-left px-4 py-3 rounded bg-gray-800 hover:bg-gray-700 flex items-center gap-3"
+                  onClick={() => setShowSidebar(false)}
+                >
+                  <span>🏠</span>
+                  <span>Mutfak Yönetimi</span>
+                </Link>
+                <Link
+                  href="/dashboard/modules"
+                  className="w-full text-left px-4 py-3 rounded bg-gray-800 hover:bg-gray-700 flex items-center gap-3"
+                  onClick={() => setShowSidebar(false)}
+                >
+                  <span>🧩</span>
+                  <span>Modüller</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </ProtectedRoute>
   );
 }

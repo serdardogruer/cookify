@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import Header from '@/components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 import { PantryItem } from '@/types/pantry';
@@ -79,6 +78,7 @@ export default function PantryPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
   const [editingItem, setEditingItem] = useState<PantryItem | null>(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -398,13 +398,22 @@ export default function PantryPage() {
 
   return (
     <ProtectedRoute>
-      <Header />
-      <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           {/* Page Title */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold">🏠 Dolabım</h1>
-            <p className="text-gray-400 mt-2">Evdeki malzemelerinizi yönetin</p>
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold">🏠 Dolabım</h1>
+              <p className="text-gray-400 mt-2 text-sm md:text-base">Evdeki malzemelerinizi yönetin</p>
+            </div>
+            {/* Mobile Category Button */}
+            <button
+              onClick={() => setShowSidebar(true)}
+              className="md:hidden px-4 py-2 bg-gray-800 rounded-lg border border-gray-700 flex items-center gap-2"
+            >
+              <span>📦</span>
+              <span className="text-sm">Kategori</span>
+            </button>
           </div>
 
           {/* Messages */}
@@ -419,9 +428,9 @@ export default function PantryPage() {
             </div>
           )}
 
-          <div className="flex gap-6">
-            {/* Sidebar - Categories */}
-            <div className="w-64 bg-gray-800 rounded-lg p-4">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+            {/* Sidebar - Desktop only */}
+            <div className="hidden md:block w-64 bg-gray-800 rounded-lg p-4">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Kategoriler</h2>
                 <span className="text-xs text-gray-400">↕️ Sürükle</span>
@@ -466,22 +475,22 @@ export default function PantryPage() {
 
             {/* Main Content */}
             <div className="flex-1">
-              <div className="bg-gray-800 rounded-lg p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-xl font-semibold">
+              <div className="bg-gray-800 rounded-lg p-4 md:p-6">
+                <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
+                  <h2 className="text-lg md:text-xl font-semibold">
                     {selectedCategory || 'Tüm Malzemeler'} ({items.length})
                   </h2>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <button
                       onClick={handleAddLowStockToMarket}
-                      className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-md flex items-center gap-2"
+                      className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-md flex items-center justify-center gap-2 text-sm md:text-base"
                       title="Azalan malzemeleri market'e ekle"
                     >
                       ⚠️ Azalanları Market'e Ekle
                     </button>
                     <button
                       onClick={() => setShowAddModal(true)}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-sm md:text-base"
                     >
                       + Malzeme Ekle
                     </button>
@@ -557,10 +566,10 @@ export default function PantryPage() {
                         return (
                           <div key={category} className="bg-gray-700/30 rounded-lg p-4">
                             {/* Kategori Başlığı */}
-                            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                              <span>{categoryIcon}</span>
+                            <h3 className="text-base font-semibold mb-2 flex items-center gap-2">
+                              <span className="text-lg">{categoryIcon}</span>
                               <span>{category}</span>
-                              <span className="text-sm text-gray-400">({mergedItems.length})</span>
+                              <span className="text-xs text-gray-400">({mergedItems.length})</span>
                             </h3>
 
                             {/* Kategori İçindeki Malzemeler */}
@@ -580,116 +589,65 @@ export default function PantryPage() {
                                 return (
                                   <div
                                     key={`${merged.name}-${idx}`}
-                                    className="bg-gray-800 rounded-lg p-4 hover:bg-gray-750 transition"
+                                    className="bg-gray-800 rounded-lg p-2 hover:bg-gray-750 transition"
                                   >
-                                    <div className="flex items-center justify-between gap-4">
-                                      {/* Malzeme Bilgisi */}
-                                      <div className="flex-1">
-                                        <div className="flex items-center gap-2 mb-2">
-                                          <div className="font-medium text-lg">{merged.name}</div>
-                                          {hasMultiple && (
-                                            <span className="text-xs bg-blue-600 px-2 py-1 rounded">
-                                              {merged.items.length} kayıt birleştirildi
-                                            </span>
-                                          )}
+                                    <div className="flex flex-col gap-2">
+                                      {/* Tek Satır: İsim, Miktar, Butonlar */}
+                                      <div className="flex items-center justify-between gap-2">
+                                        {/* Malzeme Bilgisi */}
+                                        <div className="flex-1 min-w-0 flex items-center gap-2">
+                                          <div className="font-medium text-sm truncate">{merged.name}</div>
                                           {isLowStock && (
-                                            <span className="text-xs bg-red-600 px-2 py-1 rounded flex items-center gap-1">
-                                              ⚠️ Azalıyor (Min: {firstItem.minQuantity} {firstItem.unit})
-                                            </span>
+                                            <span className="text-xs bg-red-600 px-1.5 py-0.5 rounded">⚠️</span>
                                           )}
-                                        </div>
-                                        
-                                        {/* Progress Bar */}
-                                        <div className="w-full bg-gray-700 rounded-full h-2 mb-1">
-                                          <div
-                                            className={`h-2 rounded-full transition-all ${
-                                              percentage > 50
-                                                ? 'bg-green-500'
-                                                : percentage > 20
-                                                ? 'bg-yellow-500'
-                                                : 'bg-red-500'
-                                            }`}
-                                            style={{ width: `${percentage}%` }}
-                                          ></div>
-                                        </div>
-                                        
-                                        <div className="flex items-center gap-4 text-sm text-gray-400">
-                                          <span>%{percentage} kaldı</span>
-                                          <span>•</span>
-                                          {hasMultiple ? (
-                                            // Birden fazla kayıt varsa toplam kg göster
-                                            <span className="font-semibold text-white">
-                                              {merged.totalQuantity.toFixed(2)} kg
-                                            </span>
-                                          ) : (
-                                            // Tek kayıt varsa orijinal birim + tahmini ağırlık
-                                            <span className="font-semibold text-white">
-                                              {merged.items[0].quantity} {merged.items[0].unit}
-                                              {merged.items[0].unit.toLowerCase() === 'adet' && (
-                                                <span className="text-gray-500 font-normal">
-                                                  {' '}(~{merged.totalQuantity.toFixed(2)} kg)
-                                                </span>
-                                              )}
-                                              {merged.items[0].unit.toLowerCase() === 'gram' && merged.items[0].quantity >= 1000 && (
-                                                <span className="text-gray-500 font-normal">
-                                                  {' '}(~{merged.totalQuantity.toFixed(2)} kg)
-                                                </span>
-                                              )}
-                                            </span>
-                                          )}
-                                          {merged.expiryDate && (
-                                            <>
-                                              <span>•</span>
-                                              <span>SKT: {new Date(merged.expiryDate).toLocaleDateString('tr-TR')}</span>
-                                            </>
-                                          )}
+                                          <span className="text-xs text-gray-400 whitespace-nowrap">•</span>
+                                          <span className="text-xs text-gray-400 whitespace-nowrap">
+                                            {hasMultiple ? (
+                                              `${merged.totalQuantity.toFixed(1)} kg`
+                                            ) : (
+                                              `${merged.items[0].quantity} ${merged.items[0].unit}`
+                                            )}
+                                          </span>
                                         </div>
 
-                                        {/* Detaylar (birden fazla kayıt varsa) */}
-                                        {hasMultiple && (
-                                          <div className="mt-2 text-xs text-gray-500">
-                                            Detay: {merged.items.map((item: PantryItem, i: number) => (
-                                              <span key={item.id}>
-                                                {item.quantity} {item.unit}
-                                                {item.unit.toLowerCase() === 'adet' && (
-                                                  <span className="text-gray-600">
-                                                    {' '}(~{(item.quantity * 0.2).toFixed(2)} kg)
-                                                  </span>
-                                                )}
-                                                {i < merged.items.length - 1 && ' + '}
-                                              </span>
-                                            ))}
-                                            {' = '}
-                                            <span className="font-semibold text-gray-400">
-                                              {merged.totalQuantity.toFixed(2)} kg toplam
-                                            </span>
-                                          </div>
-                                        )}
+                                        {/* İşlem Butonları - Küçük */}
+                                        <div className="flex gap-1 shrink-0">
+                                          <button
+                                            onClick={() => handleEdit(merged.items[0])}
+                                            className="px-2 py-1 bg-yellow-600 hover:bg-yellow-700 rounded text-xs"
+                                            title="Düzenle"
+                                          >
+                                            ✏️
+                                          </button>
+                                          <button
+                                            onClick={() => handleMoveToMarket(merged.items[0].id)}
+                                            className="px-2 py-1 bg-green-600 hover:bg-green-700 rounded text-xs"
+                                            title="Market'e Ekle"
+                                          >
+                                            🛒
+                                          </button>
+                                          <button
+                                            onClick={() => handleDelete(merged.items[0].id)}
+                                            className="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-xs"
+                                            title="Sil"
+                                          >
+                                            🗑️
+                                          </button>
+                                        </div>
                                       </div>
-
-                                      {/* İşlem Butonları */}
-                                      <div className="flex gap-2">
-                                        <button
-                                          onClick={() => handleEdit(merged.items[0])}
-                                          className="px-3 py-2 bg-yellow-600 hover:bg-yellow-700 rounded text-sm"
-                                          title="Düzenle"
-                                        >
-                                          ✏️
-                                        </button>
-                                        <button
-                                          onClick={() => handleMoveToMarket(merged.items[0].id)}
-                                          className="px-3 py-2 bg-green-600 hover:bg-green-700 rounded text-sm"
-                                          title="Market'e Ekle"
-                                        >
-                                          🛒
-                                        </button>
-                                        <button
-                                          onClick={() => handleDelete(merged.items[0].id)}
-                                          className="px-3 py-2 bg-red-600 hover:bg-red-700 rounded text-sm"
-                                          title="Sil"
-                                        >
-                                          🗑️
-                                        </button>
+                                      
+                                      {/* Progress Bar - En Altta */}
+                                      <div className="w-full bg-gray-700 rounded-full h-1.5">
+                                        <div
+                                          className={`h-1.5 rounded-full transition-all ${
+                                            percentage > 50
+                                              ? 'bg-green-500'
+                                              : percentage > 20
+                                              ? 'bg-yellow-500'
+                                              : 'bg-red-500'
+                                          }`}
+                                          style={{ width: `${percentage}%` }}
+                                        ></div>
                                       </div>
                                     </div>
                                   </div>
@@ -862,6 +820,67 @@ export default function PantryPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Mobile Sidebar Drawer */}
+      {showSidebar && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="md:hidden fixed inset-0 bg-black/50 z-40"
+            onClick={() => setShowSidebar(false)}
+          ></div>
+          
+          {/* Drawer */}
+          <div className="md:hidden fixed top-0 left-0 bottom-0 w-80 bg-gray-900 z-50 shadow-2xl overflow-y-auto">
+            <div className="p-4">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold">Kategoriler</h2>
+                <button
+                  onClick={() => setShowSidebar(false)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Categories */}
+              <div className="space-y-2">
+                <button
+                  onClick={() => {
+                    setSelectedCategory('');
+                    setShowSidebar(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 rounded ${
+                    selectedCategory === '' ? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700'
+                  }`}
+                >
+                  📦 Tümü ({items.length})
+                </button>
+                {categories.map((cat) => {
+                  const count = items.filter((item) => item.category === cat.name).length;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => {
+                        setSelectedCategory(cat.name);
+                        setShowSidebar(false);
+                      }}
+                      className={`w-full text-left px-4 py-3 rounded ${
+                        selectedCategory === cat.name
+                          ? 'bg-blue-600'
+                          : 'bg-gray-800 hover:bg-gray-700'
+                      }`}
+                    >
+                      {cat.icon} {cat.name} ({count})
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </ProtectedRoute>
   );
