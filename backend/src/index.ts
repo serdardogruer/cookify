@@ -29,7 +29,11 @@ app.use('/uploads', express.static('uploads'));
 
 // Health check endpoint
 app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', message: 'Cookify API is running' });
+  res.json({ 
+    status: 'ok', 
+    message: 'Cookify API is running',
+    cors: process.env.FRONTEND_URL 
+  });
 });
 
 // Routes
