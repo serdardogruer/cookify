@@ -76,7 +76,7 @@ export default function ModulesPage() {
         <div className="max-w-6xl mx-auto">
           {/* Page Title */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold">👤 Profil ve Ayarlar</h1>
+            <h1 className="text-2xl md:text-3xl font-bold">🧩 Modüller</h1>
           </div>
 
           {/* Messages */}
@@ -91,9 +91,9 @@ export default function ModulesPage() {
             </div>
           )}
 
-          <div className="flex gap-6">
-            {/* Sidebar */}
-            <div className="w-64 bg-gray-800 rounded-lg p-4">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+            {/* Sidebar - Desktop only */}
+            <div className="hidden md:block w-64 bg-gray-800 rounded-lg p-4">
               <h2 className="text-lg font-semibold mb-4">Menü</h2>
               <div className="space-y-2">
                 <Link
@@ -137,7 +137,7 @@ export default function ModulesPage() {
               {coreModules.map((module) => (
                 <div
                   key={module.id}
-                  className="bg-gray-800 rounded-lg p-6 border-2 border-green-600"
+                  className="bg-gray-800 rounded-lg p-4 md:p-6 border-2 border-green-600"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="text-4xl">{module.icon}</div>
@@ -163,7 +163,7 @@ export default function ModulesPage() {
                 {optionalModules.map((module) => (
                   <div
                     key={module.id}
-                    className={`bg-gray-800 rounded-lg p-6 border-2 ${
+                    className={`bg-gray-800 rounded-lg p-4 md:p-6 border-2 ${
                       module.isEnabled ? 'border-blue-600' : 'border-gray-700'
                     }`}
                   >
@@ -199,7 +199,7 @@ export default function ModulesPage() {
                     {futureModules.map((module) => (
                       <div
                         key={module.id}
-                        className="bg-gray-800 rounded-lg p-6 border-2 border-gray-700 opacity-60"
+                        className="bg-gray-800 rounded-lg p-4 md:p-6 border-2 border-gray-700 opacity-60"
                       >
                         <div className="flex items-start justify-between mb-3">
                           <div className="text-4xl">{module.icon}</div>
@@ -221,3 +221,4 @@ export default function ModulesPage() {
     </ProtectedRoute>
   );
 }
+

@@ -295,53 +295,49 @@ export default function MarketPage() {
                     Market listeniz boş
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-gray-700">
-                          <th className="text-left py-3 px-4">Ürün</th>
-                          <th className="text-left py-3 px-4">Kategori</th>
-                          <th className="text-left py-3 px-4">Miktar</th>
-                          <th className="text-right py-3 px-4">İşlemler</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {pendingItems.map((item) => (
-                          <tr
-                            key={item.id}
-                            className="border-b border-gray-700 hover:bg-gray-700/50"
-                          >
-                            <td className="py-3 px-4">{item.name}</td>
-                            <td className="py-3 px-4">{item.category}</td>
-                            <td className="py-3 px-4">
+                  <div className="space-y-2">
+                    {pendingItems.map((item) => (
+                      <div
+                        key={item.id}
+                        className="bg-gray-800 rounded-lg p-2 hover:bg-gray-750 transition"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          {/* Ürün Bilgisi */}
+                          <div className="flex-1 min-w-0 flex items-center gap-2">
+                            <div className="font-medium text-sm truncate">{item.name}</div>
+                            <span className="text-xs text-gray-400">•</span>
+                            <span className="text-xs text-gray-400 whitespace-nowrap">
                               {item.quantity} {item.unit}
-                            </td>
-                            <td className="py-3 px-4 text-right">
-                              <div className="flex gap-2 justify-end">
-                                <button
-                                  onClick={() => handleEdit(item)}
-                                  className="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 rounded text-sm"
-                                >
-                                  Düzenle
-                                </button>
-                                <button
-                                  onClick={() => handleMoveToPantry(item.id)}
-                                  className="px-3 py-1 bg-green-600 hover:bg-green-700 rounded text-sm"
-                                >
-                                  ✓ Alındı
-                                </button>
-                                <button
-                                  onClick={() => handleDelete(item.id)}
-                                  className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-sm"
-                                >
-                                  Sil
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                            </span>
+                          </div>
+
+                          {/* İşlem Butonları */}
+                          <div className="flex gap-1 shrink-0">
+                            <button
+                              onClick={() => handleEdit(item)}
+                              className="px-2 py-1 bg-yellow-600 hover:bg-yellow-700 rounded text-xs"
+                              title="Düzenle"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              onClick={() => handleMoveToPantry(item.id)}
+                              className="px-2 py-1 bg-green-600 hover:bg-green-700 rounded text-xs"
+                              title="Alındı"
+                            >
+                              ✓
+                            </button>
+                            <button
+                              onClick={() => handleDelete(item.id)}
+                              className="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-xs"
+                              title="Sil"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>

@@ -100,7 +100,7 @@ export default function KitchenPage() {
         <div className="max-w-4xl mx-auto">
           {/* Page Title */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold">👤 Profil ve Ayarlar</h1>
+            <h1 className="text-2xl md:text-3xl font-bold">🏠 Mutfak Yönetimi</h1>
           </div>
 
           {/* Messages */}
@@ -115,9 +115,9 @@ export default function KitchenPage() {
             </div>
           )}
 
-          <div className="flex gap-6">
-            {/* Sidebar */}
-            <div className="w-64 bg-gray-800 rounded-lg p-4">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+            {/* Sidebar - Desktop only */}
+            <div className="hidden md:block w-64 bg-gray-800 rounded-lg p-4">
               <h2 className="text-lg font-semibold mb-4">Menü</h2>
               <div className="space-y-2">
                 <Link
@@ -147,7 +147,7 @@ export default function KitchenPage() {
             {/* Main Content */}
             <div className="flex-1">
           {/* Kitchen Info */}
-          <div className="bg-gray-800 rounded-lg p-6 mb-6">
+          <div className="bg-gray-800 rounded-lg p-4 md:p-6 mb-6">
             <h2 className="text-xl font-semibold mb-4">Aktif Mutfak</h2>
             <div className="space-y-4">
               <div>
