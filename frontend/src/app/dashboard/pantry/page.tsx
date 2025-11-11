@@ -328,19 +328,22 @@ export default function PantryPage() {
                 >
                   📦 Tümü ({items.length})
                 </button>
-                {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.name)}
-                    className={`w-full text-left px-3 py-2 rounded ${
-                      selectedCategory === cat.name
-                        ? 'bg-blue-600'
-                        : 'hover:bg-gray-700'
-                    }`}
-                  >
-                    {cat.icon} {cat.name}
-                  </button>
-                ))}
+                {categories.map((cat) => {
+                  const categoryItemCount = items.filter(item => item.category === cat.name).length;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => setSelectedCategory(cat.name)}
+                      className={`w-full text-left px-3 py-2 rounded ${
+                        selectedCategory === cat.name
+                          ? 'bg-blue-600'
+                          : 'hover:bg-gray-700'
+                      }`}
+                    >
+                      {cat.icon} {cat.name} ({categoryItemCount})
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

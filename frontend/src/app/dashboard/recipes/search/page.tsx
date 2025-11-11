@@ -382,7 +382,7 @@ export default function SearchRecipesPage() {
               {recipes.map((recipe) => (
                 <div
                   key={recipe.id}
-                  onClick={() => router.push(`/recipes/${recipe.id}`)}
+                  onClick={() => router.push(`/dashboard/recipes/${recipe.id}`)}
                   className="bg-gray-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition cursor-pointer"
                 >
                   {/* Recipe Image */}

@@ -54,21 +54,13 @@ export default function RecipeDetailPage() {
   };
 
   const loadPantryItems = async () => {
-    if (!token) {
-      console.log('Token yok, pantry yüklenemiyor');
-      return;
-    }
+    if (!token) return;
     
-    console.log('Pantry yükleniyor...');
     const response = await api.get<any[]>('/api/pantry', token);
-    console.log('Pantry response:', response);
     
     if (response.success && response.data) {
-      console.log('Pantry items yüklendi:', response.data.length, 'malzeme');
-      console.log('Malzemeler:', response.data.map((item: any) => item.name));
       setPantryItems(response.data);
     } else {
-      console.error('Pantry yüklenemedi:', response.error);
       setPantryItems([]);
     }
   };
@@ -91,14 +83,9 @@ export default function RecipeDetailPage() {
   const checkMissingIngredients = (recipeData: Recipe) => {
     if (!recipeData) return;
     if (pantryItems.length === 0) {
-      console.log('⚠️ Dolap boş, tüm malzemeler eksik');
       setMissingIngredients(recipeData.ingredients);
       return;
     }
-
-    console.log('🔍 Malzeme kontrolü başlıyor...');
-    console.log('📋 Tarif malzemeleri:', recipeData.ingredients.map(i => i.name));
-    console.log('🗄️ Dolaptaki malzemeler:', pantryItems.map(p => p.name));
 
     const missing = recipeData.ingredients.filter((ingredient) => {
       const ingredientName = normalizeText(ingredient.name);
@@ -107,43 +94,25 @@ export default function RecipeDetailPage() {
         const pantryName = normalizeText(pantryItem.name);
         
         // Tam eşleşme
-        if (ingredientName === pantryName) {
-          console.log(`✅ TAM EŞLEŞME: "${ingredient.name}" = "${pantryItem.name}"`);
-          return true;
-        }
+        if (ingredientName === pantryName) return true;
         
         // Kısmi eşleşme (her iki yönde)
-        if (ingredientName.includes(pantryName) || pantryName.includes(ingredientName)) {
-          console.log(`✅ KISMİ EŞLEŞME: "${ingredient.name}" ≈ "${pantryItem.name}"`);
-          return true;
-        }
+        if (ingredientName.includes(pantryName) || pantryName.includes(ingredientName)) return true;
         
         // Kelime kelime kontrol (en az 3 karakter)
         const ingredientWords = ingredientName.split(/\s+/).filter(w => w.length >= 3);
         const pantryWords = pantryName.split(/\s+/).filter(w => w.length >= 3);
         
-        const wordMatch = ingredientWords.some(word => 
+        return ingredientWords.some(word => 
           pantryWords.some(pWord => 
             word === pWord || word.includes(pWord) || pWord.includes(word)
           )
         );
-
-        if (wordMatch) {
-          console.log(`✅ KELİME EŞLEŞME: "${ingredient.name}" ≈ "${pantryItem.name}"`);
-          return true;
-        }
-
-        return false;
       });
-
-      if (!found) {
-        console.log(`❌ BULUNAMADI: "${ingredient.name}" (normalize: "${ingredientName}")`);
-      }
 
       return !found;
     });
 
-    console.log('📊 Sonuç: Eksik malzemeler:', missing.map(m => m.name));
     setMissingIngredients(missing);
   };
 
@@ -395,7 +364,7 @@ export default function RecipeDetailPage() {
                 {isOwner && (
                   <div className="mt-4 pt-4 border-t border-gray-700 space-y-2">
                     <button
-                      onClick={() => router.push(`/recipes/${recipe.id}/edit`)}
+                      onClick={() => router.push(`/dashboard/recipes/${recipe.id}/edit`)}
                       className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
                     >
                       ✏️ Düzenle
@@ -418,6 +387,21 @@ export default function RecipeDetailPage() {
                 >
                   <span>✅</span>
                   <span>Yaptım</span>
+                </button>
+              )}
+
+              {/* Eksikleri Market'e Ekle Butonu */}
+              {token && (
+                <button
+                  onClick={addMissingToMarket}
+                  disabled={missingIngredients.length === 0}
+                  className={`w-full px-4 py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 whitespace-nowrap ${
+                    missingIngredients.length > 0
+                      ? 'bg-orange-600 hover:bg-orange-700 cursor-pointer'
+                      : 'bg-gray-600 cursor-not-allowed opacity-50'
+                  }`}
+                >
+                  🛒 Eksikleri Ekle{missingIngredients.length > 0 && ` (${missingIngredients.length})`}
                 </button>
               )}
 
@@ -521,33 +505,11 @@ export default function RecipeDetailPage() {
 
               {/* Malzemeler */}
               <div className="bg-gray-800 rounded-lg p-6">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-                  <div>
-                    <h2 className="text-2xl font-bold">🥘 Malzemeler</h2>
-                    <p className="text-sm text-gray-400 mt-1">
-                      Dolabınızda: {pantryItems.length} malzeme | Eksik: {missingIngredients.length}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    {token && (
-                      <button
-                        onClick={() => {
-                          console.log('Buton tıklandı!');
-                          console.log('Missing ingredients:', missingIngredients);
-                          addMissingToMarket();
-                        }}
-                        disabled={missingIngredients.length === 0}
-                        className={`px-4 py-2 rounded-md text-sm font-semibold transition ${
-                          missingIngredients.length > 0
-                            ? 'bg-orange-600 hover:bg-orange-700 cursor-pointer'
-                            : 'bg-gray-600 cursor-not-allowed opacity-50'
-                        }`}
-                      >
-                        🛒 Eksikleri Market'e Ekle
-                        {missingIngredients.length > 0 && ` (${missingIngredients.length})`}
-                      </button>
-                    )}
-                  </div>
+                <div className="mb-4">
+                  <h2 className="text-2xl font-bold">🥘 Malzemeler</h2>
+                  <p className="text-sm text-gray-400 mt-1">
+                    Dolabınızda: {pantryItems.length} malzeme | Eksik: {missingIngredients.length}
+                  </p>
                 </div>
                 <ul className="space-y-2">
                   {recipe.ingredients.map((ingredient) => {

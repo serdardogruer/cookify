@@ -161,12 +161,13 @@ export default function AddRecipePage() {
       tags: tags.length > 0 ? tags : undefined,
     };
 
-    const response = await api.post('/api/recipes', data, token);
+    const response = await api.post<{ id: number }>('/api/recipes', data, token);
 
-    if (response.success) {
+    if (response.success && response.data) {
       setSuccess('Tarif başarıyla eklendi!');
+      const recipeId = response.data.id;
       setTimeout(() => {
-        router.push(`/recipes/${response.data.id}`);
+        router.push(`/dashboard/recipes/${recipeId}`);
       }, 1500);
     } else {
       setError(response.error?.message || 'Tarif eklenemedi');
