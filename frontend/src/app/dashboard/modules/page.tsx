@@ -99,21 +99,21 @@ export default function ModulesPage() {
               <h2 className="text-lg font-semibold mb-4">Menü</h2>
               <div className="space-y-2">
                 <Link
-                  href="/profile"
+                  href="/dashboard/profile"
                   className="w-full text-left px-4 py-3 rounded hover:bg-gray-700 flex items-center gap-3"
                 >
                   <span>👤</span>
                   <span>Profil Bilgileri</span>
                 </Link>
                 <Link
-                  href="/kitchen"
+                  href="/dashboard/kitchen"
                   className="w-full text-left px-4 py-3 rounded hover:bg-gray-700 flex items-center gap-3"
                 >
                   <span>🏠</span>
                   <span>Mutfak Yönetimi</span>
                 </Link>
                 <Link
-                  href="/modules"
+                  href="/dashboard/modules"
                   className="w-full text-left px-4 py-3 rounded bg-blue-600 hover:bg-blue-700 flex items-center gap-3"
                 >
                   <span>🧩</span>

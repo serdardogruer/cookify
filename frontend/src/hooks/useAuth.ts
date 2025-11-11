@@ -31,7 +31,7 @@ export const useAuth = () => {
       setToken(token);
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
-      router.push('/pantry');
+      router.push('/dashboard');
       return { success: true };
     }
 
@@ -47,7 +47,7 @@ export const useAuth = () => {
       setToken(token);
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
-      router.push('/pantry');
+      router.push('/dashboard');
       return { success: true };
     }
 

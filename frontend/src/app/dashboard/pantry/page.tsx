@@ -27,6 +27,7 @@ export default function PantryPage() {
     name: '',
     category: '',
     quantity: '',
+    minQuantity: '',
     unit: 'adet',
     expiryDate: '',
   });
@@ -185,6 +186,7 @@ export default function PantryPage() {
       name: item.name,
       category: item.category,
       quantity: item.quantity.toString(),
+      minQuantity: item.minQuantity?.toString() || '',
       unit: item.unit,
       expiryDate: item.expiryDate ? item.expiryDate.split('T')[0] : '',
     });
@@ -265,6 +267,7 @@ export default function PantryPage() {
       name: '',
       category: '',
       quantity: '',
+      minQuantity: '',
       unit: 'adet',
       expiryDate: '',
     });
@@ -450,6 +453,10 @@ export default function PantryPage() {
                                 // Birden fazla kayıt varsa göster
                                 const hasMultiple = merged.items.length > 1;
 
+                                // Minimum miktar kontrolü
+                                const firstItem = merged.items[0];
+                                const isLowStock = firstItem.minQuantity && firstItem.minQuantity > 0 && firstItem.quantity < firstItem.minQuantity;
+
                                 return (
                                   <div
                                     key={`${merged.name}-${idx}`}
@@ -463,6 +470,11 @@ export default function PantryPage() {
                                           {hasMultiple && (
                                             <span className="text-xs bg-blue-600 px-2 py-1 rounded">
                                               {merged.items.length} kayıt birleştirildi
+                                            </span>
+                                          )}
+                                          {isLowStock && (
+                                            <span className="text-xs bg-red-600 px-2 py-1 rounded flex items-center gap-1">
+                                              ⚠️ Azalıyor (Min: {firstItem.minQuantity} {firstItem.unit})
                                             </span>
                                           )}
                                         </div>
@@ -651,7 +663,7 @@ export default function PantryPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Miktar
+                    Mevcut Miktar
                   </label>
                   <input
                     type="number"
@@ -681,6 +693,23 @@ export default function PantryPage() {
                     <option value="paket">Paket</option>
                   </select>
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Minimum Miktar (Opsiyonel)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.minQuantity}
+                  onChange={(e) => setFormData({ ...formData, minQuantity: e.target.value })}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                  placeholder="Örn: 2 (Bu miktarın altına düşünce uyarı)"
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                  Bu miktarın altına düşünce "Azalıyor" uyarısı gösterilir
+                </p>
               </div>
 
               <div>

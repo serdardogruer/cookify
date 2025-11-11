@@ -4,6 +4,12 @@ inclusion: always
 
 # Teknoloji Stack
 
+## İletişim Dili
+- Kod yazılırken ve geliştirme sırasında **Türkçe** iletişim kurulmalı
+- Kod içi yorumlar Türkçe olmalı
+- Commit mesajları Türkçe olmalı
+- Değişken ve fonksiyon isimleri İngilizce (standart)
+
 ## Tercih Edilen Teknolojiler
 
 ### Backend
@@ -36,13 +42,9 @@ inclusion: always
 - Gerçek verilerle test yapılmalı
 - Edge case'ler düşünülmeli
 
-### Backup ve Restore
-```bash
-# Büyük değişiklik öncesi
-tools/backup.bat
+## kod yazılırken 
+- türkçe iletişim kutulacak
 
-# Sorun durumunda geri dönüş
-tools/restore.bat
 ```
 
 ## Migration Kuralları

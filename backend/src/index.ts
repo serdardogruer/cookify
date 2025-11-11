@@ -8,6 +8,7 @@ import categoryRoutes from './routes/category.routes';
 import pantryRoutes from './routes/pantry.routes';
 import marketRoutes from './routes/market.routes';
 import moduleRoutes from './routes/module.routes';
+import recipeRoutes from './routes/recipe.routes';
 
 // Load environment variables
 dotenv.config();
@@ -39,6 +40,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/pantry', pantryRoutes);
 app.use('/api/market', marketRoutes);
 app.use('/api/modules', moduleRoutes);
+app.use('/api/recipes', recipeRoutes);
 
 // Start server
 app.listen(PORT, () => {

@@ -20,6 +20,7 @@ model User {
   kitchen       Kitchen?        @relation("ActiveKitchen", fields: [kitchenId], references: [id])
   ownedKitchens Kitchen[]       @relation("KitchenOwner")
   memberships   KitchenMember[]
+  recipes       Recipe[]
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 
@@ -101,6 +102,7 @@ model PantryItem {
   category        String
   quantity        Float
   initialQuantity Float     @default(0)
+  minQuantity     Float     @default(0)
   unit            String
   expiryDate      DateTime?
   createdAt       DateTime  @default(now())
@@ -166,4 +168,63 @@ model UnitConversion {
   multiplier Float
 
   @@map("unit_conversions")
+}
+
+// Recipe Model
+model Recipe {
+  id              Int                @id @default(autoincrement())
+  title           String
+  description     String?
+  image           String?
+  video           String?            // Video URL (YouTube, Vimeo vb.)
+  prepTime        Int?               // Hazırlık süresi (dakika)
+  cookTime        Int?               // Pişirme süresi (dakika)
+  servings        Int                @default(4)
+  difficulty      String             @default("MEDIUM") // EASY, MEDIUM, HARD
+  category        String?
+  cuisine         String?            // Türk, İtalyan, Çin vb.
+  userId          Int
+  user            User               @relation(fields: [userId], references: [id])
+  ingredients     RecipeIngredient[]
+  instructions    RecipeInstruction[]
+  tags            RecipeTag[]
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@map("recipes")
+}
+
+// Recipe Ingredient Model
+model RecipeIngredient {
+  id        Int      @id @default(autoincrement())
+  recipeId  Int
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  name      String
+  quantity  Float
+  unit      String
+  order     Int      @default(0)
+
+  @@map("recipe_ingredients")
+}
+
+// Recipe Instruction Model
+model RecipeInstruction {
+  id          Int      @id @default(autoincrement())
+  recipeId    Int
+  recipe      Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  stepNumber  Int
+  instruction String
+  image       String?
+
+  @@map("recipe_instructions")
+}
+
+// Recipe Tag Model
+model RecipeTag {
+  id       Int      @id @default(autoincrement())
+  recipeId Int
+  recipe   Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  tag      String
+
+  @@map("recipe_tags")
 }

@@ -62,6 +62,8 @@ TEMEL MALZEMELER
 
 Yumurta, Tavuk Yumurtası, Bıldırcın Yumurtası, Kaz Yumurtası, Yoğurt
 
-DİĞER
+react-dom.development.js:38341 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+2hot-reloader-client.js:162 [Fast Refresh] rebuilding
+hot-reloader-client.js:162 [Fast Refresh] rebuildingDİĞER
 
 Dondurma, Tatlı, kuru-gıda, kapya biber, Protein

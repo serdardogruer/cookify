@@ -11,7 +11,7 @@ export default function Home() {
   useEffect(() => {
     if (!loading) {
       if (isAuthenticated) {
-        router.push('/pantry');
+        router.push('/dashboard');
       } else {
         router.push('/login');
       }

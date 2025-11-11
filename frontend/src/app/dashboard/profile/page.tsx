@@ -151,21 +151,21 @@ export default function ProfilePage() {
               <h2 className="text-lg font-semibold mb-4">Menü</h2>
               <div className="space-y-2">
                 <Link
-                  href="/profile"
+                  href="/dashboard/profile"
                   className="w-full text-left px-4 py-3 rounded bg-blue-600 hover:bg-blue-700 flex items-center gap-3"
                 >
                   <span>👤</span>
                   <span>Profil Bilgileri</span>
                 </Link>
                 <Link
-                  href="/kitchen"
+                  href="/dashboard/kitchen"
                   className="w-full text-left px-4 py-3 rounded hover:bg-gray-700 flex items-center gap-3"
                 >
                   <span>🏠</span>
                   <span>Mutfak Yönetimi</span>
                 </Link>
                 <Link
-                  href="/modules"
+                  href="/dashboard/modules"
                   className="w-full text-left px-4 py-3 rounded hover:bg-gray-700 flex items-center gap-3"
                 >
                   <span>🧩</span>
@@ -309,7 +309,7 @@ export default function ProfilePage() {
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-semibold">Mutfak Bilgileri</h2>
                     <Link
-                      href="/kitchen"
+                      href="/dashboard/kitchen"
                       className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-sm"
                     >
                       Mutfak Yönetimi

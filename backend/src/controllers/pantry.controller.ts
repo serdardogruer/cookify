@@ -53,7 +53,7 @@ export const pantryController = {
   async addPantryItem(req: AuthRequest, res: Response) {
     try {
       const userId = req.user?.userId;
-      const { name, category, quantity, unit, expiryDate } = req.body;
+      const { name, category, quantity, minQuantity, unit, expiryDate } = req.body;
 
       if (!userId) {
         return res.status(401).json({
@@ -285,6 +285,57 @@ export const pantryController = {
         error: {
           code: 5000,
           message: error.message || 'Failed to move item to market',
+        },
+      });
+    }
+  },
+
+  async consumeRecipeIngredients(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user?.userId;
+      const { ingredients } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: { code: 1004, message: 'Unauthorized' },
+        });
+      }
+
+      if (!ingredients || !Array.isArray(ingredients)) {
+        return res.status(400).json({
+          success: false,
+          error: { code: 2001, message: 'Ingredients array is required' },
+        });
+      }
+
+      // Kullanıcının aktif mutfağını al
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user?.kitchenId) {
+        return res.status(404).json({
+          success: false,
+          error: { code: 3002, message: 'No active kitchen' },
+        });
+      }
+
+      const results = await pantryService.consumeRecipeIngredients(
+        user.kitchenId,
+        ingredients
+      );
+
+      return res.status(200).json({
+        success: true,
+        data: results,
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 5000,
+          message: error.message || 'Failed to consume ingredients',
         },
       });
     }

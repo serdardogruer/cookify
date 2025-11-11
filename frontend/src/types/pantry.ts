@@ -5,6 +5,7 @@ export interface PantryItem {
   category: string;
   quantity: number;
   initialQuantity: number;
+  minQuantity?: number;
   unit: string;
   expiryDate: string | null;
   createdAt: string;
@@ -15,6 +16,7 @@ export interface PantryItemInput {
   name: string;
   category: string;
   quantity: number;
+  minQuantity?: number;
   unit: string;
   expiryDate?: string;
 }

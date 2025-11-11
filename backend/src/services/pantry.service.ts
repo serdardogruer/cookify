@@ -6,6 +6,7 @@ export interface PantryItemInput {
   name: string;
   category: string;
   quantity: number;
+  minQuantity?: number;
   unit: string;
   expiryDate?: string;
 }
@@ -38,6 +39,7 @@ export class PantryService {
         category: data.category,
         quantity: data.quantity,
         initialQuantity: data.quantity, // Başlangıç miktarı = ilk miktar
+        minQuantity: data.minQuantity || 0,
         unit: data.unit,
         expiryDate: data.expiryDate ? new Date(data.expiryDate) : null,
       },
@@ -54,6 +56,7 @@ export class PantryService {
       category: item.category,
       quantity: item.quantity,
       initialQuantity: item.quantity, // Başlangıç miktarı = ilk miktar
+      minQuantity: item.minQuantity || 0,
       unit: item.unit,
       expiryDate: item.expiryDate ? new Date(item.expiryDate) : null,
     }));
@@ -139,6 +142,57 @@ export class PantryService {
     });
 
     return marketItem;
+  }
+
+  /**
+   * Tarif malzemelerini dolabtan düşer
+   */
+  async consumeRecipeIngredients(
+    kitchenId: number,
+    ingredients: Array<{ name: string; quantity: number; unit: string }>
+  ) {
+    const results = {
+      success: [] as string[],
+      failed: [] as string[],
+      notFound: [] as string[],
+    };
+
+    for (const ingredient of ingredients) {
+      // Malzemeyi dolabta bul
+      const allPantryItems = await prisma.pantryItem.findMany({
+        where: { kitchenId },
+      });
+
+      // Büyük/küçük harf duyarsız arama
+      const normalizedIngredientName = ingredient.name.toLowerCase().trim();
+      const pantryItem = allPantryItems.find((item) => {
+        const itemName = item.name.toLowerCase().trim();
+        return itemName === normalizedIngredientName || 
+               itemName.includes(normalizedIngredientName) ||
+               normalizedIngredientName.includes(itemName);
+      });
+
+      if (!pantryItem) {
+        results.notFound.push(ingredient.name);
+        continue;
+      }
+
+      try {
+        // Miktarı düş
+        const newQuantity = Math.max(0, pantryItem.quantity - ingredient.quantity);
+
+        await prisma.pantryItem.update({
+          where: { id: pantryItem.id },
+          data: { quantity: newQuantity },
+        });
+
+        results.success.push(ingredient.name);
+      } catch (error) {
+        results.failed.push(ingredient.name);
+      }
+    }
+
+    return results;
   }
 }
 

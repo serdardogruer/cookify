@@ -27,35 +27,65 @@ export default function Header() {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <header className="bg-gray-800 border-b border-gray-700">
+    <header className="sticky top-0 z-50 bg-gray-800 border-b border-gray-700">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/pantry" className="text-2xl font-bold">
+          <Link href="/dashboard" className="text-2xl font-bold">
             🍳 Cookify
           </Link>
 
           {/* Navigation */}
-          <nav className="flex items-center gap-6">
+          <nav className="flex items-center gap-4">
             <Link
-              href="/pantry"
+              href="/dashboard"
               className={`px-4 py-2 rounded-md transition ${
-                isActive('/pantry')
+                isActive('/dashboard')
                   ? 'bg-blue-600 text-white'
                   : 'text-gray-300 hover:bg-gray-700'
               }`}
             >
-              🏠 Dolabım
+              🏠 Anasayfa
             </Link>
             <Link
-              href="/market"
+              href="/dashboard/recipes/search"
               className={`px-4 py-2 rounded-md transition ${
-                isActive('/market')
+                (pathname === '/dashboard/recipes/search' || (pathname?.includes('/dashboard/recipes/') && !pathname?.includes('/add')))
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-300 hover:bg-gray-700'
+              }`}
+            >
+              📖 Tarif ara
+            </Link>
+            <Link
+              href="/dashboard/pantry"
+              className={`px-4 py-2 rounded-md transition ${
+                isActive('/dashboard/pantry')
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-300 hover:bg-gray-700'
+              }`}
+            >
+              🗄️ Dolabım
+            </Link>
+            <Link
+              href="/dashboard/market"
+              className={`px-4 py-2 rounded-md transition ${
+                isActive('/dashboard/market')
                   ? 'bg-blue-600 text-white'
                   : 'text-gray-300 hover:bg-gray-700'
               }`}
             >
               🛒 Market
+            </Link>
+            <Link
+              href="/dashboard/recipes/add"
+              className={`px-4 py-2 rounded-md transition font-semibold ${
+                isActive('/dashboard/recipes/add')
+                  ? 'bg-purple-700 text-white'
+                  : 'bg-purple-600 hover:bg-purple-700 text-white'
+              }`}
+            >
+              ➕ Tarif Ekle
             </Link>
           </nav>
 
@@ -92,21 +122,21 @@ export default function Header() {
                   </div>
                   <div className="py-2">
                     <Link
-                      href="/profile"
+                      href="/dashboard/profile"
                       className="block px-4 py-2 hover:bg-gray-700 transition"
                       onClick={() => setShowDropdown(false)}
                     >
                       👤 Profil Ayarları
                     </Link>
                     <Link
-                      href="/kitchen"
+                      href="/dashboard/kitchen"
                       className="block px-4 py-2 hover:bg-gray-700 transition"
                       onClick={() => setShowDropdown(false)}
                     >
                       🏠 Mutfak Yönetimi
                     </Link>
                     <Link
-                      href="/modules"
+                      href="/dashboard/modules"
                       className="block px-4 py-2 hover:bg-gray-700 transition"
                       onClick={() => setShowDropdown(false)}
                     >
