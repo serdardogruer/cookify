@@ -6,6 +6,71 @@ import Header from '@/components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 import { PantryItem } from '@/types/pantry';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+// Kategori ismini formatla (sadece ilk harf büyük)
+function formatCategoryName(name: string) {
+  return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+}
+
+// Sürüklenebilir kategori bileşeni
+function SortableCategory({ category, isSelected, itemCount, onClick }: any) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: category.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center gap-2 rounded ${
+        isSelected ? 'bg-blue-600' : 'hover:bg-gray-700'
+      }`}
+    >
+      <button
+        {...attributes}
+        {...listeners}
+        className="px-2 py-2 cursor-move hover:bg-gray-600 rounded-l flex-shrink-0"
+        title="Sürükle"
+      >
+        ⋮⋮
+      </button>
+      <button
+        onClick={onClick}
+        className="flex-1 text-left py-2 pr-3 truncate text-sm"
+      >
+        {category.icon} {formatCategoryName(category.name)} ({itemCount})
+      </button>
+    </div>
+  );
+}
 
 export default function PantryPage() {
   const { token } = useAuth();
@@ -17,6 +82,14 @@ export default function PantryPage() {
   const [editingItem, setEditingItem] = useState<PantryItem | null>(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Sürükle-bırak sensörleri
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   // Autocomplete state
   const [ingredientSuggestions, setIngredientSuggestions] = useState<any[]>([]);
@@ -43,7 +116,40 @@ export default function PantryPage() {
   const loadCategories = async () => {
     const response = await api.get<any>('/api/categories');
     if (response.success && response.data) {
-      setCategories(response.data);
+      // LocalStorage'dan sıralamayı yükle
+      const savedOrder = localStorage.getItem('categoryOrder');
+      if (savedOrder) {
+        const orderMap = JSON.parse(savedOrder);
+        const sorted = [...response.data].sort((a, b) => {
+          const orderA = orderMap[a.id] ?? 999;
+          const orderB = orderMap[b.id] ?? 999;
+          return orderA - orderB;
+        });
+        setCategories(sorted);
+      } else {
+        setCategories(response.data);
+      }
+    }
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setCategories((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        const newOrder = arrayMove(items, oldIndex, newIndex);
+        
+        // Sıralamayı localStorage'a kaydet
+        const orderMap: any = {};
+        newOrder.forEach((item, index) => {
+          orderMap[item.id] = index;
+        });
+        localStorage.setItem('categoryOrder', JSON.stringify(orderMap));
+        
+        return newOrder;
+      });
     }
   };
 
@@ -316,7 +422,10 @@ export default function PantryPage() {
           <div className="flex gap-6">
             {/* Sidebar - Categories */}
             <div className="w-64 bg-gray-800 rounded-lg p-4">
-              <h2 className="text-lg font-semibold mb-4">Kategoriler</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">Kategoriler</h2>
+                <span className="text-xs text-gray-400">↕️ Sürükle</span>
+              </div>
               <div className="space-y-2">
                 <button
                   onClick={() => setSelectedCategory('')}
@@ -328,22 +437,30 @@ export default function PantryPage() {
                 >
                   📦 Tümü ({items.length})
                 </button>
-                {categories.map((cat) => {
-                  const categoryItemCount = items.filter(item => item.category === cat.name).length;
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => setSelectedCategory(cat.name)}
-                      className={`w-full text-left px-3 py-2 rounded ${
-                        selectedCategory === cat.name
-                          ? 'bg-blue-600'
-                          : 'hover:bg-gray-700'
-                      }`}
-                    >
-                      {cat.icon} {cat.name} ({categoryItemCount})
-                    </button>
-                  );
-                })}
+                
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={categories.map(c => c.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {categories.map((cat) => {
+                      const categoryItemCount = items.filter(item => item.category === cat.name).length;
+                      return (
+                        <SortableCategory
+                          key={cat.id}
+                          category={cat}
+                          isSelected={selectedCategory === cat.name}
+                          itemCount={categoryItemCount}
+                          onClick={() => setSelectedCategory(cat.name)}
+                        />
+                      );
+                    })}
+                  </SortableContext>
+                </DndContext>
               </div>
             </div>
 
