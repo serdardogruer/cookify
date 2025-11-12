@@ -26,6 +26,10 @@ export default function AddRecipePage() {
     cuisine: '',
   });
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
+  const [uploadingImage, setUploadingImage] = useState(false);
+
   const [ingredients, setIngredients] = useState([
     { name: '', quantity: '', unit: 'adet', order: 0 },
   ]);
@@ -107,6 +111,51 @@ export default function AddRecipePage() {
     setSauces(updated);
   };
 
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      // Preview oluştur
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+      // URL inputunu temizle
+      setFormData({ ...formData, image: '' });
+    }
+  };
+
+  const uploadImage = async (): Promise<string | null> => {
+    if (!imageFile || !token) return null;
+
+    setUploadingImage(true);
+    const formDataUpload = new FormData();
+    formDataUpload.append('image', imageFile);
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/recipes/upload-image`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formDataUpload,
+      });
+
+      const data = await response.json();
+      setUploadingImage(false);
+
+      if (data.success && data.imageUrl) {
+        return data.imageUrl;
+      }
+      return null;
+    } catch (error) {
+      setUploadingImage(false);
+      console.error('Image upload error:', error);
+      return null;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -132,10 +181,23 @@ export default function AddRecipePage() {
       return;
     }
 
+    // Görsel yükleme (eğer dosya seçildiyse)
+    let imageUrl = formData.image;
+    if (imageFile) {
+      const uploadedUrl = await uploadImage();
+      if (uploadedUrl) {
+        imageUrl = uploadedUrl;
+      } else {
+        setError('Görsel yüklenemedi');
+        setLoading(false);
+        return;
+      }
+    }
+
     const data = {
       title: formData.title,
       description: formData.description || undefined,
-      image: formData.image || undefined,
+      image: imageUrl || undefined,
       video: formData.video || undefined,
       prepTime: formData.prepTime ? parseInt(formData.prepTime) : undefined,
       cookTime: formData.cookTime ? parseInt(formData.cookTime) : undefined,
@@ -294,36 +356,79 @@ export default function AddRecipePage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Görsel URL
+                {/* Görsel Yükleme */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Tarif Görseli
+                  </label>
+                  
+                  {/* Preview */}
+                  {(imagePreview || formData.image) && (
+                    <div className="mb-3">
+                      <img
+                        src={imagePreview || formData.image}
+                        alt="Preview"
+                        className="w-full h-48 object-cover rounded-lg"
+                      />
+                    </div>
+                  )}
+
+                  {/* Dosya Yükleme */}
+                  <div className="mb-3">
+                    <label className="block w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg cursor-pointer text-center">
+                      📁 Bilgisayardan Görsel Seç
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageFileChange}
+                        className="hidden"
+                      />
                     </label>
-                    <input
-                      type="url"
-                      value={formData.image}
-                      onChange={(e) =>
-                        setFormData({ ...formData, image: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      placeholder="https://example.com/image.jpg"
-                    />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Video URL (YouTube/Vimeo)
-                    </label>
-                    <input
-                      type="url"
-                      value={formData.video}
-                      onChange={(e) =>
-                        setFormData({ ...formData, video: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      placeholder="https://youtube.com/watch?v=..."
-                    />
+                  {/* URL Girişi */}
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="flex-1 h-px bg-gray-600"></div>
+                    <span className="text-sm text-gray-400">veya</span>
+                    <div className="flex-1 h-px bg-gray-600"></div>
                   </div>
+                  
+                  <input
+                    type="url"
+                    value={formData.image}
+                    onChange={(e) => {
+                      setFormData({ ...formData, image: e.target.value });
+                      setImageFile(null);
+                      setImagePreview('');
+                    }}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                    placeholder="Görsel URL'i yapıştır (https://...)"
+                    disabled={!!imageFile}
+                  />
+                  {imageFile && (
+                    <p className="text-xs text-gray-400 mt-1">
+                      Dosya seçildi: {imageFile.name}
+                    </p>
+                  )}
+                </div>
+
+                {/* Video URL */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Video URL (YouTube/Vimeo)
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.video}
+                    onChange={(e) =>
+                      setFormData({ ...formData, video: e.target.value })
+                    }
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                    placeholder="https://youtube.com/watch?v=..."
+                  />
+                  <p className="text-xs text-gray-400 mt-1">
+                    YouTube veya Vimeo video linkini yapıştırın
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
