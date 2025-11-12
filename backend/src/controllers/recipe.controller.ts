@@ -207,7 +207,6 @@ export const recipeController = {
       });
     }
   },
-};
 
   async uploadRecipeImage(req: AuthRequest, res: Response) {
     try {
@@ -243,3 +242,4 @@ export const recipeController = {
       });
     }
   },
+};
