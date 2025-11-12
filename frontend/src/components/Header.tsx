@@ -63,17 +63,7 @@ export default function Header() {
                   : 'text-gray-300 hover:bg-gray-700'
               }`}
             >
-              🏠 Anasayfa
-            </Link>
-            <Link
-              href="/dashboard/recipes/search"
-              className={`px-4 py-2 rounded-md transition ${
-                (pathname === '/dashboard/recipes/search' || (pathname?.includes('/dashboard/recipes/') && !pathname?.includes('/add')))
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-700'
-              }`}
-            >
-              📖 Tarif ara
+               Anasayfa
             </Link>
             <Link
               href="/dashboard/pantry"
@@ -83,8 +73,9 @@ export default function Header() {
                   : 'text-gray-300 hover:bg-gray-700'
               }`}
             >
-              🗄️ Dolabım
+               Dolabım
             </Link>
+
             <Link
               href="/dashboard/market"
               className={`px-4 py-2 rounded-md transition ${
@@ -93,18 +84,29 @@ export default function Header() {
                   : 'text-gray-300 hover:bg-gray-700'
               }`}
             >
-              🛒 Market
+               Market
             </Link>
             <Link
-              href="/dashboard/recipes/add"
-              className={`px-4 py-2 rounded-md transition font-semibold ${
-                isActive('/dashboard/recipes/add')
-                  ? 'bg-purple-700 text-white'
-                  : 'bg-purple-600 hover:bg-purple-700 text-white'
+              href="/dashboard/recipe-search"
+              className={`px-4 py-2 rounded-md transition ${
+                pathname?.includes('/recipe-search') || pathname?.includes('/recipe-detail')
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-300 hover:bg-gray-700'
               }`}
             >
-              ➕ Tarif Ekle
+               Tarif ara
             </Link>
+            <Link
+              href="/dashboard/recipe-add"
+              className={`px-4 py-2 rounded-md transition ${
+                isActive('/dashboard/recipe-add')
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-300 hover:bg-gray-700'
+              }`}
+            >
+               Tarif Ekle
+            </Link>
+
           </nav>
 
           {/* Desktop Profile Dropdown */}

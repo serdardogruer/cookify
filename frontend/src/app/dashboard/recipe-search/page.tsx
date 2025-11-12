@@ -177,15 +177,7 @@ export default function SearchRecipesPage() {
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-6 md:mb-8 flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold mb-2">🔍 Tarif Ara</h1>
-              <p className="text-gray-400 text-sm md:text-base">
-                {recipes.length} tarif bulundu
-                {searchMode === 'pantry' && ' (Dolabıma göre)'}
-                {searchMode === 'ingredient' && ` (${ingredientSearch} içeren)`}
-              </p>
-            </div>
+          <div className="mb-6 md:mb-8 flex items-center justify-end">
             {/* Mobile Filter Button */}
             <button
               onClick={() => setShowSidebar(true)}
@@ -391,7 +383,7 @@ export default function SearchRecipesPage() {
               {recipes.map((recipe) => (
                 <div
                   key={recipe.id}
-                  onClick={() => router.push(`/dashboard/recipes/${recipe.id}`)}
+                  onClick={() => router.push(`/dashboard/recipe-detail/${recipe.id}`)}
                   className="bg-gray-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition cursor-pointer"
                 >
                   {/* Recipe Image */}
@@ -593,3 +585,4 @@ export default function SearchRecipesPage() {
     </ProtectedRoute>
   );
 }
+

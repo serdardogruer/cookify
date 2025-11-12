@@ -167,7 +167,7 @@ export default function AddRecipePage() {
       setSuccess('Tarif başarıyla eklendi!');
       const recipeId = response.data.id;
       setTimeout(() => {
-        router.push(`/dashboard/recipes/${recipeId}`);
+        router.push(`/dashboard/recipe-detail/${recipeId}`);
       }, 1500);
     } else {
       setError(response.error?.message || 'Tarif eklenemedi');
@@ -180,29 +180,15 @@ export default function AddRecipePage() {
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
+          <div className="mb-8 flex items-center justify-end">
+            {/* Mobile Menu Button */}
             <button
-              onClick={() => router.back()}
-              className="text-gray-400 hover:text-white mb-4"
+              onClick={() => setShowSidebar(true)}
+              className="md:hidden px-4 py-2 bg-gray-800 rounded-lg border border-gray-700 flex items-center gap-2"
             >
-              ← Geri
+              <span>📋</span>
+              <span className="text-sm">İpuçları</span>
             </button>
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold">➕ Yeni Tarif Ekle</h1>
-                <p className="text-gray-400 mt-2 text-sm md:text-base">
-                  Lezzetli tariflerinizi paylaşın
-                </p>
-              </div>
-              {/* Mobile Menu Button */}
-              <button
-                onClick={() => setShowSidebar(true)}
-                className="md:hidden px-4 py-2 bg-gray-800 rounded-lg border border-gray-700 flex items-center gap-2"
-              >
-                <span>📋</span>
-                <span className="text-sm">İpuçları</span>
-              </button>
-            </div>
           </div>
 
           <div className="flex flex-col md:flex-row gap-4 md:gap-6">
@@ -724,5 +710,6 @@ export default function AddRecipePage() {
     </ProtectedRoute>
   );
 }
+
 
 

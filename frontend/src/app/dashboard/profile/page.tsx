@@ -128,8 +128,7 @@ export default function ProfilePage() {
       <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           {/* Page Title */}
-          <div className="mb-8 flex items-center justify-between">
-            <h1 className="text-2xl md:text-3xl font-bold">👤 Profil ve Ayarlar</h1>
+          <div className="mb-8 flex items-center justify-end">
             {/* Mobile Menu Button */}
             <button
               onClick={() => setShowSidebar(true)}

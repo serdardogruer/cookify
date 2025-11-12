@@ -28,9 +28,9 @@ export default function BottomNav() {
           <span className="text-xs font-medium">Ana Sayfa</span>
         </Link>
         <Link 
-          href="/dashboard/recipes/search" 
+          href="/dashboard/recipe-search" 
           className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-            pathname?.includes('/recipes/search') || (pathname?.includes('/recipes/') && !pathname?.includes('/add'))
+            pathname?.includes('/recipe-search') || pathname?.includes('/recipe-detail')
               ? 'text-blue-400' 
               : 'text-gray-400'
           }`}
@@ -39,9 +39,9 @@ export default function BottomNav() {
           <span className="text-xs font-medium">Ara</span>
         </Link>
         <Link 
-          href="/dashboard/recipes/add" 
+          href="/dashboard/recipe-add" 
           className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-            pathname?.includes('/recipes/add')
+            pathname?.includes('/recipe-add')
               ? 'text-purple-400' 
               : 'text-gray-400'
           }`}

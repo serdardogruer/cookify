@@ -300,8 +300,6 @@ export default function PantryPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Bu malzemeyi silmek istediğinize emin misiniz?')) return;
-
     if (!token) return;
 
     const response = await api.delete(`/api/pantry/${id}`, token);
@@ -401,11 +399,7 @@ export default function PantryPage() {
       <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           {/* Page Title */}
-          <div className="mb-8 flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold">🏠 Dolabım</h1>
-              <p className="text-gray-400 mt-2 text-sm md:text-base">Evdeki malzemelerinizi yönetin</p>
-            </div>
+          <div className="mb-8 flex items-center justify-end">
             {/* Mobile Category Button */}
             <button
               onClick={() => setShowSidebar(true)}

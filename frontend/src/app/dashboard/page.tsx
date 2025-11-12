@@ -63,20 +63,14 @@ export default function DashboardPage() {
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-          {/* Hero Section */}
-          <div className="mb-12 text-center">
-            <h1 className="text-4xl font-bold mb-4">🍳 Cookify'a Hoş Geldiniz</h1>
-            <p className="text-gray-400 text-lg">
-              Mutfağınızı yönetin, tarifler keşfedin, lezzetli yemekler yapın!
-            </p>
-          </div>
+
 
           {/* Latest Recipes */}
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">📖 Son Eklenen Tarifler</h2>
               <button
-                onClick={() => router.push('/dashboard/recipes/search')}
+                onClick={() => router.push('/dashboard/recipe-search')}
                 className="text-blue-400 hover:text-blue-300"
               >
                 Tümünü Gör →
@@ -88,7 +82,7 @@ export default function DashboardPage() {
                 <div className="text-6xl mb-4">🍽️</div>
                 <p className="text-gray-400 mb-4">Henüz tarif eklenmemiş</p>
                 <button
-                  onClick={() => router.push('/dashboard/recipes/add')}
+                  onClick={() => router.push('/dashboard/recipe-add')}
                   className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg"
                 >
                   İlk Tarifi Ekle
@@ -99,7 +93,7 @@ export default function DashboardPage() {
                 {recipes.map((recipe) => (
                   <div
                     key={recipe.id}
-                    onClick={() => router.push(`/dashboard/recipes/${recipe.id}`)}
+                    onClick={() => router.push(`/dashboard/recipe-detail/${recipe.id}`)}
                     className="bg-gray-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition cursor-pointer"
                   >
                     {/* Recipe Image */}
@@ -171,3 +165,4 @@ export default function DashboardPage() {
     </ProtectedRoute>
   );
 }
+
