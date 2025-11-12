@@ -114,10 +114,12 @@ export default function AddRecipePage() {
   const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      console.log('Dosya seçildi:', file.name, file.size);
       setImageFile(file);
       // Preview oluştur
       const reader = new FileReader();
       reader.onloadend = () => {
+        console.log('Preview oluşturuldu');
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
@@ -129,6 +131,7 @@ export default function AddRecipePage() {
   const uploadImage = async (): Promise<string | null> => {
     if (!imageFile || !token) return null;
 
+    console.log('Resim yükleniyor...', imageFile.name);
     setUploadingImage(true);
     const formDataUpload = new FormData();
     formDataUpload.append('image', imageFile);
@@ -143,11 +146,14 @@ export default function AddRecipePage() {
       });
 
       const data = await response.json();
+      console.log('Upload response:', data);
       setUploadingImage(false);
 
       if (data.success && data.imageUrl) {
+        console.log('Resim yüklendi:', data.imageUrl);
         return data.imageUrl;
       }
+      console.error('Upload başarısız:', data);
       return null;
     } catch (error) {
       setUploadingImage(false);
