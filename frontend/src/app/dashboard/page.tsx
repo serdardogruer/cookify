@@ -100,7 +100,11 @@ export default function DashboardPage() {
                     <div className="h-48 bg-gray-700 relative">
                       {recipe.image ? (
                         <img
-                          src={recipe.image}
+                          src={
+                            recipe.image.startsWith('http')
+                              ? recipe.image
+                              : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${recipe.image}`
+                          }
                           alt={recipe.title}
                           className="w-full h-full object-cover"
                         />
@@ -144,7 +148,7 @@ export default function DashboardPage() {
                         <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
                           {recipe.user.profileImage ? (
                             <img
-                              src={recipe.user.profileImage}
+                              src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${recipe.user.profileImage}`}
                               alt={recipe.user.name}
                               className="w-full h-full rounded-full object-cover"
                             />

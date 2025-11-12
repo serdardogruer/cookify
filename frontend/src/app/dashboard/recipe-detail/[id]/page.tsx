@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/hooks/useAuth';
@@ -53,10 +53,21 @@ export default function RecipeDetailPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [pantryItems, setPantryItems] = useState<any[]>([]);
+  const [isReading, setIsReading] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const isReadingRef = useRef(false);
 
   useEffect(() => {
     loadRecipe();
     loadPantryItems();
+
+    // Cleanup: Sayfa değiştiğinde seslendirmeyi durdur
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      isReadingRef.current = false;
+    };
   }, [params.id, token]);
 
   const loadPantryItems = async () => {
@@ -170,6 +181,126 @@ export default function RecipeDetailPage() {
       case 'MEDIUM': return 'Orta';
       case 'HARD': return 'Zor';
       default: return difficulty;
+    }
+  };
+
+  const startReading = () => {
+    if (!recipe || !('speechSynthesis' in window)) {
+      setError('Tarayıcınız sesli okuma özelliğini desteklemiyor');
+      setTimeout(() => setError(''), 3000);
+      return;
+    }
+
+    // Eğer zaten okuma yapılıyorsa durdur
+    if (isReadingRef.current) {
+      window.speechSynthesis.cancel();
+      setIsReading(false);
+      setCurrentStep(0);
+      isReadingRef.current = false;
+      return;
+    }
+
+    // Önceki konuşmaları temizle
+    window.speechSynthesis.cancel();
+    
+    setIsReading(true);
+    setCurrentStep(0);
+    setError('');
+    isReadingRef.current = true;
+    
+    // Seslerin yüklenmesini bekle (bazı tarayıcılarda gerekli)
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length === 0) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        setTimeout(() => readStep(0), 100);
+      };
+    } else {
+      setTimeout(() => readStep(0), 100);
+    }
+  };
+
+  const readStep = (stepIndex: number) => {
+    if (!recipe || stepIndex >= recipe.instructions.length) {
+      setIsReading(false);
+      setCurrentStep(0);
+      return;
+    }
+
+    const sortedInstructions = recipe.instructions.sort((a, b) => a.stepNumber - b.stepNumber);
+    const instruction = sortedInstructions[stepIndex];
+    
+    const text = `Adım ${instruction.stepNumber}. ${instruction.instruction}`;
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Türkçe kadın sesi seç
+    const voices = window.speechSynthesis.getVoices();
+    const turkishFemaleVoice = voices.find(voice => 
+      voice.lang.startsWith('tr') && voice.name.toLowerCase().includes('female')
+    ) || voices.find(voice => 
+      voice.lang.startsWith('tr') && !voice.name.toLowerCase().includes('male')
+    ) || voices.find(voice => voice.lang.startsWith('tr'));
+    
+    if (turkishFemaleVoice) {
+      utterance.voice = turkishFemaleVoice;
+    }
+    
+    // Ses ayarları
+    utterance.lang = 'tr-TR';
+    utterance.rate = 0.85; // Biraz daha yavaş
+    utterance.pitch = 1.1; // Kadın sesi için biraz daha yüksek
+    utterance.volume = 1;
+
+    utterance.onstart = () => {
+      setCurrentStep(stepIndex);
+    };
+
+    utterance.onend = () => {
+      const nextStep = stepIndex + 1;
+      if (nextStep < sortedInstructions.length && isReadingRef.current) {
+        // Bir sonraki adıma geç
+        setTimeout(() => readStep(nextStep), 1500);
+      } else {
+        setIsReading(false);
+        setCurrentStep(0);
+        isReadingRef.current = false;
+      }
+    };
+
+    utterance.onerror = (event) => {
+      console.error('Sesli okuma hatası:', event);
+      
+      // Cancel hatası gösterme (kullanıcı durdurdu)
+      if (event.error === 'canceled' || event.error === 'interrupted') {
+        setIsReading(false);
+        setCurrentStep(0);
+        isReadingRef.current = false;
+        return;
+      }
+      
+      setIsReading(false);
+      setCurrentStep(0);
+      isReadingRef.current = false;
+      
+      // Hata mesajını daha açıklayıcı yap
+      if (event.error === 'not-allowed') {
+        setError('Sesli okuma izni verilmedi. Lütfen tarayıcı ayarlarınızı kontrol edin.');
+      } else if (event.error === 'network') {
+        setError('İnternet bağlantısı gerekli. Lütfen bağlantınızı kontrol edin.');
+      } else {
+        setError('Sesli okuma başlatılamadı. Lütfen tekrar deneyin.');
+      }
+      
+      setTimeout(() => setError(''), 5000);
+    };
+
+    try {
+      window.speechSynthesis.speak(utterance);
+    } catch (err) {
+      console.error('Speak hatası:', err);
+      setIsReading(false);
+      setCurrentStep(0);
+      setError('Sesli okuma başlatılamadı');
+      setTimeout(() => setError(''), 3000);
     }
   };
 
@@ -321,7 +452,11 @@ export default function RecipeDetailPage() {
               {recipe.image && (
                 <div className="relative h-64 md:h-80 w-full rounded-lg overflow-hidden mb-6">
                   <img
-                    src={recipe.image}
+                    src={
+                      recipe.image.startsWith('http')
+                        ? recipe.image
+                        : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${recipe.image}`
+                    }
                     alt={recipe.title}
                     className="w-full h-full object-cover"
                   />
@@ -427,19 +562,30 @@ export default function RecipeDetailPage() {
                   <h2 className="text-xl font-bold flex items-center gap-2">
                     📋 Yapılışı
                   </h2>
-                  <button className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm flex items-center gap-2">
-                    ▶ Başlat
+                  <button 
+                    onClick={startReading}
+                    className={`px-4 py-2 ${isReading ? 'bg-red-600 hover:bg-red-700' : 'bg-purple-600 hover:bg-purple-700'} rounded-lg text-sm flex items-center gap-2`}
+                  >
+                    {isReading ? '⏹ Durdur' : '▶ Başlat'}
                   </button>
                 </div>
                 <div className="space-y-4">
                   {recipe.instructions
                     .sort((a, b) => a.stepNumber - b.stepNumber)
-                    .map((instruction) => (
+                    .map((instruction, index) => (
                       <div
                         key={instruction.id}
-                        className="flex gap-4 p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors"
+                        className={`flex gap-4 p-4 rounded-lg transition-all ${
+                          isReading && currentStep === index
+                            ? 'bg-purple-600/30 ring-2 ring-purple-500'
+                            : 'bg-gray-700/50 hover:bg-gray-700'
+                        }`}
                       >
-                        <div className="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-bold text-lg">
+                        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${
+                          isReading && currentStep === index
+                            ? 'bg-purple-600 animate-pulse'
+                            : 'bg-blue-600'
+                        }`}>
                           {instruction.stepNumber}
                         </div>
                         <div className="flex-1">

@@ -372,7 +372,12 @@ export default function AddRecipePage() {
                   {(imagePreview || formData.image) && (
                     <div className="mb-3">
                       <img
-                        src={imagePreview || formData.image}
+                        src={
+                          imagePreview || 
+                          (formData.image?.startsWith('http') 
+                            ? formData.image 
+                            : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${formData.image}`)
+                        }
                         alt="Preview"
                         className="w-full h-48 object-cover rounded-lg"
                       />
