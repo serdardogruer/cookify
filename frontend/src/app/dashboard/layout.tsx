@@ -9,9 +9,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen bg-[#121212]">
       <Header />
-      <main className="pb-24 md:pb-0">{children}</main>
+      <main className="pb-24 lg:pb-0">{children}</main>
       <BottomNav />
     </div>
   );

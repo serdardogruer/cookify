@@ -2,156 +2,60 @@
 
 import { useState, useEffect } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import DashboardHeader from '@/components/DashboardHeader';
+import BottomNav from '@/components/BottomNav';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
+import { toast } from '@/lib/toast';
 import { PantryItem } from '@/types/pantry';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-
-// Kategori ismini formatla (sadece ilk harf büyük)
-function formatCategoryName(name: string) {
-  return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-}
-
-// Sürüklenebilir kategori bileşeni
-function SortableCategory({ category, isSelected, itemCount, onClick }: any) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: category.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`flex items-center gap-2 rounded ${
-        isSelected ? 'bg-blue-600' : 'hover:bg-gray-700'
-      }`}
-    >
-      <button
-        {...attributes}
-        {...listeners}
-        className="px-2 py-2 cursor-move hover:bg-gray-600 rounded-l flex-shrink-0"
-        title="Sürükle"
-      >
-        ⋮⋮
-      </button>
-      <button
-        onClick={onClick}
-        className="flex-1 text-left py-2 pr-3 truncate text-sm"
-      >
-        {category.icon} {formatCategoryName(category.name)} ({itemCount})
-      </button>
-    </div>
-  );
-}
 
 export default function PantryPage() {
   const { token } = useAuth();
   const [items, setItems] = useState<PantryItem[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Tümü');
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [editingItem, setEditingItem] = useState<PantryItem | null>(null);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
-  // Sürükle-bırak sensörleri
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  // Autocomplete state
+  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+  
+  // Form states
+  const [newItemName, setNewItemName] = useState('');
+  const [newItemCategory, setNewItemCategory] = useState('');
+  const [newItemQuantity, setNewItemQuantity] = useState('');
+  const [newItemUnit, setNewItemUnit] = useState('adet');
+  const [newItemExpiryDate, setNewItemExpiryDate] = useState('');
+  
+  // Autocomplete states
   const [ingredientSuggestions, setIngredientSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  // Form state
-  const [formData, setFormData] = useState({
-    name: '',
-    category: '',
-    quantity: '',
-    minQuantity: '',
-    unit: 'adet',
-    expiryDate: '',
-  });
-
-  useEffect(() => {
-    loadCategories();
-  }, []);
+  // Kategori isimlerini düzelt
+  const getCategoryLabel = (category: string) => {
+    const categoryMap: { [key: string]: string } = {
+      'SEBZELER': 'Sebzeler',
+      'MEYVELER': 'Meyveler',
+      'ET_URUNLERI': 'Et Ürünleri',
+      'SUT_URUNLERI': 'Süt Ürünleri',
+      'SÜT ÜRÜNLERİ': 'Süt Ürünleri',
+      'TAHILLAR': 'Tahıllar',
+      'BAHARATLAR': 'Baharatlar',
+      'TEMEL MALZEMELER': 'Temel Malzemeler',
+      'SOSLAR': 'Soslar',
+      'TATLANDIRICILAR': 'Tatlılar',
+      'ICECEKLER': 'İçecekler',
+      'ATISTIRMALIKLAR': 'Atıştırmalıklar',
+      'BAKLAGILLER': 'Baklagiller',
+      'DİĞER': 'Diğer',
+      'DIGER': 'Diğer',
+    };
+    return categoryMap[category] || category;
+  };
 
   useEffect(() => {
     loadPantryItems();
-  }, [selectedCategory, token]);
-
-  const loadCategories = async () => {
-    const response = await api.get<any>('/api/categories');
-    if (response.success && response.data) {
-      // LocalStorage'dan sıralamayı yükle
-      const savedOrder = localStorage.getItem('categoryOrder');
-      if (savedOrder) {
-        const orderMap = JSON.parse(savedOrder);
-        const sorted = [...response.data].sort((a, b) => {
-          const orderA = orderMap[a.id] ?? 999;
-          const orderB = orderMap[b.id] ?? 999;
-          return orderA - orderB;
-        });
-        setCategories(sorted);
-      } else {
-        setCategories(response.data);
-      }
-    }
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      setCategories((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        const newOrder = arrayMove(items, oldIndex, newIndex);
-        
-        // Sıralamayı localStorage'a kaydet
-        const orderMap: any = {};
-        newOrder.forEach((item, index) => {
-          orderMap[item.id] = index;
-        });
-        localStorage.setItem('categoryOrder', JSON.stringify(orderMap));
-        
-        return newOrder;
-      });
-    }
-  };
+  }, [token]);
 
   const loadPantryItems = async () => {
     if (!token) {
@@ -159,13 +63,14 @@ export default function PantryPage() {
       return;
     }
 
-    const url = selectedCategory
-      ? `/api/pantry?category=${selectedCategory}`
-      : '/api/pantry';
-
-    const response = await api.get<PantryItem[]>(url, token);
+    const response = await api.get<PantryItem[]>('/api/pantry', token);
     if (response.success && response.data) {
       setItems(response.data);
+      
+      // Sadece miktarı sıfırdan büyük olan malzemelerin kategorilerini al
+      const itemsWithStock = response.data.filter(item => item.quantity > 0);
+      const uniqueCategories = Array.from(new Set(itemsWithStock.map(item => item.category)));
+      setAvailableCategories(uniqueCategories);
     }
     setLoading(false);
   };
@@ -177,217 +82,187 @@ export default function PantryPage() {
       return;
     }
 
-    const response = await api.get<any[]>(`/api/categories/ingredients/search?q=${query}&limit=10`);
+    const response = await api.get<any[]>(`/api/categories/ingredients/search?q=${query}&limit=5`);
     if (response.success && response.data) {
       setIngredientSuggestions(response.data);
       setShowSuggestions(true);
     }
   };
 
-  const getDefaultExpiryDate = (categoryName: string): string => {
-    const today = new Date();
-    let daysToAdd = 30; // Varsayılan 1 ay
-
-    // Kategoriye göre akıllı SKT önerisi
-    switch (categoryName) {
-      case 'SEBZELER':
-      case 'YEŞİLLİKLER':
-        daysToAdd = 7; // 1 hafta
-        break;
-      case 'MEYVELER':
-        daysToAdd = 10; // 10 gün
-        break;
-      case 'ET ÜRÜNLERİ':
-      case 'DENİZ ÜRÜNLERİ':
-        daysToAdd = 3; // 3 gün (taze)
-        break;
-      case 'SÜT ÜRÜNLERİ':
-        daysToAdd = 14; // 2 hafta
-        break;
-      case 'BAHARATLAR':
-      case 'KURUYEMİŞLER':
-      case 'TAHILLAR':
-      case 'BAKLİYATLAR':
-        daysToAdd = 365; // 1 yıl
-        break;
-      case 'HAMUR ÜRÜNLERİ':
-      case 'SOSLAR':
-        daysToAdd = 90; // 3 ay
-        break;
-      case 'TATLANDIRICILAR':
-        daysToAdd = 180; // 6 ay
-        break;
-      case 'İÇECEKLER':
-        daysToAdd = 60; // 2 ay
-        break;
-      case 'YAĞLAR':
-        daysToAdd = 180; // 6 ay
-        break;
-      case 'TEMEL MALZEMELER':
-        daysToAdd = 21; // 3 hafta
-        break;
-      default:
-        daysToAdd = 30; // 1 ay
-    }
-
-    const expiryDate = new Date(today);
-    expiryDate.setDate(today.getDate() + daysToAdd);
-    return expiryDate.toISOString().split('T')[0];
+  const handleIngredientNameChange = (value: string) => {
+    setNewItemName(value);
+    searchIngredients(value);
   };
 
   const selectIngredient = (ingredient: any) => {
-    const suggestedExpiryDate = getDefaultExpiryDate(ingredient.category.name);
+    setNewItemName(ingredient.name);
+    // Backend'den gelen kategori zaten doğru formatta (SEBZELER, MEYVELER, vb.)
+    setNewItemCategory(ingredient.category.name);
+    setNewItemUnit(ingredient.defaultUnit);
     
-    console.log('🔍 Seçilen malzeme:', {
-      name: ingredient.name,
-      category: ingredient.category.name,
-      unit: ingredient.defaultUnit,
-      suggestedSKT: suggestedExpiryDate
-    });
+    // Tahmini SKT hesapla
+    if (ingredient.shelfLifeDays) {
+      const today = new Date();
+      const expiryDate = new Date(today.getTime() + ingredient.shelfLifeDays * 24 * 60 * 60 * 1000);
+      const formattedDate = expiryDate.toISOString().split('T')[0];
+      setNewItemExpiryDate(formattedDate);
+    } else {
+      setNewItemExpiryDate('');
+    }
     
-    setFormData({
-      ...formData,
-      name: ingredient.name,
-      category: ingredient.category.name,
-      unit: ingredient.defaultUnit,
-      expiryDate: suggestedExpiryDate,
-    });
     setShowSuggestions(false);
     setIngredientSuggestions([]);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    if (!token || !newItemName || !newItemCategory) return;
 
-    if (!token) return;
-
-    const data = {
-      ...formData,
-      quantity: parseFloat(formData.quantity),
-    };
-
-    let response;
-    if (editingItem) {
-      response = await api.put(`/api/pantry/${editingItem.id}`, data, token);
-    } else {
-      response = await api.post('/api/pantry', data, token);
-    }
+    const response = await api.post('/api/pantry', {
+      name: newItemName,
+      category: newItemCategory,
+      quantity: parseFloat(newItemQuantity) || 1,
+      unit: newItemUnit,
+      expiryDate: newItemExpiryDate || null,
+    }, token);
 
     if (response.success) {
-      setSuccess(editingItem ? 'Malzeme güncellendi' : 'Malzeme eklendi');
+      toast.success('Malzeme eklendi');
       setShowAddModal(false);
-      setEditingItem(null);
-      resetForm();
+      setNewItemName('');
+      setNewItemCategory('');
+      setNewItemQuantity('');
+      setNewItemUnit('adet');
+      setNewItemExpiryDate('');
+      setShowSuggestions(false);
+      setIngredientSuggestions([]);
       loadPantryItems();
     } else {
-      setError(response.error?.message || 'İşlem başarısız');
+      toast.error('Malzeme eklenemedi');
     }
   };
 
   const handleEdit = (item: PantryItem) => {
     setEditingItem(item);
-    setFormData({
-      name: item.name,
-      category: item.category,
-      quantity: item.quantity.toString(),
-      minQuantity: item.minQuantity?.toString() || '',
-      unit: item.unit,
-      expiryDate: item.expiryDate ? item.expiryDate.split('T')[0] : '',
-    });
-    setShowAddModal(true);
+    setNewItemName(item.name);
+    setNewItemCategory(item.category);
+    setNewItemQuantity(item.quantity.toString());
+    setNewItemUnit(item.unit);
+    setNewItemExpiryDate(item.expiryDate ? new Date(item.expiryDate).toISOString().split('T')[0] : '');
+    setShowEditModal(true);
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!token || !editingItem || !newItemName || !newItemCategory) return;
+
+    const response = await api.put(`/api/pantry/${editingItem.id}`, {
+      name: newItemName,
+      category: newItemCategory,
+      quantity: parseFloat(newItemQuantity) || 1,
+      unit: newItemUnit,
+      expiryDate: newItemExpiryDate || null,
+    }, token);
+
+    if (response.success) {
+      toast.success('Malzeme güncellendi');
+      setShowEditModal(false);
+      setEditingItem(null);
+      setNewItemName('');
+      setNewItemCategory('');
+      setNewItemQuantity('');
+      setNewItemUnit('adet');
+      setNewItemExpiryDate('');
+      loadPantryItems();
+    } else {
+      toast.error('Güncelleme başarısız');
+    }
   };
 
   const handleDelete = async (id: number) => {
     if (!token) return;
 
     const response = await api.delete(`/api/pantry/${id}`, token);
-    
     if (response.success) {
-      setSuccess('Malzeme silindi');
+      toast.success('Malzeme silindi');
       loadPantryItems();
     } else {
-      setError(response.error?.message || 'Silme başarısız');
+      toast.error('Silme işlemi başarısız');
     }
   };
 
-  const handleMoveToMarket = async (id: number) => {
+  const handleAddToMarket = async (id: number) => {
     if (!token) return;
 
     const response = await api.post(`/api/pantry/${id}/add-to-market`, {}, token);
-
     if (response.success) {
-      setSuccess('Malzeme market listesine eklendi');
-      // Dolap listesini yenilemeye gerek yok çünkü malzeme hala dolabta
-    } else {
-      setError(response.error?.message || 'Ekleme başarısız');
+      toast.success('Market listesine eklendi');
     }
   };
 
-  const handleAddLowStockToMarket = async () => {
-    if (!token) return;
+  // Filtreleme
+  const filteredItems = items.filter((item) => {
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      selectedCategory === 'Tümü' || item.category === selectedCategory;
+    const hasQuantity = item.quantity > 0; // Miktarı sıfırdan büyük olanlar
+    return matchesSearch && matchesCategory && hasQuantity;
+  });
 
-    // %50'nin altındaki malzemeleri bul
-    const lowStockItems = items.filter((item) => {
-      const percentage = item.initialQuantity > 0 
-        ? (item.quantity / item.initialQuantity) * 100
-        : 100;
-      return percentage < 50;
+  // Kategoriye göre grupla
+  const groupedItems = filteredItems.reduce((acc: any, item) => {
+    const category = item.category || 'Diğer';
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(item);
+    return acc;
+  }, {});
+
+  const getStockPercentage = (item: PantryItem) => {
+    if (!item.initialQuantity || item.initialQuantity === 0) return 100;
+    return Math.round((item.quantity / item.initialQuantity) * 100);
+  };
+
+  const getCategoryName = (category: string) => {
+    const categoryMap: { [key: string]: string } = {
+      'SEBZELER': 'Sebzeler',
+      'MEYVELER': 'Meyveler',
+      'ET_URUNLERI': 'Et Ürünleri',
+      'SUT_URUNLERI': 'Süt Ürünleri',
+      'TAHILLAR': 'Tahıllar',
+      'BAHARATLAR': 'Baharatlar',
+      'ICECEKLER': 'İçecekler',
+      'ATISTIRMALIKLAR': 'Atıştırmalıklar',
+      'BAKLAGILLER': 'Baklagiller',
+    };
+    return categoryMap[category] || category;
+  };
+
+  const getExpiryStatus = (expiryDate: string | null) => {
+    if (!expiryDate) return { text: '', color: '' };
+
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const daysLeft = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+    // Tarihi formatla (DD.MM.YY)
+    const formattedDate = expiry.toLocaleDateString('tr-TR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit'
     });
 
-    if (lowStockItems.length === 0) {
-      setError('Azalan malzeme bulunamadı (%50\'nin altında)');
-      return;
-    }
-
-    if (!confirm(`${lowStockItems.length} adet azalan malzeme market listesine eklenecek. Devam edilsin mi?`)) {
-      return;
-    }
-
-    setError('');
-    let successCount = 0;
-    let errorCount = 0;
-
-    // Her malzemeyi market'e ekle
-    for (const item of lowStockItems) {
-      const response = await api.post(`/api/pantry/${item.id}/add-to-market`, {}, token);
-      if (response.success) {
-        successCount++;
-      } else {
-        errorCount++;
-      }
-    }
-
-    if (successCount > 0) {
-      setSuccess(`${successCount} malzeme market listesine eklendi${errorCount > 0 ? `, ${errorCount} hata` : ''}`);
-    } else {
-      setError('Malzemeler eklenemedi');
-    }
-  };
-
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      category: '',
-      quantity: '',
-      minQuantity: '',
-      unit: 'adet',
-      expiryDate: '',
-    });
-  };
-
-  const closeModal = () => {
-    setShowAddModal(false);
-    setEditingItem(null);
-    resetForm();
-    setError('');
+    if (daysLeft < 0) return { text: `SKT: ${formattedDate}`, color: 'text-red-400' };
+    if (daysLeft <= 3) return { text: `SKT: ${formattedDate}`, color: 'text-red-400' };
+    if (daysLeft <= 7) return { text: `SKT: ${formattedDate}`, color: 'text-yellow-400' };
+    return { text: `SKT: ${formattedDate}`, color: 'text-green-400' };
   };
 
   if (loading) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="min-h-screen bg-[#121212] flex items-center justify-center">
           <div className="text-white">Yükleniyor...</div>
         </div>
       </ProtectedRoute>
@@ -396,486 +271,467 @@ export default function PantryPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Page Title */}
-          <div className="mb-8 flex items-center justify-end">
-            {/* Mobile Category Button */}
-            <button
-              onClick={() => setShowSidebar(true)}
-              className="md:hidden px-4 py-2 bg-gray-800 rounded-lg border border-gray-700 flex items-center gap-2"
-            >
-              <span>📦</span>
-              <span className="text-sm">Kategori</span>
-            </button>
+      <div className="relative flex h-auto min-h-screen w-full flex-col text-[#E0E0E0] pb-24 bg-[#121212]">
+        {/* Header */}
+        <DashboardHeader />
+
+        {/* Content Container */}
+        <div className="max-w-7xl mx-auto w-full">
+          {/* Page Header */}
+          <div className="px-4 py-4">
+            <h1 className="text-white text-2xl font-bold">Dolabım</h1>
           </div>
 
-          {/* Messages */}
-          {error && (
-            <div className="mb-4 bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded">
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="mb-4 bg-green-500/10 border border-green-500 text-green-500 px-4 py-3 rounded">
-              {success}
-            </div>
-          )}
-
-          <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-            {/* Sidebar - Desktop only */}
-            <div className="hidden md:block w-64 bg-gray-800 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">Kategoriler</h2>
-                <span className="text-xs text-gray-400">↕️ Sürükle</span>
+          {/* Search Bar */}
+          <div className="px-4 py-2">
+            <div className="flex w-full items-stretch rounded-lg h-12 bg-[#1E1E1E]">
+              <div className="flex items-center justify-center pl-4 text-[#30D158]">
+                <span className="material-symbols-outlined">search</span>
               </div>
-              <div className="space-y-2">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 bg-transparent border-none text-white placeholder:text-[#A0A0A0] px-4 focus:outline-none"
+                placeholder="Malzeme ara..."
+              />
+            </div>
+          </div>
+
+          {/* Category Filters */}
+          <div className="flex gap-3 px-4 py-2 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none]">
+            {/* Tümü butonu */}
+            <button
+              onClick={() => setSelectedCategory('Tümü')}
+              className={`flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 ${
+                selectedCategory === 'Tümü'
+                  ? 'bg-[#30D158] text-[#121212] font-bold'
+                  : 'bg-[#1E1E1E] text-white hover:bg-[#30D158]/10'
+              }`}
+            >
+              <p className="text-sm">
+                Tümü ({items.filter(item => item.quantity > 0 && item.name.toLowerCase().includes(searchQuery.toLowerCase())).length})
+              </p>
+            </button>
+
+            {/* Dinamik kategoriler - sadece dolu olanlar, büyükten küçüğe sıralı */}
+            {availableCategories
+              .map((category) => {
+                const categoryItems = items.filter(item => 
+                  item.quantity > 0 &&
+                  item.category === category && 
+                  item.name.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+                return { category, count: categoryItems.length };
+              })
+              .filter(item => item.count > 0) // Boş kategorileri filtrele
+              .sort((a, b) => b.count - a.count) // Büyükten küçüğe sırala
+              .map(({ category, count }) => (
                 <button
-                  onClick={() => setSelectedCategory('')}
-                  className={`w-full text-left px-3 py-2 rounded ${
-                    selectedCategory === ''
-                      ? 'bg-blue-600'
-                      : 'hover:bg-gray-700'
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 ${
+                    selectedCategory === category
+                      ? 'bg-[#30D158] text-[#121212] font-bold'
+                      : 'bg-[#1E1E1E] text-white hover:bg-[#30D158]/10'
                   }`}
                 >
-                  📦 Tümü ({items.length})
+                  <p className="text-sm">{getCategoryLabel(category)} ({count})</p>
                 </button>
-                
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
-                  <SortableContext
-                    items={categories.map(c => c.id)}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    {categories.map((cat) => {
-                      const categoryItemCount = items.filter(item => item.category === cat.name).length;
-                      return (
-                        <SortableCategory
-                          key={cat.id}
-                          category={cat}
-                          isSelected={selectedCategory === cat.name}
-                          itemCount={categoryItemCount}
-                          onClick={() => setSelectedCategory(cat.name)}
-                        />
-                      );
-                    })}
-                  </SortableContext>
-                </DndContext>
-              </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="flex-1">
-              <div className="bg-gray-800 rounded-lg p-4 md:p-6">
-                <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
-                  <h2 className="text-lg md:text-xl font-semibold">
-                    {selectedCategory || 'Tüm Malzemeler'} ({items.length})
-                  </h2>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <button
-                      onClick={handleAddLowStockToMarket}
-                      className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-md flex items-center justify-center gap-2 text-sm md:text-base"
-                      title="Azalan malzemeleri market'e ekle"
-                    >
-                      ⚠️ Azalanları Market'e Ekle
-                    </button>
-                    <button
-                      onClick={() => setShowAddModal(true)}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-sm md:text-base"
-                    >
-                      + Malzeme Ekle
-                    </button>
-                  </div>
-                </div>
-
-                {items.length === 0 ? (
-                  <div className="text-center py-12 text-gray-400">
-                    Henüz malzeme eklenmemiş
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {/* Kategorilere göre grupla */}
-                    {(() => {
-                      // Birim dönüşüm fonksiyonu
-                      const convertToKg = (quantity: number, unit: string): number => {
-                        const unitLower = unit.toLowerCase();
-                        if (unitLower === 'gram' || unitLower === 'gr') return quantity / 1000;
-                        if (unitLower === 'kg') return quantity;
-                        if (unitLower === 'adet') return quantity * 0.2; // 1 adet = 200g ortalama
-                        return quantity;
-                      };
-
-                      // Kategorilere göre gruplandır
-                      const grouped = items.reduce((acc: any, item) => {
-                        if (!acc[item.category]) {
-                          acc[item.category] = [];
-                        }
-                        acc[item.category].push(item);
-                        return acc;
-                      }, {});
-
-                      // Her kategori için render et
-                      return Object.keys(grouped).sort().map((category) => {
-                        const categoryItems = grouped[category];
-                        const categoryIcon = categories.find(c => c.name === category)?.icon || '📦';
-
-                        // Aynı malzemeleri birleştir
-                        const mergedItems = categoryItems.reduce((acc: any, item: PantryItem) => {
-                          const existing = acc.find((i: any) => i.name.toLowerCase() === item.name.toLowerCase());
-                          
-                          if (existing) {
-                            // Aynı malzeme var, birleştir
-                            const existingKg = convertToKg(existing.totalQuantity, existing.unit);
-                            const newKg = convertToKg(item.quantity, item.unit);
-                            existing.totalQuantity = existingKg + newKg;
-                            existing.unit = 'kg';
-                            existing.items.push(item);
-                            
-                            // İlk eklenen malzemenin initial quantity'sini kullan
-                            if (item.initialQuantity > 0) {
-                              const initialKg = convertToKg(item.initialQuantity, item.unit);
-                              existing.totalInitialQuantity += initialKg;
-                            }
-                          } else {
-                            // Yeni malzeme
-                            const quantityInKg = convertToKg(item.quantity, item.unit);
-                            const initialInKg = item.initialQuantity > 0 ? convertToKg(item.initialQuantity, item.unit) : quantityInKg;
-                            
-                            acc.push({
-                              name: item.name,
-                              category: item.category,
-                              totalQuantity: quantityInKg,
-                              totalInitialQuantity: initialInKg,
-                              unit: 'kg',
-                              items: [item],
-                              expiryDate: item.expiryDate,
-                            });
-                          }
-                          return acc;
-                        }, []);
-
-                        return (
-                          <div key={category} className="bg-gray-700/30 rounded-lg p-4">
-                            {/* Kategori Başlığı */}
-                            <h3 className="text-base font-semibold mb-2 flex items-center gap-2">
-                              <span className="text-lg">{categoryIcon}</span>
-                              <span>{category}</span>
-                              <span className="text-xs text-gray-400">({mergedItems.length})</span>
-                            </h3>
-
-                            {/* Kategori İçindeki Malzemeler */}
-                            <div className="space-y-2">
-                              {mergedItems.map((merged: any, idx: number) => {
-                                const percentage = merged.totalInitialQuantity > 0 
-                                  ? Math.round((merged.totalQuantity / merged.totalInitialQuantity) * 100)
-                                  : 100;
-
-                                // Birden fazla kayıt varsa göster
-                                const hasMultiple = merged.items.length > 1;
-
-                                // Minimum miktar kontrolü
-                                const firstItem = merged.items[0];
-                                const isLowStock = firstItem.minQuantity && firstItem.minQuantity > 0 && firstItem.quantity < firstItem.minQuantity;
-
-                                return (
-                                  <div
-                                    key={`${merged.name}-${idx}`}
-                                    className="bg-gray-800 rounded-lg p-2 hover:bg-gray-750 transition"
-                                  >
-                                    <div className="flex flex-col gap-2">
-                                      {/* Tek Satır: İsim, Miktar, Butonlar */}
-                                      <div className="flex items-center justify-between gap-2">
-                                        {/* Malzeme Bilgisi */}
-                                        <div className="flex-1 min-w-0 flex items-center gap-2">
-                                          <div className="font-medium text-sm truncate">{merged.name}</div>
-                                          {isLowStock && (
-                                            <span className="text-xs bg-red-600 px-1.5 py-0.5 rounded">⚠️</span>
-                                          )}
-                                          <span className="text-xs text-gray-400 whitespace-nowrap">•</span>
-                                          <span className="text-xs text-gray-400 whitespace-nowrap">
-                                            {hasMultiple ? (
-                                              `${merged.totalQuantity.toFixed(1)} kg`
-                                            ) : (
-                                              `${merged.items[0].quantity} ${merged.items[0].unit}`
-                                            )}
-                                          </span>
-                                        </div>
-
-                                        {/* İşlem Butonları - Küçük */}
-                                        <div className="flex gap-1 shrink-0">
-                                          <button
-                                            onClick={() => handleEdit(merged.items[0])}
-                                            className="px-2 py-1 bg-yellow-600 hover:bg-yellow-700 rounded text-xs"
-                                            title="Düzenle"
-                                          >
-                                            ✏️
-                                          </button>
-                                          <button
-                                            onClick={() => handleMoveToMarket(merged.items[0].id)}
-                                            className="px-2 py-1 bg-green-600 hover:bg-green-700 rounded text-xs"
-                                            title="Market'e Ekle"
-                                          >
-                                            🛒
-                                          </button>
-                                          <button
-                                            onClick={() => handleDelete(merged.items[0].id)}
-                                            className="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-xs"
-                                            title="Sil"
-                                          >
-                                            🗑️
-                                          </button>
-                                        </div>
-                                      </div>
-                                      
-                                      {/* Progress Bar - En Altta */}
-                                      <div className="w-full bg-gray-700 rounded-full h-1.5">
-                                        <div
-                                          className={`h-1.5 rounded-full transition-all ${
-                                            percentage > 50
-                                              ? 'bg-green-500'
-                                              : percentage > 20
-                                              ? 'bg-yellow-500'
-                                              : 'bg-red-500'
-                                          }`}
-                                          style={{ width: `${percentage}%` }}
-                                        ></div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        );
-                      });
-                    })()}
-                  </div>
-                )}
-              </div>
-            </div>
+              ))}
           </div>
-        </div>
-      </div>
 
-      {/* Add/Edit Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-xl font-semibold mb-4">
-              {editingItem ? 'Malzeme Düzenle' : 'Yeni Malzeme Ekle'}
-            </h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="relative">
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Malzeme Adı
-                </label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => {
-                    setFormData({ ...formData, name: e.target.value });
-                    searchIngredients(e.target.value);
-                  }}
-                  onFocus={() => {
-                    if (formData.name.length >= 2) {
-                      searchIngredients(formData.name);
-                    }
-                  }}
-                  onBlur={() => {
-                    // Delay to allow click on suggestion
-                    setTimeout(() => setShowSuggestions(false), 200);
-                  }}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                  placeholder="Örn: domates, soğan..."
-                  required
-                />
-                
-                {/* Autocomplete Suggestions */}
-                {showSuggestions && ingredientSuggestions.length > 0 && (
-                  <div className="absolute z-10 w-full mt-1 bg-gray-700 border border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                    {ingredientSuggestions.map((ingredient) => (
-                      <button
-                        key={ingredient.id}
-                        type="button"
-                        onClick={() => selectIngredient(ingredient)}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-600 flex items-center justify-between"
-                      >
-                        <span className="font-medium">{ingredient.name}</span>
-                        <span className="text-sm text-gray-400">
-                          {ingredient.category.name} • {ingredient.defaultUnit}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                )}
+          {/* Items List */}
+          <main className="flex-grow p-4 pb-24">
+            {Object.keys(groupedItems).length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <span className="material-symbols-outlined text-6xl text-[#30D158] mb-4">
+                  kitchen
+                </span>
+                <p className="text-white text-lg font-bold mb-2">Dolabın boş görünüyor</p>
+                <p className="text-[#A0A0A0] text-sm">İlk malzemeni ekle</p>
               </div>
+            ) : (
+              <div className="flex flex-col gap-6">
+                {Object.keys(groupedItems)
+                  .sort()
+                  .map((category) => (
+                    <div key={category} className="flex flex-col gap-4 rounded-xl bg-[#1E1E1E] p-4">
+                      <h3 className="text-base font-bold text-white uppercase tracking-wider">
+                        {getCategoryName(category)} ({groupedItems[category].length})
+                      </h3>
+                      <div className="flex flex-col gap-4">
+                        {groupedItems[category].map((item: PantryItem) => {
+                          const percentage = getStockPercentage(item);
+                          const expiryStatus = getExpiryStatus(item.expiryDate);
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Kategori
-                </label>
-                <select
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                  required
-                >
-                  <option value="">Seçiniz</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.name}>
-                      {cat.icon} {cat.name}
-                    </option>
+                          return (
+                            <div key={item.id} className="flex flex-col gap-2">
+                              <div className="flex items-start justify-between">
+                                <div className="flex flex-col gap-1.5">
+                                  <p className="text-sm text-white/90">{item.name}</p>
+                                  <div className="flex items-center gap-2 text-xs text-white/70">
+                                    <span>
+                                      {item.quantity} {item.unit}
+                                    </span>
+                                    {expiryStatus.text && (
+                                      <span className={expiryStatus.color}>
+                                        {expiryStatus.text}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => handleAddToMarket(item.id)}
+                                    className="flex h-7 w-7 items-center justify-center rounded bg-blue-600 text-white hover:bg-blue-700"
+                                    title="Market'e ekle"
+                                  >
+                                    <span className="material-symbols-outlined text-base">
+                                      shopping_cart
+                                    </span>
+                                  </button>
+                                  <button
+                                    onClick={() => handleEdit(item)}
+                                    className="flex h-7 w-7 items-center justify-center rounded bg-yellow-600 text-white hover:bg-yellow-700"
+                                    title="Düzenle"
+                                  >
+                                    <span className="material-symbols-outlined text-base">
+                                      edit
+                                    </span>
+                                  </button>
+                                  <button
+                                    onClick={() => handleDelete(item.id)}
+                                    className="flex h-7 w-7 items-center justify-center rounded bg-red-600 text-white hover:bg-red-700"
+                                    title="Sil"
+                                  >
+                                    <span className="material-symbols-outlined text-base">
+                                      delete
+                                    </span>
+                                  </button>
+                                </div>
+                              </div>
+                              {/* Progress Bar */}
+                              <div className="h-1.5 w-full rounded-full bg-black/20">
+                                <div
+                                  className={`h-full rounded-full ${
+                                    percentage > 50
+                                      ? 'bg-[#30D158]'
+                                      : percentage > 20
+                                      ? 'bg-yellow-500'
+                                      : 'bg-red-500'
+                                  }`}
+                                  style={{ width: `${percentage}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
                   ))}
-                </select>
               </div>
+            )}
+          </main>
+        </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Mevcut Miktar
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.quantity}
-                    onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                    required
-                  />
-                </div>
+        {/* Floating Add Button */}
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="fixed bottom-24 right-4 lg:bottom-8 flex items-center justify-center w-14 h-14 bg-[#30D158] rounded-full shadow-lg shadow-[#30D158]/20 hover:bg-[#30D158]/90 transition-colors z-10"
+          title="Malzeme Ekle"
+        >
+          <span className="material-symbols-outlined text-3xl text-[#121212]">add</span>
+        </button>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Birim
-                  </label>
-                  <select
-                    value={formData.unit}
-                    onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                    required
+        {/* Bottom Navigation */}
+        <BottomNav />
+
+        {/* Edit Item Modal */}
+        {showEditModal && editingItem && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="flex w-full max-w-sm flex-col overflow-hidden bg-[#121212] rounded-xl max-h-[85vh]">
+              <div className="flex shrink-0 items-center border-b border-[#3A3A3C] px-4 py-3">
+                <div className="w-8"></div>
+                <h2 className="flex-1 text-center text-base font-bold tracking-tight text-white">
+                  Malzeme Düzenle
+                </h2>
+                <div className="flex w-8 items-center justify-end">
+                  <button
+                    onClick={() => {
+                      setShowEditModal(false);
+                      setEditingItem(null);
+                      setNewItemName('');
+                      setNewItemCategory('');
+                      setNewItemQuantity('');
+                      setNewItemUnit('adet');
+                      setNewItemExpiryDate('');
+                    }}
+                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-white transition-colors hover:bg-white/10"
                   >
-                    <option value="adet">Adet</option>
-                    <option value="kg">Kg</option>
-                    <option value="gram">Gram</option>
-                    <option value="litre">Litre</option>
-                    <option value="ml">ML</option>
-                    <option value="paket">Paket</option>
-                  </select>
+                    <span className="material-symbols-outlined text-xl">close</span>
+                  </button>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Minimum Miktar (Opsiyonel)
+              <form onSubmit={handleUpdate} className="flex-1 space-y-4 overflow-y-auto p-4">
+                <label className="flex flex-col">
+                  <p className="pb-1.5 text-sm font-medium text-white">Malzeme Adı *</p>
+                  <input
+                    required
+                    value={newItemName}
+                    onChange={(e) => setNewItemName(e.target.value)}
+                    className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                    placeholder="Örn: Domates"
+                  />
                 </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={formData.minQuantity}
-                  onChange={(e) => setFormData({ ...formData, minQuantity: e.target.value })}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                  placeholder="Örn: 2 (Bu miktarın altına düşünce uyarı)"
-                />
-                <p className="text-xs text-gray-400 mt-1">
-                  Bu miktarın altına düşünce "Azalıyor" uyarısı gösterilir
-                </p>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Son Kullanma Tarihi (Opsiyonel)
+                <label className="flex flex-col">
+                  <p className="pb-1.5 text-sm font-medium text-white">Kategori *</p>
+                  <select
+                    required
+                    value={newItemCategory}
+                    onChange={(e) => setNewItemCategory(e.target.value)}
+                    className="form-select w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                  >
+                    <option value="">Kategori Seç</option>
+                    <option value="SEBZELER">Sebzeler</option>
+                    <option value="MEYVELER">Meyveler</option>
+                    <option value="ET_URUNLERI">Et Ürünleri</option>
+                    <option value="SUT_URUNLERI">Süt Ürünleri</option>
+                    <option value="TAHILLAR">Tahıllar</option>
+                    <option value="BAHARATLAR">Baharatlar</option>
+                    <option value="ICECEKLER">İçecekler</option>
+                    <option value="ATISTIRMALIKLAR">Atıştırmalıklar</option>
+                  </select>
                 </label>
-                <input
-                  type="date"
-                  value={formData.expiryDate}
-                  onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                />
-              </div>
 
-              <div className="flex gap-2">
+                <div className="flex items-end gap-3">
+                  <label className="flex min-w-0 flex-[2] flex-col">
+                    <p className="pb-1.5 text-sm font-medium text-white">Miktar</p>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={newItemQuantity}
+                      onChange={(e) => setNewItemQuantity(e.target.value)}
+                      className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                      placeholder="0"
+                    />
+                  </label>
+                  <label className="flex min-w-0 flex-1 flex-col">
+                    <p className="pb-1.5 text-sm font-medium text-white">Birim</p>
+                    <select
+                      value={newItemUnit}
+                      onChange={(e) => setNewItemUnit(e.target.value)}
+                      className="form-select w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                    >
+                      <option value="adet">adet</option>
+                      <option value="kg">kg</option>
+                      <option value="gr">gr</option>
+                      <option value="litre">litre</option>
+                      <option value="ml">ml</option>
+                    </select>
+                  </label>
+                </div>
+
+                <label className="flex flex-col">
+                  <p className="pb-1.5 text-sm font-medium text-white">
+                    Son Kullanma Tarihi (Opsiyonel)
+                  </p>
+                  <div className="relative flex w-full items-stretch rounded-lg">
+                    <input
+                      type="date"
+                      value={newItemExpiryDate}
+                      onChange={(e) => setNewItemExpiryDate(e.target.value)}
+                      className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] py-3 pl-3 pr-10 text-sm text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                      placeholder="Tarih Seç"
+                    />
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-[#A0A0A0]">
+                      <span className="material-symbols-outlined text-lg">calendar_today</span>
+                    </div>
+                  </div>
+                </label>
+              </form>
+
+              <div className="flex shrink-0 flex-col space-y-2 border-t border-[#3A3A3C] p-4">
                 <button
-                  type="submit"
-                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
+                  onClick={handleUpdate}
+                  type="button"
+                  className="flex h-11 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#30D158] text-sm font-bold text-white transition-opacity hover:opacity-90"
                 >
-                  {editingItem ? 'Güncelle' : 'Ekle'}
+                  Güncelle
                 </button>
                 <button
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setEditingItem(null);
+                    setNewItemName('');
+                    setNewItemCategory('');
+                    setNewItemQuantity('');
+                    setNewItemUnit('adet');
+                    setNewItemExpiryDate('');
+                  }}
                   type="button"
-                  onClick={closeModal}
-                  className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-md"
+                  className="flex h-11 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-transparent text-sm font-bold text-[#A0A0A0] transition-colors hover:bg-white/10"
                 >
                   İptal
                 </button>
               </div>
-            </form>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Mobile Sidebar Drawer */}
-      {showSidebar && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="md:hidden fixed inset-0 bg-black/50 z-40"
-            onClick={() => setShowSidebar(false)}
-          ></div>
-          
-          {/* Drawer */}
-          <div className="md:hidden fixed top-0 left-0 bottom-0 w-80 bg-gray-900 z-50 shadow-2xl overflow-y-auto">
-            <div className="p-4">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold">Kategoriler</h2>
-                <button
-                  onClick={() => setShowSidebar(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800"
-                >
-                  ✕
-                </button>
+        {/* Add Item Modal */}
+        {showAddModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="flex w-full max-w-sm flex-col overflow-hidden bg-[#121212] rounded-xl max-h-[85vh]">
+              {/* Modal Header */}
+              <div className="flex shrink-0 items-center border-b border-[#3A3A3C] px-4 py-3">
+                <div className="w-8"></div>
+                <h2 className="flex-1 text-center text-base font-bold tracking-tight text-white">
+                  Malzeme Ekle
+                </h2>
+                <div className="flex w-8 items-center justify-end">
+                  <button
+                    onClick={() => setShowAddModal(false)}
+                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-white transition-colors hover:bg-white/10"
+                  >
+                    <span className="material-symbols-outlined text-xl">close</span>
+                  </button>
+                </div>
               </div>
 
-              {/* Categories */}
-              <div className="space-y-2">
-                <button
-                  onClick={() => {
-                    setSelectedCategory('');
-                    setShowSidebar(false);
-                  }}
-                  className={`w-full text-left px-4 py-3 rounded ${
-                    selectedCategory === '' ? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700'
-                  }`}
-                >
-                  📦 Tümü ({items.length})
-                </button>
-                {categories.map((cat) => {
-                  const count = items.filter((item) => item.category === cat.name).length;
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => {
-                        setSelectedCategory(cat.name);
-                        setShowSidebar(false);
-                      }}
-                      className={`w-full text-left px-4 py-3 rounded ${
-                        selectedCategory === cat.name
-                          ? 'bg-blue-600'
-                          : 'bg-gray-800 hover:bg-gray-700'
-                      }`}
+              {/* Form Content */}
+              <form onSubmit={handleAdd} className="flex-1 space-y-4 overflow-y-auto p-4">
+                {/* Ingredient Name */}
+                <label className="flex flex-col relative">
+                  <p className="pb-1.5 text-sm font-medium text-white">
+                    Malzeme Adı *
+                  </p>
+                  <input
+                    required
+                    value={newItemName}
+                    onChange={(e) => handleIngredientNameChange(e.target.value)}
+                    onFocus={() => newItemName.length >= 2 && setShowSuggestions(true)}
+                    className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                    placeholder="Örn: Domates"
+                    autoComplete="off"
+                  />
+                  {/* Autocomplete Suggestions */}
+                  {showSuggestions && ingredientSuggestions.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-[#1E1E1E] border border-[#3A3A3C] rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
+                      {ingredientSuggestions.map((ingredient, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => selectIngredient(ingredient)}
+                          className="w-full text-left px-3 py-2 hover:bg-[#30D158]/10 text-white text-sm border-b border-[#3A3A3C] last:border-b-0"
+                        >
+                          <div className="font-medium">{ingredient.name}</div>
+                          <div className="text-xs text-[#A0A0A0]">
+                            {ingredient.category.name} • {ingredient.defaultUnit}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </label>
+
+                {/* Category */}
+                <label className="flex flex-col">
+                  <p className="pb-1.5 text-sm font-medium text-white">
+                    Kategori *
+                  </p>
+                  <select
+                    required
+                    value={newItemCategory}
+                    onChange={(e) => setNewItemCategory(e.target.value)}
+                    className="form-select w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                  >
+                    <option value="">Kategori Seç</option>
+                    <option value="SEBZELER">Sebzeler</option>
+                    <option value="MEYVELER">Meyveler</option>
+                    <option value="ET_URUNLERI">Et Ürünleri</option>
+                    <option value="SUT_URUNLERI">Süt Ürünleri</option>
+                    <option value="TAHILLAR">Tahıllar</option>
+                    <option value="BAHARATLAR">Baharatlar</option>
+                    <option value="ICECEKLER">İçecekler</option>
+                    <option value="ATISTIRMALIKLAR">Atıştırmalıklar</option>
+                  </select>
+                </label>
+
+                {/* Quantity & Unit */}
+                <div className="flex items-end gap-3">
+                  <label className="flex min-w-0 flex-[2] flex-col">
+                    <p className="pb-1.5 text-sm font-medium text-white">Miktar</p>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={newItemQuantity}
+                      onChange={(e) => setNewItemQuantity(e.target.value)}
+                      className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                      placeholder="0"
+                    />
+                  </label>
+                  <label className="flex min-w-0 flex-1 flex-col">
+                    <p className="pb-1.5 text-sm font-medium text-white">Birim</p>
+                    <select
+                      value={newItemUnit}
+                      onChange={(e) => setNewItemUnit(e.target.value)}
+                      className="form-select w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
                     >
-                      {cat.icon} {cat.name} ({count})
-                    </button>
-                  );
-                })}
+                      <option value="adet">adet</option>
+                      <option value="kg">kg</option>
+                      <option value="gr">gr</option>
+                      <option value="litre">litre</option>
+                      <option value="ml">ml</option>
+                    </select>
+                  </label>
+                </div>
+
+                {/* Expiry Date */}
+                <label className="flex flex-col">
+                  <p className="pb-1.5 text-sm font-medium text-white">
+                    Son Kullanma Tarihi (Opsiyonel)
+                  </p>
+                  <div className="relative flex w-full items-stretch rounded-lg">
+                    <input
+                      type="date"
+                      value={newItemExpiryDate}
+                      onChange={(e) => setNewItemExpiryDate(e.target.value)}
+                      className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] py-3 pl-3 pr-10 text-sm text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                      placeholder="Tarih Seç"
+                    />
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-[#A0A0A0]">
+                      <span className="material-symbols-outlined text-lg">calendar_today</span>
+                    </div>
+                  </div>
+                </label>
+              </form>
+
+              {/* Modal Actions */}
+              <div className="flex shrink-0 flex-col space-y-2 border-t border-[#3A3A3C] p-4">
+                <button
+                  onClick={handleAdd}
+                  type="button"
+                  className="flex h-11 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#30D158] text-sm font-bold text-white transition-opacity hover:opacity-90"
+                >
+                  Ekle
+                </button>
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  type="button"
+                  className="flex h-11 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-transparent text-sm font-bold text-[#A0A0A0] transition-colors hover:bg-white/10"
+                >
+                  İptal
+                </button>
               </div>
             </div>
           </div>
-        </>
-      )}
+        )}
+      </div>
     </ProtectedRoute>
   );
 }

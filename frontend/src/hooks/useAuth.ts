@@ -12,12 +12,20 @@ export const useAuth = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
+    // localStorage sadece client-side'da mevcut
+    if (typeof window !== 'undefined') {
+      const storedToken = localStorage.getItem('token');
+      const storedUser = localStorage.getItem('user');
 
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+      if (storedToken && storedUser) {
+        setToken(storedToken);
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+          localStorage.removeItem('user');
+        }
+      }
     }
     setLoading(false);
   }, []);
@@ -29,8 +37,10 @@ export const useAuth = () => {
       const { user, token } = response.data;
       setUser(user);
       setToken(token);
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+      }
       router.push('/dashboard');
       return { success: true };
     }
@@ -45,8 +55,10 @@ export const useAuth = () => {
       const { user, token } = response.data;
       setUser(user);
       setToken(token);
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+      }
       router.push('/dashboard');
       return { success: true };
     }
@@ -57,8 +69,10 @@ export const useAuth = () => {
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
     router.push('/login');
   };
 

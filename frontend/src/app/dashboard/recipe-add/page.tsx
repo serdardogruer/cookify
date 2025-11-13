@@ -2,88 +2,78 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import ProtectedRoute from '@/components/ProtectedRoute';
-import { useAuth } from '@/hooks/useAuth';
-import { api } from '@/lib/api';
 
-export default function AddRecipePage() {
+interface Ingredient {
+  id: string;
+  amount: string;
+  unit: string;
+  name: string;
+}
+
+interface Step {
+  id: string;
+  description: string;
+  imageUrl?: string;
+  timer?: number;
+}
+
+interface Sauce {
+  id: string;
+  name: string;
+  ingredients: Ingredient[];
+}
+
+export default function RecipeAddPage() {
   const router = useRouter();
-  const { token } = useAuth();
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    image: '',
-    video: '',
-    prepTime: '',
-    cookTime: '',
-    servings: '4',
-    difficulty: 'MEDIUM',
-    category: '',
-    cuisine: '',
-  });
-
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>('');
-  const [uploadingImage, setUploadingImage] = useState(false);
-
-  const [ingredients, setIngredients] = useState([
-    { name: '', quantity: '', unit: 'adet', order: 0 },
-  ]);
-
-  const [instructions, setInstructions] = useState([
-    { stepNumber: 1, instruction: '', image: '' },
-  ]);
-
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [videoUrl, setVideoUrl] = useState('');
+  const [showSauces, setShowSauces] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
-
-  const [showSauceSection, setShowSauceSection] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
-  const [sauces, setSauces] = useState([
-    { name: '', ingredients: '', instructions: '' },
+  
+  const [ingredients, setIngredients] = useState<Ingredient[]>([
+    { id: '1', amount: '1', unit: 'Adet', name: 'soğan' },
+    { id: '2', amount: '500', unit: 'Gram', name: 'tavuk göğsü' }
   ]);
+  const [steps, setSteps] = useState<Step[]>([
+    { id: '1', description: 'Soğanları doğrayın ve tavada pembeleşinceye kadar kavurun.' },
+    { id: '2', description: 'Tavukları ekleyin ve rengi dönene kadar pişirin.' }
+  ]);
+  const [sauces, setSauces] = useState<Sauce[]>([]);
+
+  const units = ['Adet', 'Kg', 'Gram', 'Litre', 'ML', 'Su Bardağı', 'Çay Kaşığı', 'Yemek Kaşığı'];
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const addIngredient = () => {
-    setIngredients([
-      ...ingredients,
-      { name: '', quantity: '', unit: 'adet', order: ingredients.length },
-    ]);
+    const newId = (Math.max(...ingredients.map(i => parseInt(i.id)), 0) + 1).toString();
+    setIngredients([...ingredients, { id: newId, amount: '', unit: 'Adet', name: '' }]);
   };
 
-  const removeIngredient = (index: number) => {
-    setIngredients(ingredients.filter((_, i) => i !== index));
+  const removeIngredient = (id: string) => {
+    setIngredients(ingredients.filter(i => i.id !== id));
   };
 
-  const updateIngredient = (index: number, field: string, value: string) => {
-    const updated = [...ingredients];
-    updated[index] = { ...updated[index], [field]: value };
-    setIngredients(updated);
+  const updateIngredient = (id: string, field: keyof Ingredient, value: string) => {
+    setIngredients(ingredients.map(i => i.id === id ? { ...i, [field]: value } : i));
   };
 
-  const addInstruction = () => {
-    setInstructions([
-      ...instructions,
-      { stepNumber: instructions.length + 1, instruction: '', image: '' },
-    ]);
+  const addStep = () => {
+    const newId = (Math.max(...steps.map(s => parseInt(s.id)), 0) + 1).toString();
+    setSteps([...steps, { id: newId, description: '' }]);
   };
 
-  const removeInstruction = (index: number) => {
-    const updated = instructions.filter((_, i) => i !== index);
-    // Adım numaralarını yeniden düzenle
-    updated.forEach((inst, i) => {
-      inst.stepNumber = i + 1;
-    });
-    setInstructions(updated);
-  };
-
-  const updateInstruction = (index: number, field: string, value: string) => {
-    const updated = [...instructions];
-    updated[index] = { ...updated[index], [field]: value };
-    setInstructions(updated);
+  const removeStep = (id: string) => {
+    setSteps(steps.filter(s => s.id !== id));
   };
 
   const addTag = () => {
@@ -94,738 +84,407 @@ export default function AddRecipePage() {
   };
 
   const removeTag = (tag: string) => {
-    setTags(tags.filter((t) => t !== tag));
+    setTags(tags.filter(t => t !== tag));
   };
 
-  const addSauce = () => {
-    setSauces([...sauces, { name: '', ingredients: '', instructions: '' }]);
-  };
-
-  const removeSauce = (index: number) => {
-    setSauces(sauces.filter((_, i) => i !== index));
-  };
-
-  const updateSauce = (index: number, field: string, value: string) => {
-    const updated = [...sauces];
-    updated[index] = { ...updated[index], [field]: value };
-    setSauces(updated);
-  };
-
-  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      console.log('Dosya seçildi:', file.name, file.size);
-      setImageFile(file);
-      // Preview oluştur
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        console.log('Preview oluşturuldu');
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-      // URL inputunu temizle
-      setFormData({ ...formData, image: '' });
+  const handleTagKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTag();
     }
   };
 
-  const uploadImage = async (): Promise<string | null> => {
-    if (!imageFile || !token) return null;
-
-    console.log('Resim yükleniyor...', imageFile.name);
-    setUploadingImage(true);
-    const formDataUpload = new FormData();
-    formDataUpload.append('image', imageFile);
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/recipes/upload-image`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: formDataUpload,
-      });
-
-      const data = await response.json();
-      console.log('Upload response:', data);
-      setUploadingImage(false);
-
-      if (data.success && data.imageUrl) {
-        console.log('Resim yüklendi:', data.imageUrl);
-        return data.imageUrl;
-      }
-      console.error('Upload başarısız:', data);
-      return null;
-    } catch (error) {
-      setUploadingImage(false);
-      console.error('Image upload error:', error);
-      return null;
-    }
+  const handleSaveDraft = () => {
+    // Taslak kaydetme işlemi
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-    setLoading(true);
+  const handlePublish = () => {
+    // Yayınlama işlemi
+  };
 
-    if (!token) {
-      setError('Oturum açmanız gerekiyor');
-      setLoading(false);
-      return;
-    }
-
-    // Validasyon
-    if (ingredients.filter((i) => i.name.trim()).length === 0) {
-      setError('En az bir malzeme eklemelisiniz');
-      setLoading(false);
-      return;
-    }
-
-    if (instructions.filter((i) => i.instruction.trim()).length === 0) {
-      setError('En az bir talimat eklemelisiniz');
-      setLoading(false);
-      return;
-    }
-
-    // Görsel yükleme (eğer dosya seçildiyse)
-    let imageUrl = formData.image;
-    if (imageFile) {
-      const uploadedUrl = await uploadImage();
-      if (uploadedUrl) {
-        imageUrl = uploadedUrl;
-      } else {
-        setError('Görsel yüklenemedi');
-        setLoading(false);
-        return;
-      }
-    }
-
-    const data = {
-      title: formData.title,
-      description: formData.description || undefined,
-      image: imageUrl || undefined,
-      video: formData.video || undefined,
-      prepTime: formData.prepTime ? parseInt(formData.prepTime) : undefined,
-      cookTime: formData.cookTime ? parseInt(formData.cookTime) : undefined,
-      servings: parseInt(formData.servings),
-      difficulty: formData.difficulty,
-      category: formData.category || undefined,
-      cuisine: formData.cuisine || undefined,
-      ingredients: ingredients
-        .filter((i) => i.name.trim())
-        .map((i, idx) => ({
-          name: i.name,
-          quantity: parseFloat(i.quantity),
-          unit: i.unit,
-          order: idx,
-        })),
-      instructions: instructions
-        .filter((i) => i.instruction.trim())
-        .map((i) => ({
-          stepNumber: i.stepNumber,
-          instruction: i.instruction,
-          image: i.image || undefined,
-        })),
-      tags: tags.length > 0 ? tags : undefined,
-    };
-
-    const response = await api.post<{ id: number }>('/api/recipes', data, token);
-
-    if (response.success && response.data) {
-      setSuccess('Tarif başarıyla eklendi!');
-      const recipeId = response.data.id;
-      setTimeout(() => {
-        router.push(`/dashboard/recipe-detail/${recipeId}`);
-      }, 1500);
-    } else {
-      setError(response.error?.message || 'Tarif eklenemedi');
-    }
-
-    setLoading(false);
+  const handleDelete = () => {
+    // Silme işlemi
+    router.back();
   };
 
   return (
-    <ProtectedRoute>
-      <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-8 flex items-center justify-end">
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setShowSidebar(true)}
-              className="md:hidden px-4 py-2 bg-gray-800 rounded-lg border border-gray-700 flex items-center gap-2"
-            >
-              <span>📋</span>
-              <span className="text-sm">İpuçları</span>
-            </button>
-          </div>
+    <div className="relative min-h-screen w-full flex flex-col">
+      {/* Top App Bar */}
+      <header className="sticky top-0 z-10 bg-[#121212]/80 backdrop-blur-sm border-b border-[#3A3A3C]">
+        <div className="w-full max-w-4xl mx-auto p-4">
+          <h1 className="text-white text-lg font-bold leading-tight tracking-[-0.015em] text-center">
+            Yeni Tarif Ekle
+          </h1>
+        </div>
+      </header>
 
-          <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-            {/* Sidebar - Desktop only */}
-            <div className="hidden md:block w-64 space-y-4">
-              <div className="bg-gray-800 rounded-lg p-4">
-                <h2 className="text-lg font-semibold mb-4">📝 İpuçları</h2>
-                <div className="text-sm text-gray-400 space-y-3">
-                  <p>
-                    <strong className="text-white">Başlık:</strong> Kısa ve açıklayıcı olsun
-                  </p>
-                  <p>
-                    <strong className="text-white">Malzemeler:</strong> Miktarları net belirtin
-                  </p>
-                  <p>
-                    <strong className="text-white">Adımlar:</strong> Sıralı ve anlaşılır yazın
-                  </p>
-                  <p>
-                    <strong className="text-white">Soslar:</strong> Özel sos varsa ekleyin
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-gray-800 rounded-lg p-4">
-                <h2 className="text-lg font-semibold mb-4">🎯 Hızlı Erişim</h2>
-                <div className="space-y-2">
-                  <button
-                    onClick={() => document.getElementById('ingredients')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="w-full text-left px-3 py-2 rounded hover:bg-gray-700 text-sm"
-                  >
-                    🥘 Malzemeler
-                  </button>
-                  <button
-                    onClick={() => document.getElementById('instructions')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="w-full text-left px-3 py-2 rounded hover:bg-gray-700 text-sm"
-                  >
-                    📋 Yapılışı
-                  </button>
-                  <button
-                    onClick={() => document.getElementById('sauces')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="w-full text-left px-3 py-2 rounded hover:bg-gray-700 text-sm"
-                  >
-                    🍯 Soslar
-                  </button>
-                  <button
-                    onClick={() => document.getElementById('tags')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="w-full text-left px-3 py-2 rounded hover:bg-gray-700 text-sm"
-                  >
-                    🏷️ Etiketler
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="flex-1">
-
-          {error && (
-            <div className="mb-4 bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded">
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="mb-4 bg-green-500/10 border border-green-500 text-green-500 px-4 py-3 rounded">
-              {success}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Temel Bilgiler */}
-            <div className="bg-gray-800 rounded-lg p-4 md:p-6">
-              <h2 className="text-xl font-semibold mb-4">📝 Temel Bilgiler</h2>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Tarif Adı *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.title}
-                    onChange={(e) =>
-                      setFormData({ ...formData, title: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                    placeholder="Örn: Mercimek Çorbası"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Açıklama
-                  </label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                    rows={3}
-                    placeholder="Tarif hakkında kısa bir açıklama..."
-                  />
-                </div>
-
-                {/* Görsel Yükleme */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Tarif Görseli
-                  </label>
-                  
-                  {/* Preview */}
-                  {(imagePreview || formData.image) && (
-                    <div className="mb-3">
-                      <img
-                        src={
-                          imagePreview || 
-                          (formData.image?.startsWith('http') 
-                            ? formData.image 
-                            : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${formData.image}`)
-                        }
-                        alt="Preview"
-                        className="w-full h-48 object-cover rounded-lg"
-                      />
-                    </div>
-                  )}
-
-                  {/* Dosya Yükleme */}
-                  <div className="mb-3">
-                    <label className="block w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg cursor-pointer text-center">
-                      📁 Bilgisayardan Görsel Seç
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageFileChange}
-                        className="hidden"
-                      />
-                    </label>
-                  </div>
-
-                  {/* URL Girişi */}
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex-1 h-px bg-gray-600"></div>
-                    <span className="text-sm text-gray-400">veya</span>
-                    <div className="flex-1 h-px bg-gray-600"></div>
-                  </div>
-                  
-                  <input
-                    type="url"
-                    value={formData.image}
-                    onChange={(e) => {
-                      setFormData({ ...formData, image: e.target.value });
-                      setImageFile(null);
-                      setImagePreview('');
-                    }}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                    placeholder="Görsel URL'i yapıştır (https://...)"
-                    disabled={!!imageFile}
-                  />
-                  {imageFile && (
-                    <p className="text-xs text-gray-400 mt-1">
-                      Dosya seçildi: {imageFile.name}
-                    </p>
-                  )}
-                </div>
-
-                {/* Video URL */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Video URL (YouTube/Vimeo)
-                  </label>
-                  <input
-                    type="url"
-                    value={formData.video}
-                    onChange={(e) =>
-                      setFormData({ ...formData, video: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                    placeholder="https://youtube.com/watch?v=..."
-                  />
-                  <p className="text-xs text-gray-400 mt-1">
-                    YouTube veya Vimeo video linkini yapıştırın
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Hazırlık (dk)
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.prepTime}
-                      onChange={(e) =>
-                        setFormData({ ...formData, prepTime: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      placeholder="15"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Pişirme (dk)
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.cookTime}
-                      onChange={(e) =>
-                        setFormData({ ...formData, cookTime: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      placeholder="30"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Kişi Sayısı *
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.servings}
-                      onChange={(e) =>
-                        setFormData({ ...formData, servings: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      required
-                      min="1"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Zorluk *
-                    </label>
-                    <select
-                      value={formData.difficulty}
-                      onChange={(e) =>
-                        setFormData({ ...formData, difficulty: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      required
-                    >
-                      <option value="EASY">Kolay</option>
-                      <option value="MEDIUM">Orta</option>
-                      <option value="HARD">Zor</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Kategori
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.category}
-                      onChange={(e) =>
-                        setFormData({ ...formData, category: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      placeholder="Örn: Çorba, Ana Yemek, Tatlı"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Mutfak
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.cuisine}
-                      onChange={(e) =>
-                        setFormData({ ...formData, cuisine: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      placeholder="Örn: Türk, İtalyan, Çin"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Malzemeler */}
-            <div id="ingredients" className="bg-gray-800 rounded-lg p-4 md:p-6">
-              <h2 className="text-xl font-semibold mb-4">🥘 Malzemeler</h2>
-
-              <div className="space-y-3">
-                {ingredients.map((ingredient, index) => (
-                  <div key={index} className="space-y-2 p-3 bg-gray-700/50 rounded-lg">
-                    {/* Malzeme Adı - Üstte */}
-                    <input
-                      type="text"
-                      value={ingredient.name}
-                      onChange={(e) =>
-                        updateIngredient(index, 'name', e.target.value)
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      placeholder="Malzeme adı"
-                    />
-                    
-                    {/* Miktar, Birim, Sil - Altta yan yana */}
-                    <div className="flex gap-2">
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={ingredient.quantity}
-                        onChange={(e) =>
-                          updateIngredient(index, 'quantity', e.target.value)
-                        }
-                        className="w-20 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                        placeholder="Miktar"
-                      />
-                      <select
-                        value={ingredient.unit}
-                        onChange={(e) =>
-                          updateIngredient(index, 'unit', e.target.value)
-                        }
-                        className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      >
-                        <option value="adet">Adet</option>
-                        <option value="kg">Kg</option>
-                        <option value="gram">Gram</option>
-                        <option value="litre">Litre</option>
-                        <option value="ml">ML</option>
-                        <option value="su bardağı">Su Bardağı</option>
-                        <option value="çay kaşığı">Çay Kaşığı</option>
-                        <option value="yemek kaşığı">Yemek Kaşığı</option>
-                      </select>
-                      <button
-                        type="button"
-                        onClick={() => removeIngredient(index)}
-                        className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-md"
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                onClick={addIngredient}
-                className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
-              >
-                + Malzeme Ekle
-              </button>
-            </div>
-
-            {/* Talimatlar */}
-            <div id="instructions" className="bg-gray-800 rounded-lg p-4 md:p-6">
-              <h2 className="text-xl font-semibold mb-4">📋 Yapılışı</h2>
-
-              <div className="space-y-4">
-                {instructions.map((instruction, index) => (
-                  <div key={index} className="flex gap-2">
-                    <div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center font-semibold">
-                      {instruction.stepNumber}
-                    </div>
-                    <div className="flex-1">
-                      <textarea
-                        value={instruction.instruction}
-                        onChange={(e) =>
-                          updateInstruction(index, 'instruction', e.target.value)
-                        }
-                        className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                        rows={2}
-                        placeholder="Adım açıklaması..."
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeInstruction(index)}
-                      className="px-3 py-2 bg-red-600 hover:bg-red-700 rounded-md h-fit"
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                onClick={addInstruction}
-                className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
-              >
-                + Adım Ekle
-              </button>
-            </div>
-
-            {/* Soslar */}
-            <div id="sauces" className="bg-gray-800 rounded-lg p-4 md:p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">🍯 Soslar (Opsiyonel)</h2>
-                <button
-                  type="button"
-                  onClick={() => setShowSauceSection(!showSauceSection)}
-                  className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm"
-                >
-                  {showSauceSection ? '▼ Gizle' : '▶ Göster'}
-                </button>
-              </div>
-
-              {showSauceSection && (
+      {/* Main Content */}
+      <main className="flex-grow pb-8 w-full max-w-4xl mx-auto">
+        {/* Header Image/Video Uploader */}
+        <div className="p-4">
+          <label className="flex flex-col gap-2">
+            <p className="text-white text-base font-medium leading-normal">
+              Tarif Görseli
+            </p>
+            <div className="block w-full bg-[#1E1E1E] border-2 border-dashed border-[#3A3A3C] flex flex-col justify-center items-center overflow-hidden rounded-xl min-h-60 text-center cursor-pointer">
+              {imagePreview ? (
+                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+              ) : (
                 <>
-                  <p className="text-sm text-gray-400 mb-4">
-                    Tarifin özel sosları varsa buraya ekleyebilirsiniz
-                  </p>
-                  <div className="space-y-4">
-                    {sauces.map((sauce, index) => (
-                      <div key={index} className="bg-gray-700/50 rounded-lg p-4">
-                        <div className="flex items-center justify-between mb-3">
-                          <h3 className="font-semibold">Sos #{index + 1}</h3>
-                          {sauces.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => removeSauce(index)}
-                              className="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-sm"
-                            >
-                              🗑️
-                            </button>
-                          )}
-                        </div>
-                        <div className="space-y-3">
-                          <input
-                            type="text"
-                            value={sauce.name}
-                            onChange={(e) => updateSauce(index, 'name', e.target.value)}
-                            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                            placeholder="Sos adı (örn: Domates Sosu)"
-                          />
-                          <textarea
-                            value={sauce.ingredients}
-                            onChange={(e) => updateSauce(index, 'ingredients', e.target.value)}
-                            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                            rows={2}
-                            placeholder="Malzemeler (örn: 2 domates, 1 soğan, tuz)"
-                          />
-                          <textarea
-                            value={sauce.instructions}
-                            onChange={(e) => updateSauce(index, 'instructions', e.target.value)}
-                            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                            rows={3}
-                            placeholder="Yapılışı..."
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={addSauce}
-                    className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
-                  >
-                    + Sos Ekle
-                  </button>
+                  <span className="material-symbols-outlined text-[#A9A9A9] text-5xl">
+                    add_photo_alternate
+                  </span>
+                  <p className="text-[#A9A9A9] mt-2">📁 Bilgisayardan Görsel Seç</p>
                 </>
               )}
+              <input 
+                type="file" 
+                accept="image/*" 
+                className="hidden" 
+                onChange={handleImageUpload}
+              />
             </div>
+          </label>
 
-            {/* Etiketler */}
-            <div id="tags" className="bg-gray-800 rounded-lg p-4 md:p-6">
-              <h2 className="text-xl font-semibold mb-4">🏷️ Etiketler</h2>
+          <div className="mt-4">
+            <p className="text-[#A9A9A9] text-center mb-2">veya</p>
+            <label className="flex flex-col">
+              <p className="text-white text-base font-medium leading-normal pb-2">
+                Video URL (YouTube/Vimeo)
+              </p>
+              <input 
+                type="url"
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+                className="form-input w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 placeholder:text-[#A9A9A9] p-4 text-base font-normal leading-normal"
+                placeholder="YouTube veya Vimeo video linkini yapıştırın"
+              />
+            </label>
+          </div>
+        </div>
 
-              <div className="flex gap-2 mb-4">
-                <input
-                  type="text"
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                  className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                  placeholder="Etiket ekle (örn: vegan, glutensiz)"
+        {/* Section: Temel Bilgiler */}
+        <section className="px-4">
+          <h2 className="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] pt-5 pb-3">
+            Temel Bilgiler
+          </h2>
+          <div className="flex flex-col gap-4">
+            <label className="flex flex-col">
+              <p className="text-white text-base font-medium leading-normal pb-2">
+                Tarif Adı <span className="text-red-500">*</span>
+              </p>
+              <input 
+                required
+                className="form-input w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 placeholder:text-[#A9A9A9] p-4 text-base font-normal leading-normal"
+                placeholder="Örn: Kremalı Mantarlı Tavuk"
+              />
+            </label>
+
+            <label className="flex flex-col">
+              <p className="text-white text-base font-medium leading-normal pb-2">
+                Açıklama
+              </p>
+              <textarea 
+                className="form-textarea w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] min-h-32 placeholder:text-[#A9A9A9] p-4 text-base font-normal leading-normal"
+                placeholder="Tarifiniz hakkında kısa bir açıklama yapın"
+              />
+            </label>
+
+            <label className="flex flex-col">
+              <p className="text-white text-base font-medium leading-normal pb-2">
+                Kategori
+              </p>
+              <div className="relative">
+                <select className="form-select appearance-none w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 p-4 text-base font-normal leading-normal">
+                  <option value="">Kategori Seçin</option>
+                  <option>Ana Yemek</option>
+                  <option>Tatlı</option>
+                  <option>Çorba</option>
+                  <option>Salata</option>
+                  <option>Aperatif</option>
+                </select>
+                <span className="material-symbols-outlined pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#A9A9A9]">
+                  expand_more
+                </span>
+              </div>
+            </label>
+
+            <label className="flex flex-col">
+              <p className="text-white text-base font-medium leading-normal pb-2">
+                Mutfak
+              </p>
+              <div className="relative">
+                <select className="form-select appearance-none w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 p-4 text-base font-normal leading-normal">
+                  <option value="">Mutfak Seçin</option>
+                  <option>Türk Mutfağı</option>
+                  <option>İtalyan Mutfağı</option>
+                  <option>Fransız Mutfağı</option>
+                  <option>Uzak Doğu Mutfağı</option>
+                  <option>Dünya Mutfağı</option>
+                </select>
+                <span className="material-symbols-outlined pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#A9A9A9]">
+                  expand_more
+                </span>
+              </div>
+            </label>
+          </div>
+        </section>
+
+        {/* Section: Detaylar */}
+        <section className="px-4">
+          <h2 className="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] pt-8 pb-3">
+            Detaylar
+          </h2>
+          <div className="grid grid-cols-2 gap-4">
+            <label className="flex flex-col">
+              <p className="text-white text-base font-medium leading-normal pb-2">
+                Hazırlık (dk)
+              </p>
+              <input 
+                type="number"
+                min="0"
+                className="form-input w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 placeholder:text-[#A9A9A9] p-4 text-base font-normal"
+                placeholder="20"
+              />
+            </label>
+
+            <label className="flex flex-col">
+              <p className="text-white text-base font-medium leading-normal pb-2">
+                Pişirme (dk)
+              </p>
+              <input 
+                type="number"
+                min="0"
+                className="form-input w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 placeholder:text-[#A9A9A9] p-4 text-base font-normal"
+                placeholder="45"
+              />
+            </label>
+
+            <label className="flex flex-col">
+              <p className="text-white text-base font-medium leading-normal pb-2">
+                Kişi Sayısı <span className="text-red-500">*</span>
+              </p>
+              <input 
+                type="number"
+                min="1"
+                required
+                className="form-input w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 placeholder:text-[#A9A9A9] p-4 text-base font-normal"
+                placeholder="4"
+              />
+            </label>
+
+            <label className="flex flex-col">
+              <p className="text-white text-base font-medium leading-normal pb-2">
+                Zorluk <span className="text-red-500">*</span>
+              </p>
+              <div className="relative">
+                <select required className="form-select appearance-none w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 p-4 text-base font-normal">
+                  <option value="">Seçin</option>
+                  <option>Kolay</option>
+                  <option>Orta</option>
+                  <option>Zor</option>
+                </select>
+                <span className="material-symbols-outlined pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#A9A9A9]">
+                  expand_more
+                </span>
+              </div>
+            </label>
+          </div>
+        </section>
+
+        {/* Section: Malzemeler */}
+        <section className="px-4">
+          <div className="flex justify-between items-center pt-8 pb-3">
+            <h2 className="text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">
+              🥘 Malzemeler
+            </h2>
+            <button 
+              onClick={addIngredient}
+              className="flex items-center gap-1 text-[#30D158] font-bold text-sm"
+            >
+              <span className="material-symbols-outlined text-lg">add_circle</span>
+              Malzeme Ekle
+            </button>
+          </div>
+          <div className="flex flex-col gap-3">
+            {ingredients.map((ingredient) => (
+              <div key={ingredient.id} className="flex items-center gap-2 bg-[#1E1E1E] p-3 rounded-lg">
+                <input 
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={ingredient.amount}
+                  onChange={(e) => updateIngredient(ingredient.id, 'amount', e.target.value)}
+                  className="w-20 bg-transparent text-white outline-none border-b border-[#3A3A3C] focus:border-[#30D158]"
+                  placeholder="Miktar"
                 />
-                <button
-                  type="button"
-                  onClick={addTag}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
+                <div className="relative w-32">
+                  <select 
+                    value={ingredient.unit}
+                    onChange={(e) => updateIngredient(ingredient.id, 'unit', e.target.value)}
+                    className="form-select appearance-none w-full bg-transparent text-white text-sm outline-none border-b border-[#3A3A3C] focus:border-[#30D158]"
+                  >
+                    {units.map(unit => (
+                      <option key={unit} value={unit} className="bg-[#1E1E1E]">{unit}</option>
+                    ))}
+                  </select>
+                  <span className="material-symbols-outlined pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-[#A9A9A9] text-sm">
+                    expand_more
+                  </span>
+                </div>
+                <input 
+                  type="text"
+                  value={ingredient.name}
+                  onChange={(e) => updateIngredient(ingredient.id, 'name', e.target.value)}
+                  className="flex-1 bg-transparent text-white outline-none border-b border-[#3A3A3C] focus:border-[#30D158]"
+                  placeholder="Malzeme adı"
+                />
+                <button 
+                  onClick={() => removeIngredient(ingredient.id)}
+                  className="text-[#A9A9A9] hover:text-red-500 transition"
                 >
-                  Ekle
+                  <span className="material-symbols-outlined text-xl">delete</span>
                 </button>
               </div>
+            ))}
+          </div>
+        </section>
 
+        {/* Section: Tarif Adımları */}
+        <section className="px-4">
+          <div className="flex justify-between items-center pt-8 pb-3">
+            <h2 className="text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">
+              📋 Yapılışı
+            </h2>
+            <button 
+              onClick={addStep}
+              className="flex items-center gap-1 text-[#30D158] font-bold text-sm"
+            >
+              <span className="material-symbols-outlined text-lg">add_circle</span>
+              Adım Ekle
+            </button>
+          </div>
+          <div className="flex flex-col gap-3">
+            {steps.map((step, index) => (
+              <div key={step.id} className="flex items-start bg-[#1E1E1E] p-3 rounded-lg gap-2">
+                <span className="material-symbols-outlined text-[#A9A9A9] cursor-grab pt-1">
+                  drag_indicator
+                </span>
+                <div className="flex-1 flex flex-col">
+                  <div className="flex items-start">
+                    <p className="text-[#30D158] font-bold pt-1">{index + 1}.</p>
+                    <textarea 
+                      className="bg-transparent text-white font-medium ml-2 flex-1 outline-none resize-none"
+                      placeholder="Adım açıklaması yazın..."
+                      defaultValue={step.description}
+                      rows={2}
+                    />
+                  </div>
+                </div>
+                <button 
+                  onClick={() => removeStep(step.id)}
+                  className="text-[#A9A9A9] hover:text-red-500 transition pt-1"
+                >
+                  <span className="material-symbols-outlined text-xl">delete</span>
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Section: Soslar */}
+        <section className="px-4">
+          <div className="pt-8 pb-3">
+            <button
+              onClick={() => setShowSauces(!showSauces)}
+              className="flex items-center gap-2 text-white text-[22px] font-bold leading-tight tracking-[-0.015em] w-full"
+            >
+              <span className="material-symbols-outlined">
+                {showSauces ? 'expand_more' : 'chevron_right'}
+              </span>
+              🍯 Soslar (Opsiyonel)
+            </button>
+          </div>
+          
+          {showSauces && (
+            <div className="flex flex-col gap-4">
+              <p className="text-[#A9A9A9] text-sm">
+                Tarifinizde kullanılan sosları buraya ekleyebilirsiniz
+              </p>
+              <button className="flex items-center gap-2 text-[#30D158] font-bold text-sm">
+                <span className="material-symbols-outlined text-lg">add_circle</span>
+                Sos Ekle
+              </button>
+            </div>
+          )}
+        </section>
+
+        {/* Section: Etiketler */}
+        <section className="px-4">
+          <h2 className="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] pt-8 pb-3">
+            🏷️ Etiketler
+          </h2>
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-2">
+              <input 
+                type="text"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyPress={handleTagKeyPress}
+                className="form-input flex-1 rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 placeholder:text-[#A9A9A9] p-4 text-base font-normal leading-normal"
+                placeholder="Etiket yazın ve Enter'a basın"
+              />
+              <button
+                onClick={addTag}
+                type="button"
+                className="px-6 h-14 rounded-lg bg-[#30D158] text-[#121212] font-bold text-base hover:bg-[#30D158]/90 transition"
+              >
+                Ekle
+              </button>
+            </div>
+            
+            {tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-3 py-1 bg-blue-600 rounded-full text-sm flex items-center gap-2"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#1E1E1E] rounded-full text-white"
                   >
                     {tag}
                     <button
                       type="button"
                       onClick={() => removeTag(tag)}
-                      className="hover:text-red-300"
+                      className="text-[#A9A9A9] hover:text-red-500 transition"
                     >
-                      ×
+                      <span className="material-symbols-outlined text-sm">close</span>
                     </button>
                   </span>
                 ))}
               </div>
-            </div>
-
-            {/* Submit */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 rounded-md font-semibold disabled:opacity-50"
-              >
-                {loading ? 'Kaydediliyor...' : '✓ Tarifi Kaydet'}
-              </button>
-              <button
-                type="button"
-                onClick={() => router.back()}
-                className="px-6 py-3 bg-gray-600 hover:bg-gray-500 rounded-md"
-              >
-                İptal
-              </button>
-            </div>
-          </form>
-            </div>
+            )}
           </div>
-        </div>
-      </div>
+        </section>
 
-      {/* Mobile Sidebar Drawer */}
-      {showSidebar && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="md:hidden fixed inset-0 bg-black/50 z-40"
-            onClick={() => setShowSidebar(false)}
-          ></div>
-          
-          {/* Drawer */}
-          <div className="md:hidden fixed top-0 left-0 bottom-0 w-80 bg-gray-900 z-50 shadow-2xl overflow-y-auto">
-            <div className="p-4">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold">İpuçları</h2>
-                <button
-                  onClick={() => setShowSidebar(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800"
-                >
-                  ✕
-                </button>
-              </div>
-
-              {/* Tips */}
-              <div className="bg-gray-800 rounded-lg p-4">
-                <h3 className="text-lg font-semibold mb-4">📝 İpuçları</h3>
-                <ul className="space-y-2 text-sm text-gray-400">
-                  <li>• Tarif başlığı açık ve çekici olsun</li>
-                  <li>• Malzemeleri net bir şekilde belirtin</li>
-                  <li>• Adımları sıralı ve anlaşılır yazın</li>
-                  <li>• Fotoğraf eklemek tarifi daha çekici yapar</li>
-                  <li>• Video linki ekleyerek tarifi zenginleştirin</li>
-                </ul>
-              </div>
-            </div>
+        {/* Kaydet ve Sil Butonları */}
+        <section className="px-4 pb-8 pt-8">
+          <div className="flex gap-4">
+            <button 
+              onClick={handleDelete}
+              className="w-full h-14 rounded-full border-2 border-red-500 text-red-500 font-bold text-base hover:bg-red-500/10 transition"
+            >
+              Sil
+            </button>
+            <button 
+              onClick={handlePublish}
+              className="w-full h-14 rounded-full bg-[#30D158] text-[#121212] font-bold text-base hover:bg-[#30D158]/90 transition"
+            >
+              Kaydet
+            </button>
           </div>
-        </>
-      )}
-    </ProtectedRoute>
+        </section>
+      </main>
+
+
+    </div>
   );
 }
-
-
-

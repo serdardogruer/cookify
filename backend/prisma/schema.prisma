@@ -5,8 +5,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 // User Model
@@ -82,12 +83,14 @@ model Category {
 
 // Ingredient Model
 model Ingredient {
-  id          Int      @id @default(autoincrement())
-  name        String
-  categoryId  Int
-  category    Category @relation(fields: [categoryId], references: [id])
-  defaultUnit String
-  createdAt   DateTime @default(now())
+  id                   Int      @id @default(autoincrement())
+  name                 String
+  categoryId           Int
+  category             Category @relation(fields: [categoryId], references: [id])
+  defaultUnit          String
+  shelfLifeDays        Int?     // Tahmini raf ömrü (gün)
+  averageWeightPerUnit Float?   // Adet başına ortalama ağırlık (gram)
+  createdAt            DateTime @default(now())
 
   @@unique([name, categoryId], name: "name_categoryId")
   @@map("ingredients")

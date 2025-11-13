@@ -3,37 +3,49 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import DashboardHeader from '@/components/DashboardHeader';
+import BottomNav from '@/components/BottomNav';
+import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 import { Recipe } from '@/types/recipe';
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { token } = useAuth();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [pantryCount, setPantryCount] = useState(0);
+  const [marketCount, setMarketCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadRecipes();
-  }, []);
+    loadData();
+  }, [token]);
 
-  const loadRecipes = async () => {
-    const response = await api.get<Recipe[]>('/api/recipes?limit=12');
-    if (response.success && response.data) {
-      setRecipes(response.data);
+  const loadData = async () => {
+    if (!token) {
+      setLoading(false);
+      return;
     }
+
+    // Load recipes
+    const recipesResponse = await api.get<Recipe[]>('/api/recipes?limit=24', token);
+    if (recipesResponse.success && recipesResponse.data) {
+      setRecipes(recipesResponse.data);
+    }
+
+    // Load pantry count
+    const pantryResponse = await api.get<any[]>('/api/pantry', token);
+    if (pantryResponse.success && pantryResponse.data) {
+      setPantryCount(pantryResponse.data.length);
+    }
+
+    // Load market count
+    const marketResponse = await api.get<any[]>('/api/market', token);
+    if (marketResponse.success && marketResponse.data) {
+      setMarketCount(marketResponse.data.length);
+    }
+
     setLoading(false);
-  };
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'EASY':
-        return 'bg-green-600';
-      case 'MEDIUM':
-        return 'bg-yellow-600';
-      case 'HARD':
-        return 'bg-red-600';
-      default:
-        return 'bg-gray-600';
-    }
   };
 
   const getDifficultyText = (difficulty: string) => {
@@ -52,7 +64,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="min-h-screen bg-[#121212] flex items-center justify-center">
           <div className="text-white">Yükleniyor...</div>
         </div>
       </ProtectedRoute>
@@ -61,110 +73,167 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
+      <div className="relative flex h-auto min-h-screen w-full flex-col text-[#E0E0E0] pb-24 bg-[#121212]">
+        {/* Header */}
+        <DashboardHeader />
 
-
-          {/* Latest Recipes */}
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">📖 Son Eklenen Tarifler</h2>
-              <button
-                onClick={() => router.push('/dashboard/recipe-search')}
-                className="text-blue-400 hover:text-blue-300"
-              >
-                Tümünü Gör →
-              </button>
+        {/* Content Container */}
+        <div className="max-w-7xl mx-auto w-full">
+          {/* Stats Cards */}
+          <div className="flex gap-3 px-4 py-4 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="flex min-w-[170px] flex-1 flex-col gap-2 rounded-lg p-4 bg-[#1E1E1E]">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#A0A0A0]">kitchen</span>
+              <p className="text-[#A0A0A0] text-base font-medium leading-normal">Dolabımda</p>
             </div>
+            <p className="text-white tracking-light text-2xl font-bold leading-tight">
+              {pantryCount} malzeme
+            </p>
+          </div>
 
-            {recipes.length === 0 ? (
-              <div className="text-center py-12 bg-gray-800 rounded-lg">
-                <div className="text-6xl mb-4">🍽️</div>
-                <p className="text-gray-400 mb-4">Henüz tarif eklenmemiş</p>
-                <button
-                  onClick={() => router.push('/dashboard/recipe-add')}
-                  className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg"
-                >
-                  İlk Tarifi Ekle
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {recipes.map((recipe) => (
-                  <div
-                    key={recipe.id}
-                    onClick={() => router.push(`/dashboard/recipe-detail/${recipe.id}`)}
-                    className="bg-gray-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition cursor-pointer"
-                  >
-                    {/* Recipe Image */}
-                    <div className="h-48 bg-gray-700 relative">
-                      {recipe.image ? (
-                        <img
-                          src={
-                            recipe.image.startsWith('http')
-                              ? recipe.image
-                              : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${recipe.image}`
-                          }
-                          alt={recipe.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-6xl">
-                          🍽️
-                        </div>
-                      )}
-                      <div
-                        className={`absolute top-2 right-2 ${getDifficultyColor(
-                          recipe.difficulty
-                        )} px-3 py-1 rounded-full text-xs font-semibold`}
-                      >
-                        {getDifficultyText(recipe.difficulty)}
-                      </div>
-                    </div>
+          <div className="flex min-w-[170px] flex-1 flex-col gap-2 rounded-lg p-4 bg-[#1E1E1E]">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#A0A0A0]">shopping_cart</span>
+              <p className="text-[#A0A0A0] text-base font-medium leading-normal">Market Listem</p>
+            </div>
+            <p className="text-white tracking-light text-2xl font-bold leading-tight">
+              {marketCount} ürün
+            </p>
+          </div>
 
-                    {/* Recipe Info */}
-                    <div className="p-4">
-                      <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                        {recipe.title}
-                      </h3>
-                      {recipe.description && (
-                        <p className="text-sm text-gray-400 mb-3 line-clamp-2">
-                          {recipe.description}
-                        </p>
-                      )}
-
-                      <div className="flex items-center gap-4 text-sm text-gray-400 mb-3">
-                        {recipe.prepTime && (
-                          <span className="flex items-center gap-1">
-                            ⏱️ {recipe.prepTime} dk
-                          </span>
-                        )}
-                        <span className="flex items-center gap-1">
-                          👥 {recipe.servings} kişi
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-sm">
-                        <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
-                          {recipe.user.profileImage ? (
-                            <img
-                              src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${recipe.user.profileImage}`}
-                              alt={recipe.user.name}
-                              className="w-full h-full rounded-full object-cover"
-                            />
-                          ) : (
-                            '👤'
-                          )}
-                        </div>
-                        <span className="text-gray-400">{recipe.user.name}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+          <div className="flex min-w-[170px] flex-1 flex-col gap-2 rounded-lg p-4 bg-[#1E1E1E]">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#A0A0A0]">menu_book</span>
+              <p className="text-[#A0A0A0] text-base font-medium leading-normal">Tariflerim</p>
+            </div>
+            <p className="text-white tracking-light text-2xl font-bold leading-tight">
+              {recipes.length} tarif
+            </p>
           </div>
         </div>
+
+        {/* Latest Recipes Section */}
+        <div className="flex justify-between items-center px-4 pb-2 pt-6">
+          <h3 className="text-white text-xl font-bold leading-tight tracking-[-0.015em]">
+            Son Tariflerim
+          </h3>
+          <button
+            onClick={() => router.push('/dashboard/recipe-search')}
+            className="text-[#30D158] text-sm font-bold hover:underline"
+          >
+            Tümünü Gör
+          </button>
+        </div>
+
+        {recipes.length === 0 ? (
+          <div className="flex flex-col px-4 py-6">
+            <div className="flex flex-col items-center gap-4 p-6 rounded-xl bg-[#1E1E1E]">
+              <span className="material-symbols-outlined text-6xl text-[#30D158]">cake</span>
+              <div className="flex max-w-[480px] flex-col items-center gap-2 text-center">
+                <p className="text-white text-lg font-bold leading-tight tracking-[-0.015em]">
+                  Henüz hiç tarifin yok.
+                </p>
+                <p className="text-[#A0A0A0] text-sm font-normal leading-normal">
+                  Yeni tarifler ekleyerek mutfak maceralarına başla!
+                </p>
+              </div>
+              <button
+                onClick={() => router.push('/dashboard/recipe-add')}
+                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#30D158] text-[#121212] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#30D158]/90 transition-colors"
+              >
+                <span className="truncate">İlk Tarifini Ekle</span>
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-4 p-4">
+            {recipes.map((recipe) => (
+              <div
+                key={recipe.id}
+                onClick={() => router.push(`/dashboard/recipe-detail/${recipe.id}`)}
+                className="flex flex-col gap-3 pb-3 cursor-pointer hover:opacity-80 transition-opacity"
+              >
+                {/* Recipe Image */}
+                <div className="relative w-full">
+                  <div className="w-full bg-center bg-no-repeat aspect-[3/4] bg-cover rounded-xl bg-gray-700">
+                    {recipe.image ? (
+                      <img
+                        src={
+                          recipe.image.startsWith('http')
+                            ? recipe.image
+                            : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${recipe.image}`
+                        }
+                        alt={recipe.title}
+                        className="w-full h-full object-cover rounded-xl"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-6xl rounded-xl">
+                        🍽️
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute top-2 left-2 bg-[#30D158]/20 text-[#30D158] text-xs font-bold px-2 py-1 rounded-full backdrop-blur-sm">
+                    {getDifficultyText(recipe.difficulty)}
+                  </div>
+                </div>
+
+                {/* Recipe Info */}
+                <div>
+                  <p className="text-white text-base font-bold leading-normal line-clamp-1">
+                    {recipe.title}
+                  </p>
+                  {recipe.description && (
+                    <p className="text-[#A0A0A0] text-sm font-normal leading-normal line-clamp-2">
+                      {recipe.description}
+                    </p>
+                  )}
+
+                  <div className="flex items-center gap-4 mt-2 text-[#A0A0A0]">
+                    {recipe.prepTime && (
+                      <div className="flex items-center gap-1">
+                        <span className="material-symbols-outlined text-base">timer</span>
+                        <span className="text-xs">{recipe.prepTime} dk</span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-1">
+                      <span className="material-symbols-outlined text-base">restaurant</span>
+                      <span className="text-xs">{recipe.servings}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-3">
+                    {recipe.user.profileImage ? (
+                      <img
+                        src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${recipe.user.profileImage}`}
+                        alt={recipe.user.name}
+                        className="w-6 h-6 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-xs text-white">person</span>
+                      </div>
+                    )}
+                    <span className="text-xs text-white">{recipe.user.name}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        </div>
+
+        {/* Floating Add Recipe Button */}
+        <button
+          onClick={() => router.push('/dashboard/recipe-add')}
+          className="fixed bottom-24 right-4 lg:bottom-8 flex items-center justify-center w-14 h-14 bg-[#30D158] rounded-full shadow-lg shadow-[#30D158]/20 hover:bg-[#30D158]/90 transition-colors z-10"
+          title="Tarif Ekle"
+        >
+          <span className="material-symbols-outlined text-3xl text-[#121212]">add</span>
+        </button>
+
+        {/* Bottom Navigation */}
+        <BottomNav />
       </div>
     </ProtectedRoute>
   );

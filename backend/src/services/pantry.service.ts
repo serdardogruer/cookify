@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import unitConversionService from './unit-conversion.service';
 
 const prisma = new PrismaClient();
 
@@ -29,16 +30,53 @@ export class PantryService {
   }
 
   /**
-   * Tekli malzeme ekler
+   * Tekli malzeme ekler - Birim dönüştürme ile birleştirme yapar
    */
   async addPantryItem(kitchenId: number, data: PantryItemInput) {
+    // Aynı isim ve kategoride malzeme var mı kontrol et (birim farketmeksizin)
+    const existingItem = await prisma.pantryItem.findFirst({
+      where: {
+        kitchenId,
+        name: data.name,
+        category: data.category,
+      },
+    });
+
+    if (existingItem) {
+      // Birim dönüştürme ile birleştirmeyi dene
+      const merged = await unitConversionService.tryMergeItems(
+        { quantity: existingItem.quantity, unit: existingItem.unit },
+        { quantity: data.quantity, unit: data.unit, name: data.name }
+      );
+
+      if (merged) {
+        // Birleştirme başarılı - mevcut malzemeyi güncelle
+        return await prisma.pantryItem.update({
+          where: { id: existingItem.id },
+          data: {
+            quantity: merged.quantity,
+            unit: merged.unit,
+            initialQuantity: existingItem.initialQuantity + data.quantity,
+            // Yeni SKT daha yakınsa güncelle
+            expiryDate: data.expiryDate 
+              ? (existingItem.expiryDate && new Date(data.expiryDate) > existingItem.expiryDate
+                  ? existingItem.expiryDate
+                  : new Date(data.expiryDate))
+              : existingItem.expiryDate,
+          },
+        });
+      }
+      // Birleştirme başarısız - farklı birimler, yeni satır olarak ekle
+    }
+
+    // Yeni malzeme ekle
     return await prisma.pantryItem.create({
       data: {
         kitchenId,
         name: data.name,
         category: data.category,
         quantity: data.quantity,
-        initialQuantity: data.quantity, // Başlangıç miktarı = ilk miktar
+        initialQuantity: data.quantity,
         minQuantity: data.minQuantity || 0,
         unit: data.unit,
         expiryDate: data.expiryDate ? new Date(data.expiryDate) : null,
@@ -90,6 +128,14 @@ export class PantryService {
     if (data.unit) updateData.unit = data.unit;
     if (data.expiryDate !== undefined) {
       updateData.expiryDate = data.expiryDate ? new Date(data.expiryDate) : null;
+    }
+
+    // Miktar sıfır veya negatifse sil
+    if (data.quantity !== undefined && data.quantity <= 0) {
+      await prisma.pantryItem.delete({
+        where: { id: itemId },
+      });
+      return null;
     }
 
     return await prisma.pantryItem.update({
@@ -181,10 +227,18 @@ export class PantryService {
         // Miktarı düş
         const newQuantity = Math.max(0, pantryItem.quantity - ingredient.quantity);
 
-        await prisma.pantryItem.update({
-          where: { id: pantryItem.id },
-          data: { quantity: newQuantity },
-        });
+        if (newQuantity === 0) {
+          // Miktar sıfır olduysa sil
+          await prisma.pantryItem.delete({
+            where: { id: pantryItem.id },
+          });
+        } else {
+          // Miktarı güncelle
+          await prisma.pantryItem.update({
+            where: { id: pantryItem.id },
+            data: { quantity: newQuantity },
+          });
+        }
 
         results.success.push(ingredient.name);
       } catch (error) {

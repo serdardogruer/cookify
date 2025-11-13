@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import unitConversionService from './unit-conversion.service';
 
 const prisma = new PrismaClient();
 
@@ -27,9 +28,40 @@ export class MarketService {
   }
 
   /**
-   * Market ürünü ekler
+   * Market ürünü ekler - Birim dönüştürme ile birleştirme yapar
    */
   async addMarketItem(kitchenId: number, data: MarketItemInput) {
+    // Aynı isim ve kategoride ürün var mı kontrol et
+    const existingItem = await prisma.marketItem.findFirst({
+      where: {
+        kitchenId,
+        name: data.name,
+        category: data.category,
+        status: 'PENDING',
+      },
+    });
+
+    if (existingItem) {
+      // Birim dönüştürme ile birleştirmeyi dene
+      const merged = await unitConversionService.tryMergeItems(
+        { quantity: existingItem.quantity, unit: existingItem.unit },
+        { quantity: data.quantity, unit: data.unit, name: data.name }
+      );
+
+      if (merged) {
+        // Birleştirme başarılı - mevcut ürünü güncelle
+        return await prisma.marketItem.update({
+          where: { id: existingItem.id },
+          data: {
+            quantity: merged.quantity,
+            unit: merged.unit,
+          },
+        });
+      }
+      // Birleştirme başarısız - farklı birimler, yeni satır olarak ekle
+    }
+
+    // Yeni ürün ekle
     return await prisma.marketItem.create({
       data: {
         kitchenId,
@@ -90,7 +122,7 @@ export class MarketService {
   }
 
   /**
-   * Ürünü dolaba taşır (alındı olarak işaretle)
+   * Ürünü dolaba taşır (alındı olarak işaretle) - SKT otomatik hesaplanır
    */
   async moveToPantry(itemId: number, kitchenId: number) {
     // Kitchen kontrolü
@@ -102,18 +134,94 @@ export class MarketService {
       throw new Error('Ürün bulunamadı veya erişim yetkiniz yok');
     }
 
-    // Transaction ile market'ten sil ve dolaba ekle
+    // Malzeme veritabanından SKT bilgisini al
+    const category = await prisma.category.findFirst({
+      where: { name: item.category },
+    });
+
+    let expiryDate: Date | null = null;
+
+    if (category) {
+      const ingredient = await prisma.ingredient.findFirst({
+        where: {
+          name: item.name,
+          categoryId: category.id,
+        },
+      });
+
+      // SKT hesapla
+      if (ingredient?.shelfLifeDays) {
+        const today = new Date();
+        expiryDate = new Date(
+          today.getTime() + ingredient.shelfLifeDays * 24 * 60 * 60 * 1000
+        );
+      }
+    }
+
+    // Transaction ile market'ten sil ve dolaba ekle/güncelle
     return await prisma.$transaction(async (tx) => {
-      // Dolaba ekle
-      const pantryItem = await tx.pantryItem.create({
-        data: {
+      // Aynı malzeme dolabta var mı kontrol et
+      const existingPantryItem = await tx.pantryItem.findFirst({
+        where: {
           kitchenId,
           name: item.name,
           category: item.category,
-          quantity: item.quantity,
-          unit: item.unit,
         },
       });
+
+      let pantryItem;
+
+      if (existingPantryItem) {
+        // Birim dönüştürme ile birleştirmeyi dene
+        const merged = await unitConversionService.tryMergeItems(
+          { quantity: existingPantryItem.quantity, unit: existingPantryItem.unit },
+          { quantity: item.quantity, unit: item.unit, name: item.name }
+        );
+
+        if (merged) {
+          // Birleştirme başarılı - mevcut malzemeyi güncelle
+          pantryItem = await tx.pantryItem.update({
+            where: { id: existingPantryItem.id },
+            data: {
+              quantity: merged.quantity,
+              unit: merged.unit,
+              initialQuantity: existingPantryItem.initialQuantity + item.quantity,
+              // Yeni SKT daha yakınsa güncelle
+              expiryDate: expiryDate
+                ? existingPantryItem.expiryDate && expiryDate > existingPantryItem.expiryDate
+                  ? existingPantryItem.expiryDate
+                  : expiryDate
+                : existingPantryItem.expiryDate,
+            },
+          });
+        } else {
+          // Birleştirme başarısız - yeni satır olarak ekle
+          pantryItem = await tx.pantryItem.create({
+            data: {
+              kitchenId,
+              name: item.name,
+              category: item.category,
+              quantity: item.quantity,
+              initialQuantity: item.quantity,
+              unit: item.unit,
+              expiryDate,
+            },
+          });
+        }
+      } else {
+        // Yeni malzeme ekle - SKT ile birlikte
+        pantryItem = await tx.pantryItem.create({
+          data: {
+            kitchenId,
+            name: item.name,
+            category: item.category,
+            quantity: item.quantity,
+            initialQuantity: item.quantity,
+            unit: item.unit,
+            expiryDate,
+          },
+        });
+      }
 
       // Market'ten sil
       await tx.marketItem.delete({
@@ -121,6 +229,15 @@ export class MarketService {
       });
 
       return pantryItem;
+    });
+  }
+
+  /**
+   * Tüm market ürünlerini temizler
+   */
+  async clearAllItems(kitchenId: number) {
+    return await prisma.marketItem.deleteMany({
+      where: { kitchenId },
     });
   }
 

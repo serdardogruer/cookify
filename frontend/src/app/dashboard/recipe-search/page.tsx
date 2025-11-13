@@ -3,165 +3,106 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import DashboardHeader from '@/components/DashboardHeader';
+import BottomNav from '@/components/BottomNav';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 import { Recipe } from '@/types/recipe';
 
-export default function SearchRecipesPage() {
+export default function RecipeSearchPage() {
   const router = useRouter();
   const { token } = useAuth();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [allRecipes, setAllRecipes] = useState<Recipe[]>([]); // Tüm tarifler
+  const [pantryIngredients, setPantryIngredients] = useState<string[]>([]); // Dolaptaki malzemeler
   const [searchQuery, setSearchQuery] = useState('');
-  const [ingredientSearch, setIngredientSearch] = useState('');
-  const [searchMode, setSearchMode] = useState<'normal' | 'pantry' | 'ingredient'>('normal');
-  const [showSidebar, setShowSidebar] = useState(false);
-  const [filters, setFilters] = useState({
-    difficulty: '',
-    category: '',
-    cuisine: '',
-    maxPrepTime: '',
-  });
+  const [selectedCategory, setSelectedCategory] = useState('Tümü');
+  const [useMyIngredients, setUseMyIngredients] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [difficulty, setDifficulty] = useState('');
+  const [maxTime, setMaxTime] = useState(120);
+  const [loading, setLoading] = useState(true);
+
+  const categories = [
+    'Tümü',
+    'Kahvaltı',
+    'Ana Yemek',
+    'Çorba',
+    'Salata',
+    'Tatlı',
+    'İçecek',
+  ];
 
   useEffect(() => {
-    loadAllRecipes();
-  }, []);
+    loadRecipes();
+  }, [token]);
 
-  const loadAllRecipes = async () => {
-    setLoading(true);
-    const response = await api.get<Recipe[]>('/api/recipes');
-    if (response.success && response.data) {
-      setRecipes(response.data);
-    }
-    setLoading(false);
-  };
-
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
-      loadAllRecipes();
-      return;
-    }
-
-    setLoading(true);
-    const params = new URLSearchParams({ q: searchQuery });
-    
-    if (filters.difficulty) params.append('difficulty', filters.difficulty);
-    if (filters.category) params.append('category', filters.category);
-    if (filters.cuisine) params.append('cuisine', filters.cuisine);
-    if (filters.maxPrepTime) params.append('maxPrepTime', filters.maxPrepTime);
-
-    const response = await api.get<Recipe[]>(`/api/recipes/search?${params}`);
-    if (response.success && response.data) {
-      setRecipes(response.data);
-    }
-    setLoading(false);
-  };
-
-  const searchByPantry = async () => {
-    if (!token) return;
-    
-    setLoading(true);
-    setSearchMode('pantry');
-    
-    // Dolaptaki malzemeleri al
-    const pantryResponse = await api.get<any[]>('/api/pantry', token);
-    if (!pantryResponse.success || !pantryResponse.data) {
+  const loadRecipes = async () => {
+    if (!token) {
       setLoading(false);
       return;
     }
 
-    const pantryIngredients = pantryResponse.data.map((item: any) => 
-      item.name.toLowerCase()
-    );
-
-    // Tüm tarifleri al ve filtrele
-    const recipesResponse = await api.get<Recipe[]>('/api/recipes');
-    if (recipesResponse.success && recipesResponse.data) {
-      // Dolaptaki malzemelerle yapılabilecek tarifleri filtrele
-      const matchingRecipes = recipesResponse.data.filter((recipe) => {
-        const recipeIngredients = recipe.ingredients.map((ing) => 
-          ing.name.toLowerCase()
-        );
-        
-        // En az %50 malzeme dolabımızda varsa göster
-        const matchCount = recipeIngredients.filter((ing) =>
-          pantryIngredients.some((pantryIng) => 
-            ing.includes(pantryIng) || pantryIng.includes(ing)
-          )
-        ).length;
-        
-        const matchPercentage = (matchCount / recipeIngredients.length) * 100;
-        return matchPercentage >= 50;
-      });
-
-      // Eşleşme yüzdesine göre sırala
-      matchingRecipes.sort((a, b) => {
-        const aMatch = a.ingredients.filter((ing) =>
-          pantryIngredients.some((pantryIng) => 
-            ing.name.toLowerCase().includes(pantryIng) || 
-            pantryIng.includes(ing.name.toLowerCase())
-          )
-        ).length / a.ingredients.length;
-        
-        const bMatch = b.ingredients.filter((ing) =>
-          pantryIngredients.some((pantryIng) => 
-            ing.name.toLowerCase().includes(pantryIng) || 
-            pantryIng.includes(ing.name.toLowerCase())
-          )
-        ).length / b.ingredients.length;
-        
-        return bMatch - aMatch;
-      });
-
-      setRecipes(matchingRecipes);
-    }
-    setLoading(false);
-  };
-
-  const searchByIngredient = async () => {
-    if (!ingredientSearch.trim()) return;
-    
-    setLoading(true);
-    setSearchMode('ingredient');
-    
-    const response = await api.get<Recipe[]>('/api/recipes');
+    // Tarifleri yükle
+    const response = await api.get<Recipe[]>('/api/recipes', token);
     if (response.success && response.data) {
-      const filtered = response.data.filter((recipe) =>
-        recipe.ingredients.some((ing) =>
-          ing.name.toLowerCase().includes(ingredientSearch.toLowerCase())
-        )
-      );
-      setRecipes(filtered);
+      setAllRecipes(response.data);
+      setRecipes(response.data);
     }
+
+    // Dolaptaki malzemeleri yükle
+    const pantryResponse = await api.get<any[]>('/api/pantry', token);
+    if (pantryResponse.success && pantryResponse.data) {
+      const ingredients = pantryResponse.data
+        .filter((item: any) => item.quantity > 0)
+        .map((item: any) => item.name.toLowerCase());
+      setPantryIngredients(ingredients);
+    }
+
     setLoading(false);
   };
 
-  const clearFilters = () => {
-    setSearchQuery('');
-    setFilters({
-      difficulty: '',
-      category: '',
-      cuisine: '',
-      maxPrepTime: '',
-    });
-    loadAllRecipes();
-  };
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'EASY':
-        return 'bg-green-600';
-      case 'MEDIUM':
-        return 'bg-yellow-600';
-      case 'HARD':
-        return 'bg-red-600';
-      default:
-        return 'bg-gray-600';
+  // Dolabıma göre filtrele
+  const filterByMyIngredients = () => {
+    if (!useMyIngredients) {
+      // Tüm tarifleri göster
+      setRecipes(allRecipes);
+      return;
     }
+
+    // Dolaptaki malzemelerle yapılabilecek tarifleri filtrele
+    const filtered = allRecipes.filter((recipe) => {
+      // Tarifin malzemelerini kontrol et
+      const recipeIngredients = recipe.ingredients?.map((ing: any) => 
+        ing.name.toLowerCase()
+      ) || [];
+
+      // En az %50 malzeme dolabımda varsa göster
+      const availableCount = recipeIngredients.filter((ing: string) =>
+        pantryIngredients.some((pantryIng) => 
+          pantryIng.includes(ing) || ing.includes(pantryIng)
+        )
+      ).length;
+
+      const matchPercentage = recipeIngredients.length > 0 
+        ? (availableCount / recipeIngredients.length) * 100 
+        : 0;
+
+      return matchPercentage >= 50; // En az %50 eşleşme
+    });
+
+    setRecipes(filtered);
   };
 
-  const getDifficultyText = (difficulty: string) => {
-    switch (difficulty) {
+  // useMyIngredients değiştiğinde filtreleme yap
+  useEffect(() => {
+    if (allRecipes.length > 0) {
+      filterByMyIngredients();
+    }
+  }, [useMyIngredients]);
+
+  const getDifficultyText = (diff: string) => {
+    switch (diff) {
       case 'EASY':
         return 'Kolay';
       case 'MEDIUM':
@@ -169,424 +110,326 @@ export default function SearchRecipesPage() {
       case 'HARD':
         return 'Zor';
       default:
-        return difficulty;
+        return diff;
     }
   };
 
+  // Tarif için eşleşme bilgilerini hesapla
+  const getRecipeMatchInfo = (recipe: Recipe) => {
+    if (!useMyIngredients || pantryIngredients.length === 0) return null;
+
+    const recipeIngredients = recipe.ingredients?.map((ing: any) => ing.name.toLowerCase()) || [];
+    if (recipeIngredients.length === 0) return null;
+
+    const availableCount = recipeIngredients.filter((ing: string) =>
+      pantryIngredients.some((pantryIng) => pantryIng.includes(ing) || ing.includes(pantryIng))
+    ).length;
+
+    const missingCount = recipeIngredients.length - availableCount;
+    const percentage = Math.round((availableCount / recipeIngredients.length) * 100);
+
+    return { missing: missingCount, percentage };
+  };
+
+  // Filtreleme
+  const filteredRecipes = recipes.filter((recipe) => {
+    const matchesSearch =
+      recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      recipe.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      selectedCategory === 'Tümü' || recipe.category === selectedCategory;
+    const matchesDifficulty = !difficulty || recipe.difficulty === difficulty;
+    const matchesTime = !recipe.prepTime || recipe.prepTime <= maxTime;
+
+    return matchesSearch && matchesCategory && matchesDifficulty && matchesTime;
+  });
+
+  if (loading) {
+    return (
+      <ProtectedRoute>
+        <div className="min-h-screen bg-[#121212] flex items-center justify-center">
+          <div className="text-white">Yükleniyor...</div>
+        </div>
+      </ProtectedRoute>
+    );
+  }
+
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-6 md:mb-8 flex items-center justify-end">
-            {/* Mobile Filter Button */}
-            <button
-              onClick={() => setShowSidebar(true)}
-              className="md:hidden px-4 py-2 bg-gray-800 rounded-lg border border-gray-700 flex items-center gap-2"
-            >
-              <span>🔧</span>
-              <span className="text-sm">Filtre</span>
-            </button>
+      <div className="relative flex h-auto min-h-screen w-full flex-col text-[#E0E0E0] pb-24 bg-[#121212]">
+        {/* Header */}
+        <DashboardHeader />
+
+        {/* Content Container */}
+        <div className="max-w-7xl mx-auto w-full">
+          {/* Page Header */}
+          <div className="px-4 py-4">
+            <h1 className="text-white text-2xl font-bold">Tarif Ara</h1>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-            {/* Sidebar - Desktop only */}
-            <div className="hidden md:block w-64 space-y-4">
-              <div className="bg-gray-800 rounded-lg p-4">
-                <h2 className="text-lg font-semibold mb-4">🔍 Arama Türü</h2>
-                <div className="space-y-2">
-                  <button
-                    onClick={() => {
-                      setSearchMode('normal');
-                      loadAllRecipes();
-                    }}
-                    className={`w-full text-left px-4 py-3 rounded transition ${
-                      searchMode === 'normal'
-                        ? 'bg-blue-600'
-                        : 'bg-gray-700 hover:bg-gray-600'
-                    }`}
-                  >
-                    📝 Normal Arama
-                  </button>
-                  <button
-                    onClick={searchByPantry}
-                    className={`w-full text-left px-4 py-3 rounded transition ${
-                      searchMode === 'pantry'
-                        ? 'bg-green-600'
-                        : 'bg-gray-700 hover:bg-gray-600'
-                    }`}
-                  >
-                    🏠 Dolabıma Göre Ara
-                  </button>
-                </div>
+          {/* Search Bar */}
+          <div className="px-4 pb-4">
+            <div className="flex w-full items-stretch rounded-lg h-14 bg-[#1E1E1E]">
+              <div className="flex items-center justify-center pl-4 text-[#A0A0A0]">
+                <span className="material-symbols-outlined">search</span>
               </div>
-
-              <div className="bg-gray-800 rounded-lg p-4">
-                <h2 className="text-lg font-semibold mb-4">🥘 Malzemeye Göre</h2>
-                <div className="space-y-2">
-                  <input
-                    type="text"
-                    value={ingredientSearch}
-                    onChange={(e) => setIngredientSearch(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && searchByIngredient()}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm"
-                    placeholder="Malzeme adı..."
-                  />
-                  <button
-                    onClick={searchByIngredient}
-                    className="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-md text-sm"
-                  >
-                    Ara
-                  </button>
-                </div>
-              </div>
-
-              <div className="bg-gray-800 rounded-lg p-4">
-                <h2 className="text-lg font-semibold mb-4">ℹ️ Bilgi</h2>
-                <div className="text-sm text-gray-400 space-y-2">
-                  <p>
-                    <strong className="text-white">Dolabıma Göre:</strong> Dolabınızdaki
-                    malzemelerle yapabileceğiniz tarifler
-                  </p>
-                  <p>
-                    <strong className="text-white">Malzemeye Göre:</strong> Belirli bir
-                    malzeme içeren tarifler
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="flex-1">
-
-          {/* Search & Filters */}
-          <div className="bg-gray-800 rounded-lg p-6 mb-8">
-            <div className="space-y-4">
-              {/* Search Bar */}
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white"
-                  placeholder="Tarif adı, malzeme veya kategori ara..."
-                />
-                <button
-                  onClick={handleSearch}
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-md font-semibold"
-                >
-                  Ara
-                </button>
-              </div>
-
-              {/* Filters */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-sm text-gray-400 mb-2">
-                    Zorluk
-                  </label>
-                  <select
-                    value={filters.difficulty}
-                    onChange={(e) =>
-                      setFilters({ ...filters, difficulty: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                  >
-                    <option value="">Tümü</option>
-                    <option value="EASY">Kolay</option>
-                    <option value="MEDIUM">Orta</option>
-                    <option value="HARD">Zor</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm text-gray-400 mb-2">
-                    Kategori
-                  </label>
-                  <input
-                    type="text"
-                    value={filters.category}
-                    onChange={(e) =>
-                      setFilters({ ...filters, category: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                    placeholder="Örn: Çorba"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm text-gray-400 mb-2">
-                    Mutfak
-                  </label>
-                  <input
-                    type="text"
-                    value={filters.cuisine}
-                    onChange={(e) =>
-                      setFilters({ ...filters, cuisine: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                    placeholder="Örn: Türk"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm text-gray-400 mb-2">
-                    Max Hazırlık (dk)
-                  </label>
-                  <input
-                    type="number"
-                    value={filters.maxPrepTime}
-                    onChange={(e) =>
-                      setFilters({ ...filters, maxPrepTime: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                    placeholder="30"
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  onClick={handleSearch}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-sm"
-                >
-                  Filtrele
-                </button>
-                <button
-                  onClick={clearFilters}
-                  className="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-md text-sm"
-                >
-                  Temizle
-                </button>
-              </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 bg-transparent border-none text-white placeholder:text-[#A0A0A0] px-4 focus:outline-none"
+                placeholder="Makarna, tavuk, çorba..."
+              />
             </div>
           </div>
 
-          {/* Results */}
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="text-white">Yükleniyor...</div>
-            </div>
-          ) : recipes.length === 0 ? (
-            <div className="text-center py-12 bg-gray-800 rounded-lg">
-              <div className="text-6xl mb-4">🔍</div>
-              <p className="text-gray-400 mb-4">Tarif bulunamadı</p>
+          {/* Search Type Buttons */}
+          <div className="px-4 pb-4">
+            <div className="grid grid-cols-2 gap-3">
               <button
-                onClick={clearFilters}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg"
+                onClick={() => setUseMyIngredients(true)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                  useMyIngredients
+                    ? 'bg-[#30D158] text-white'
+                    : 'bg-[#1E1E1E] text-white hover:bg-[#30D158]/10'
+                }`}
               >
-                Filtreleri Temizle
+                <span className="material-symbols-outlined text-2xl">kitchen</span>
+                <div className="flex flex-col items-start">
+                  <p className="text-sm font-bold">Dolabıma Göre</p>
+                  <p className="text-xs opacity-80">Malzemelerimle ara</p>
+                </div>
+              </button>
+              <button
+                onClick={() => setUseMyIngredients(false)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                  !useMyIngredients
+                    ? 'bg-[#30D158] text-white'
+                    : 'bg-[#1E1E1E] text-white hover:bg-[#30D158]/10'
+                }`}
+              >
+                <span className="material-symbols-outlined text-2xl">restaurant</span>
+                <div className="flex flex-col items-start">
+                  <p className="text-sm font-bold">Malzemeye Göre</p>
+                  <p className="text-xs opacity-80">Tüm tarifler</p>
+                </div>
               </button>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {recipes.map((recipe) => (
-                <div
-                  key={recipe.id}
-                  onClick={() => router.push(`/dashboard/recipe-detail/${recipe.id}`)}
-                  className="bg-gray-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition cursor-pointer"
+          </div>
+
+          {/* Category Filters */}
+          <div className="flex gap-3 px-4 pb-4 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none]">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 ${
+                  selectedCategory === category
+                    ? 'bg-[#30D158] text-white font-bold'
+                    : 'bg-[#1E1E1E] text-white hover:bg-[#30D158]/10'
+                }`}
+              >
+                <p className="text-sm">{category}</p>
+              </button>
+            ))}
+          </div>
+
+          {/* Advanced Filters */}
+          <div className="px-4 pb-4">
+            <details
+              className="flex flex-col rounded-lg bg-[#1E1E1E] group"
+              open={showFilters}
+            >
+              <summary
+                className="flex cursor-pointer list-none items-center justify-between gap-6 p-4"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowFilters(!showFilters);
+                }}
+              >
+                <p className="text-white text-base font-bold leading-normal">
+                  Gelişmiş Filtreler
+                </p>
+                <span
+                  className={`material-symbols-outlined text-white transition-transform ${
+                    showFilters ? 'rotate-180' : ''
+                  }`}
                 >
-                  {/* Recipe Image */}
-                  <div className="h-48 bg-gray-700 relative">
-                    {recipe.image ? (
-                      <img
-                        src={
-                          recipe.image.startsWith('http')
-                            ? recipe.image
-                            : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${recipe.image}`
-                        }
-                        alt={recipe.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-6xl">
-                        🍽️
-                      </div>
-                    )}
-                    <div
-                      className={`absolute top-2 right-2 ${getDifficultyColor(
-                        recipe.difficulty
-                      )} px-3 py-1 rounded-full text-xs font-semibold`}
-                    >
-                      {getDifficultyText(recipe.difficulty)}
+                  expand_more
+                </span>
+              </summary>
+              {showFilters && (
+                <div className="flex flex-col gap-6 p-4 pt-0">
+                  {/* Difficulty */}
+                  <div>
+                    <p className="text-white text-sm font-medium mb-2">Zorluk</p>
+                    <div className="grid grid-cols-3 gap-2 rounded-lg bg-[#121212] p-1">
+                      {['EASY', 'MEDIUM', 'HARD'].map((diff) => (
+                        <button
+                          key={diff}
+                          onClick={() => setDifficulty(difficulty === diff ? '' : diff)}
+                          className={`rounded-md py-2 text-sm font-semibold ${
+                            difficulty === diff
+                              ? 'bg-[#30D158] text-white'
+                              : 'bg-[#1E1E1E] text-white'
+                          }`}
+                        >
+                          {getDifficultyText(diff)}
+                        </button>
+                      ))}
                     </div>
                   </div>
 
-                  {/* Recipe Info */}
-                  <div className="p-4">
-                    <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                      {recipe.title}
-                    </h3>
-                    {recipe.description && (
-                      <p className="text-sm text-gray-400 mb-3 line-clamp-2">
-                        {recipe.description}
+                  {/* Time */}
+                  <div>
+                    <div className="flex justify-between items-baseline mb-1">
+                      <p className="text-white text-sm font-medium">Süre</p>
+                      <p className="text-[#A0A0A0] text-xs font-medium">
+                        10 - {maxTime} dk
                       </p>
-                    )}
-
-                    <div className="flex items-center gap-4 text-sm text-gray-400 mb-3">
-                      {recipe.prepTime && (
-                        <span className="flex items-center gap-1">
-                          ⏱️ {recipe.prepTime} dk
-                        </span>
-                      )}
-                      <span className="flex items-center gap-1">
-                        👥 {recipe.servings} kişi
-                      </span>
                     </div>
+                    <input
+                      type="range"
+                      min="10"
+                      max="120"
+                      value={maxTime}
+                      onChange={(e) => setMaxTime(parseInt(e.target.value))}
+                      className="w-full h-2 bg-[#121212] rounded-lg appearance-none cursor-pointer accent-[#30D158]"
+                    />
+                  </div>
+                </div>
+              )}
+            </details>
+          </div>
 
-                    {recipe.category && (
-                      <div className="text-xs text-blue-400 mb-2">
-                        📂 {recipe.category}
-                      </div>
-                    )}
-
-                    {recipe.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-3">
-                        {recipe.tags.slice(0, 3).map((tag) => (
-                          <span
-                            key={tag.id}
-                            className="px-2 py-1 bg-blue-600/20 text-blue-400 rounded text-xs"
-                          >
-                            {tag.tag}
-                          </span>
-                        ))}
-                        {recipe.tags.length > 3 && (
-                          <span className="px-2 py-1 bg-gray-700 text-gray-400 rounded text-xs">
-                            +{recipe.tags.length - 3}
-                          </span>
+          {/* Results */}
+          <div className="px-4 pb-24">
+            <p className="text-[#A0A0A0] text-sm mb-4">
+              {filteredRecipes.length} tarif bulundu
+            </p>
+            {filteredRecipes.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <span className="material-symbols-outlined text-6xl text-[#30D158] mb-4">
+                  search_off
+                </span>
+                <p className="text-white text-lg font-bold mb-2">Sonuç bulunamadı</p>
+                <p className="text-[#A0A0A0] text-sm">Farklı filtreler dene</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                {filteredRecipes
+                  .sort((a, b) => {
+                    // Dolabıma göre modunda eşleşme yüzdesine göre sırala
+                    if (useMyIngredients) {
+                      const matchA = getRecipeMatchInfo(a);
+                      const matchB = getRecipeMatchInfo(b);
+                      if (matchA && matchB) {
+                        return matchB.percentage - matchA.percentage; // Büyükten küçüğe
+                      }
+                    }
+                    return 0; // Normal modda sıralama yapma
+                  })
+                  .map((recipe) => (
+                  <div
+                    key={recipe.id}
+                    onClick={() => router.push(`/dashboard/recipe-detail/${recipe.id}`)}
+                    className="flex flex-col gap-3 pb-3 cursor-pointer hover:opacity-80 transition-opacity"
+                  >
+                    {/* Recipe Image */}
+                    <div className="relative w-full">
+                      <div className="w-full bg-center bg-no-repeat aspect-[3/4] bg-cover rounded-xl bg-gray-700">
+                        {recipe.image ? (
+                          <img
+                            src={
+                              recipe.image.startsWith('http')
+                                ? recipe.image
+                                : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${recipe.image}`
+                            }
+                            alt={recipe.title}
+                            className="w-full h-full object-cover rounded-xl"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-6xl rounded-xl">
+                            🍽️
+                          </div>
                         )}
                       </div>
-                    )}
+                      <div className="absolute top-2 left-2 bg-[#30D158]/20 text-[#30D158] text-xs font-bold px-2 py-1 rounded-full backdrop-blur-sm">
+                        {getDifficultyText(recipe.difficulty)}
+                      </div>
+                    </div>
 
-                    <div className="flex items-center gap-2 text-sm">
-                      <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
+                    {/* Recipe Info */}
+                    <div>
+                      <p className="text-white text-base font-bold leading-normal line-clamp-1">
+                        {recipe.title}
+                      </p>
+                      {recipe.description && (
+                        <p className="text-[#A0A0A0] text-sm font-normal leading-normal line-clamp-2">
+                          {recipe.description}
+                        </p>
+                      )}
+
+                      <div className="flex items-center gap-4 mt-2 text-[#A0A0A0]">
+                        {recipe.prepTime && (
+                          <div className="flex items-center gap-1">
+                            <span className="material-symbols-outlined text-base">timer</span>
+                            <span className="text-xs">{recipe.prepTime} dk</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-1">
+                          <span className="material-symbols-outlined text-base">restaurant</span>
+                          <span className="text-xs">{recipe.servings}</span>
+                        </div>
+                      </div>
+
+                      {/* Eşleşme bilgisi */}
+                      {(() => {
+                        const matchInfo = getRecipeMatchInfo(recipe);
+                        if (matchInfo) {
+                          return (
+                            <div className="mt-2 flex items-center gap-2">
+                              <div className={`text-xs font-bold ${matchInfo.percentage >= 70 ? 'text-green-400' : matchInfo.percentage >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
+                                %{matchInfo.percentage} eşleşme
+                              </div>
+                              {matchInfo.missing > 0 && (
+                                <div className="text-xs text-red-400">
+                                  • {matchInfo.missing} eksik
+                                </div>
+                              )}
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
+
+                      <div className="flex items-center gap-2 mt-3">
                         {recipe.user.profileImage ? (
                           <img
                             src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${recipe.user.profileImage}`}
                             alt={recipe.user.name}
-                            className="w-full h-full rounded-full object-cover"
+                            className="w-6 h-6 rounded-full object-cover"
                           />
                         ) : (
-                          '👤'
+                          <div className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-xs text-white">
+                              person
+                            </span>
+                          </div>
                         )}
+                        <span className="text-xs text-white">{recipe.user.name}</span>
                       </div>
-                      <span className="text-gray-400">{recipe.user.name}</span>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Bottom Navigation */}
+        <BottomNav />
       </div>
-
-      {/* Mobile Sidebar Drawer */}
-      {showSidebar && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="md:hidden fixed inset-0 bg-black/50 z-40"
-            onClick={() => setShowSidebar(false)}
-          ></div>
-          
-          {/* Drawer */}
-          <div className="md:hidden fixed top-0 left-0 bottom-0 w-80 bg-gray-900 z-50 shadow-2xl overflow-y-auto">
-            <div className="p-4">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold">Filtreler</h2>
-                <button
-                  onClick={() => setShowSidebar(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800"
-                >
-                  ✕
-                </button>
-              </div>
-
-              {/* Sidebar Content */}
-              <div className="space-y-4">
-                <div className="bg-gray-800 rounded-lg p-4">
-                  <h2 className="text-lg font-semibold mb-4">🔍 Arama Türü</h2>
-                  <div className="space-y-2">
-                    <button
-                      onClick={() => {
-                        setSearchMode('normal');
-                        loadAllRecipes();
-                        setShowSidebar(false);
-                      }}
-                      className={`w-full text-left px-4 py-3 rounded transition ${
-                        searchMode === 'normal'
-                          ? 'bg-blue-600'
-                          : 'bg-gray-700 hover:bg-gray-600'
-                      }`}
-                    >
-                      📝 Normal Arama
-                    </button>
-                    <button
-                      onClick={() => {
-                        searchByPantry();
-                        setShowSidebar(false);
-                      }}
-                      className={`w-full text-left px-4 py-3 rounded transition ${
-                        searchMode === 'pantry'
-                          ? 'bg-green-600'
-                          : 'bg-gray-700 hover:bg-gray-600'
-                      }`}
-                    >
-                      🏠 Dolabıma Göre Ara
-                    </button>
-                  </div>
-                </div>
-
-                <div className="bg-gray-800 rounded-lg p-4">
-                  <h2 className="text-lg font-semibold mb-4">🥘 Malzemeye Göre</h2>
-                  <div className="space-y-2">
-                    <input
-                      type="text"
-                      value={ingredientSearch}
-                      onChange={(e) => setIngredientSearch(e.target.value)}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          searchByIngredient();
-                          setShowSidebar(false);
-                        }
-                      }}
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm"
-                      placeholder="Malzeme adı..."
-                    />
-                    <button
-                      onClick={() => {
-                        searchByIngredient();
-                        setShowSidebar(false);
-                      }}
-                      className="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-md text-sm"
-                    >
-                      Ara
-                    </button>
-                  </div>
-                </div>
-
-                <div className="bg-gray-800 rounded-lg p-4">
-                  <h2 className="text-lg font-semibold mb-4">ℹ️ Bilgi</h2>
-                  <div className="text-sm text-gray-400 space-y-2">
-                    <p>
-                      <strong className="text-white">Dolabıma Göre:</strong> Dolabınızdaki
-                      malzemelerle yapabileceğiniz tarifler
-                    </p>
-                    <p>
-                      <strong className="text-white">Malzemeye Göre:</strong> Belirli bir
-                      malzeme içeren tarifler
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
     </ProtectedRoute>
   );
 }
-

@@ -232,6 +232,45 @@ export const marketController = {
     }
   },
 
+  async clearAllItems(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user?.userId;
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: { code: 1004, message: 'Unauthorized' },
+        });
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user?.kitchenId) {
+        return res.status(404).json({
+          success: false,
+          error: { code: 3002, message: 'No active kitchen' },
+        });
+      }
+
+      await marketService.clearAllItems(user.kitchenId);
+
+      return res.status(200).json({
+        success: true,
+        data: { message: 'All items cleared successfully' },
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 5000,
+          message: error.message || 'Failed to clear items',
+        },
+      });
+    }
+  },
+
   async exportToWhatsApp(req: AuthRequest, res: Response) {
     try {
       const userId = req.user?.userId;

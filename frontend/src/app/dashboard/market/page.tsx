@@ -2,47 +2,40 @@
 
 import { useState, useEffect } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import DashboardHeader from '@/components/DashboardHeader';
+import BottomNav from '@/components/BottomNav';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
-import { MarketItem } from '@/types/market';
+import { toast } from '@/lib/toast';
+
+interface MarketItem {
+  id: number;
+  name: string;
+  quantity: number;
+  unit: string;
+  category: string;
+  completed: boolean;
+}
 
 export default function MarketPage() {
   const { token } = useAuth();
-  const [items, setItems] = useState<MarketItem[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
-  const [editingItem, setEditingItem] = useState<MarketItem | null>(null);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
-  // Autocomplete state
+  
+  // Form states
+  const [newItemName, setNewItemName] = useState('');
+  const [newItemCategory, setNewItemCategory] = useState('');
+  const [newItemQuantity, setNewItemQuantity] = useState('');
+  const [newItemUnit, setNewItemUnit] = useState('adet');
+  const [items, setItems] = useState<MarketItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Autocomplete states
   const [ingredientSuggestions, setIngredientSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const [formData, setFormData] = useState({
-    name: '',
-    category: '',
-    quantity: '',
-    unit: 'adet',
-  });
-
-  useEffect(() => {
-    loadCategories();
-  }, []);
-
   useEffect(() => {
     loadMarketItems();
-  }, [selectedCategory, token]);
-
-  const loadCategories = async () => {
-    const response = await api.get<any>('/api/categories');
-    if (response.success && response.data) {
-      setCategories(response.data);
-    }
-  };
+  }, [token]);
 
   const loadMarketItems = async () => {
     if (!token) {
@@ -50,15 +43,47 @@ export default function MarketPage() {
       return;
     }
 
-    const url = selectedCategory
-      ? `/api/market?category=${selectedCategory}`
-      : '/api/market';
-
-    const response = await api.get<MarketItem[]>(url, token);
+    const response = await api.get<MarketItem[]>('/api/market', token);
     if (response.success && response.data) {
       setItems(response.data);
     }
     setLoading(false);
+  };
+
+  const handleMoveToPantry = async (id: number) => {
+    if (!token) return;
+
+    const response = await api.post(`/api/market/${id}/move-to-pantry`, {}, token);
+    if (response.success) {
+      toast.success('Ürün dolabınıza eklendi');
+      loadMarketItems();
+    } else {
+      toast.error('Ürün eklenemedi');
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!token) return;
+
+    const response = await api.delete(`/api/market/${id}`, token);
+    if (response.success) {
+      toast.success('Ürün silindi');
+      loadMarketItems();
+    } else {
+      toast.error('Silme işlemi başarısız');
+    }
+  };
+
+  const handleClearAll = async () => {
+    if (!token) return;
+
+    const response = await api.delete('/api/market/clear', token);
+    if (response.success) {
+      toast.success('Liste temizlendi');
+      loadMarketItems();
+    } else {
+      toast.error('Temizleme işlemi başarısız');
+    }
   };
 
   const searchIngredients = async (query: string) => {
@@ -68,130 +93,68 @@ export default function MarketPage() {
       return;
     }
 
-    const response = await api.get<any[]>(`/api/categories/ingredients/search?q=${query}&limit=10`);
+    const response = await api.get<any[]>(`/api/categories/ingredients/search?q=${query}&limit=5`);
     if (response.success && response.data) {
       setIngredientSuggestions(response.data);
       setShowSuggestions(true);
     }
   };
 
+  const handleIngredientNameChange = (value: string) => {
+    setNewItemName(value);
+    searchIngredients(value);
+  };
+
   const selectIngredient = (ingredient: any) => {
-    setFormData({
-      ...formData,
-      name: ingredient.name,
-      category: ingredient.category.name,
-      unit: ingredient.defaultUnit,
-    });
+    setNewItemName(ingredient.name);
+    setNewItemCategory(ingredient.category.name);
+    setNewItemUnit(ingredient.defaultUnit);
     setShowSuggestions(false);
     setIngredientSuggestions([]);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    if (!token || !newItemName || !newItemCategory) return;
 
-    if (!token) return;
-
-    const data = {
-      ...formData,
-      quantity: parseFloat(formData.quantity),
-    };
-
-    let response;
-    if (editingItem) {
-      response = await api.put(`/api/market/${editingItem.id}`, data, token);
-    } else {
-      response = await api.post('/api/market', data, token);
-    }
+    const response = await api.post('/api/market', {
+      name: newItemName,
+      category: newItemCategory,
+      quantity: parseFloat(newItemQuantity) || 1,
+      unit: newItemUnit,
+    }, token);
 
     if (response.success) {
-      setSuccess(editingItem ? 'Ürün güncellendi' : 'Ürün eklendi');
+      toast.success('Ürün eklendi');
       setShowAddModal(false);
-      setEditingItem(null);
-      resetForm();
+      setNewItemName('');
+      setNewItemCategory('');
+      setNewItemQuantity('');
+      setNewItemUnit('adet');
+      setShowSuggestions(false);
+      setIngredientSuggestions([]);
       loadMarketItems();
     } else {
-      setError(response.error?.message || 'İşlem başarısız');
+      toast.error('Ürün eklenemedi');
     }
   };
 
-  const handleEdit = (item: MarketItem) => {
-    setEditingItem(item);
-    setFormData({
-      name: item.name,
-      category: item.category,
-      quantity: item.quantity.toString(),
-      unit: item.unit,
-    });
-    setShowAddModal(true);
-  };
-
-  const handleDelete = async (id: number) => {
-    if (!token) return;
-
-    const response = await api.delete(`/api/market/${id}`, token);
-
-    if (response.success) {
-      setSuccess('Ürün silindi');
-      loadMarketItems();
-    } else {
-      setError(response.error?.message || 'Silme başarısız');
+  // Kategoriye göre grupla
+  const groupedItems = items.reduce((acc: any, item) => {
+    const category = item.category || 'Diğer';
+    if (!acc[category]) {
+      acc[category] = [];
     }
-  };
+    acc[category].push(item);
+    return acc;
+  }, {});
 
-  const handleMoveToPantry = async (id: number) => {
-    if (!token) return;
-
-    const response = await api.post(`/api/market/${id}/move-to-pantry`, {}, token);
-
-    if (response.success) {
-      setSuccess('Ürün dolaba taşındı');
-      loadMarketItems();
-    } else {
-      setError(response.error?.message || 'Taşıma başarısız');
-    }
-  };
-
-  const handleWhatsAppExport = async () => {
-    if (!token) return;
-
-    const response = await api.get<{ message: string }>('/api/market/export/whatsapp', token);
-
-    if (response.success && response.data) {
-      const message = encodeURIComponent(response.data.message);
-      window.open(`https://wa.me/?text=${message}`, '_blank');
-    } else {
-      setError('Export başarısız');
-    }
-  };
-
-  const handlePrint = () => {
-    window.print();
-  };
-
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      category: '',
-      quantity: '',
-      unit: 'adet',
-    });
-  };
-
-  const closeModal = () => {
-    setShowAddModal(false);
-    setEditingItem(null);
-    resetForm();
-    setError('');
-  };
-
-  const pendingItems = items.filter((item) => item.status === 'PENDING');
+  const totalItems = items.length;
 
   if (loading) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="min-h-screen bg-[#121212] flex items-center justify-center">
           <div className="text-white">Yükleniyor...</div>
         </div>
       </ProtectedRoute>
@@ -200,330 +163,242 @@ export default function MarketPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Page Title */}
-          <div className="mb-6 md:mb-8 flex items-center justify-end">
-            {/* Mobile Category Button */}
+      <div className="relative flex h-auto min-h-screen w-full flex-col text-[#E0E0E0] pb-24 bg-[#121212]">
+        {/* Header */}
+        <DashboardHeader />
+
+        {/* Content Container */}
+        <div className="max-w-7xl mx-auto w-full">
+          {/* Page Header */}
+          <div className="px-4 py-4">
+            <div className="flex justify-between items-center mb-4">
+              <h1 className="text-white text-2xl font-bold">Market Listem</h1>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    const text = items
+                      .map((item) => `${item.name} - ${item.quantity} ${item.unit}`)
+                      .join('\n');
+                    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
+                      'Market Listem:\n\n' + text
+                    )}`;
+                    window.open(whatsappUrl, '_blank');
+                  }}
+                  className="flex items-center justify-center gap-1.5 rounded-md bg-green-500 px-3 py-2 text-sm font-bold text-white shadow-sm transition-colors hover:bg-green-600"
+                  title="WhatsApp'ta Paylaş"
+                >
+                  <span className="material-symbols-outlined text-lg">call</span>
+                  <span className="hidden sm:inline">WhatsApp</span>
+                </button>
+                <button
+                  onClick={() => window.print()}
+                  className="hidden lg:flex items-center justify-center gap-1.5 rounded-md bg-blue-500 px-3 py-2 text-sm font-bold text-white shadow-sm transition-colors hover:bg-blue-600"
+                  title="Yazdır"
+                >
+                  <span className="material-symbols-outlined text-lg">print</span>
+                  <span>Yazdır</span>
+                </button>
+              </div>
+            </div>
             <button
-              onClick={() => setShowSidebar(true)}
-              className="md:hidden px-4 py-2 bg-gray-800 rounded-lg border border-gray-700 flex items-center gap-2"
+              onClick={handleClearAll}
+              className="text-[#30D158] hover:text-[#30D158]/80 text-sm font-bold"
             >
-              <span>📦</span>
-              <span className="text-sm">Kategori</span>
+              Tümünü Temizle
             </button>
           </div>
 
-          {/* Messages */}
-          {error && (
-            <div className="mb-4 bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded">
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="mb-4 bg-green-500/10 border border-green-500 text-green-500 px-4 py-3 rounded">
-              {success}
-            </div>
-          )}
-
-          <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-            {/* Sidebar - Desktop only */}
-            <div className="hidden md:block w-64 bg-gray-800 rounded-lg p-4">
-              <h2 className="text-lg font-semibold mb-4">Kategoriler</h2>
-              <div className="space-y-2">
-                <button
-                  onClick={() => setSelectedCategory('')}
-                  className={`w-full text-left px-3 py-2 rounded ${
-                    selectedCategory === '' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                  }`}
-                >
-                  📦 Tümü ({pendingItems.length})
-                </button>
-                {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.name)}
-                    className={`w-full text-left px-3 py-2 rounded ${
-                      selectedCategory === cat.name
-                        ? 'bg-blue-600'
-                        : 'hover:bg-gray-700'
-                    }`}
-                  >
-                    {cat.icon} {cat.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="flex-1">
-              <div className="bg-gray-800 rounded-lg p-6">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                  <h2 className="text-lg md:text-xl font-semibold">
-                    {selectedCategory || 'Tüm Ürünler'} ({pendingItems.length})
-                  </h2>
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={handleWhatsAppExport}
-                      className="px-3 md:px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md text-sm md:text-base"
-                    >
-                      📱 WhatsApp
-                    </button>
-                    <button
-                      onClick={handlePrint}
-                      className="px-3 md:px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-sm md:text-base hidden md:block"
-                    >
-                      🖨️ Yazdır
-                    </button>
-                    <button
-                      onClick={() => setShowAddModal(true)}
-                      className="px-3 md:px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-sm md:text-base"
-                    >
-                      + Ekle
-                    </button>
-                  </div>
+          {/* Summary */}
+          <div className="px-4 pb-4">
+            <div className="bg-[#1E1E1E] rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-white text-lg font-semibold">
+                    {totalItems} ürün listemde
+                  </p>
+                  <p className="text-[#A0A0A0] text-sm">
+                    Alındı butonuna basarak dolabınıza ekleyin
+                  </p>
                 </div>
-
-                {pendingItems.length === 0 ? (
-                  <div className="text-center py-12 text-gray-400">
-                    Market listeniz boş
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {pendingItems.map((item) => (
-                      <div
-                        key={item.id}
-                        className="bg-gray-800 rounded-lg p-2 hover:bg-gray-750 transition"
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          {/* Ürün Bilgisi */}
-                          <div className="flex-1 min-w-0 flex items-center gap-2">
-                            <div className="font-medium text-sm truncate">{item.name}</div>
-                            <span className="text-xs text-gray-400">•</span>
-                            <span className="text-xs text-gray-400 whitespace-nowrap">
-                              {item.quantity} {item.unit}
-                            </span>
-                          </div>
-
-                          {/* İşlem Butonları */}
-                          <div className="flex gap-1 shrink-0">
-                            <button
-                              onClick={() => handleEdit(item)}
-                              className="px-2 py-1 bg-yellow-600 hover:bg-yellow-700 rounded text-xs"
-                              title="Düzenle"
-                            >
-                              ✏️
-                            </button>
-                            <button
-                              onClick={() => handleMoveToPantry(item.id)}
-                              className="px-2 py-1 bg-green-600 hover:bg-green-700 rounded text-xs"
-                              title="Alındı"
-                            >
-                              ✓
-                            </button>
-                            <button
-                              onClick={() => handleDelete(item.id)}
-                              className="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-xs"
-                              title="Sil"
-                            >
-                              🗑️
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <span className="material-symbols-outlined text-[#30D158] text-4xl">
+                  shopping_cart
+                </span>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Add/Edit Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-xl font-semibold mb-4">
-              {editingItem ? 'Ürün Düzenle' : 'Yeni Ürün Ekle'}
-            </h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="relative">
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Ürün Adı
-                </label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => {
-                    setFormData({ ...formData, name: e.target.value });
-                    searchIngredients(e.target.value);
-                  }}
-                  onFocus={() => {
-                    if (formData.name.length >= 2) {
-                      searchIngredients(formData.name);
-                    }
-                  }}
-                  onBlur={() => {
-                    // Delay to allow click on suggestion
-                    setTimeout(() => setShowSuggestions(false), 200);
-                  }}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                  placeholder="Örn: domates, soğan..."
-                  required
-                />
-                
-                {/* Autocomplete Suggestions */}
-                {showSuggestions && ingredientSuggestions.length > 0 && (
-                  <div className="absolute z-10 w-full mt-1 bg-gray-700 border border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                    {ingredientSuggestions.map((ingredient) => (
-                      <button
-                        key={ingredient.id}
-                        type="button"
-                        onClick={() => selectIngredient(ingredient)}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-600 flex items-center justify-between"
-                      >
-                        <span className="font-medium">{ingredient.name}</span>
-                        <span className="text-sm text-gray-400">
-                          {ingredient.category.name} • {ingredient.defaultUnit}
+          {/* Items List */}
+          <main className="flex-grow px-4 pb-24">
+            {Object.keys(groupedItems).length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <span className="material-symbols-outlined text-6xl text-[#30D158] mb-4">
+                  shopping_cart
+                </span>
+                <p className="text-white text-lg font-bold mb-2">Market listen boş</p>
+                <p className="text-[#A0A0A0] text-sm">İlk ürünü ekle</p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {Object.keys(groupedItems)
+                  .sort()
+                  .map((category) => (
+                    <details
+                      key={category}
+                      className="flex flex-col rounded-xl bg-[#1E1E1E] group"
+                      open
+                    >
+                      <summary className="flex cursor-pointer list-none items-center justify-between gap-6 p-4">
+                        <p className="text-white text-base font-medium leading-normal">
+                          {category} ({groupedItems[category].length})
+                        </p>
+                        <span className="material-symbols-outlined text-white group-open:rotate-180 transition-transform">
+                          expand_more
                         </span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Kategori
-                </label>
-                <select
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                  required
-                >
-                  <option value="">Seçiniz</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.name}>
-                      {cat.icon} {cat.name}
-                    </option>
+                      </summary>
+                      <div className="px-4 pb-2">
+                        {groupedItems[category].map((item: MarketItem) => (
+                          <div
+                            key={item.id}
+                            className="flex items-center py-3 border-t border-white/10"
+                          >
+                            <div className="flex-grow">
+                              <p className="text-white text-base font-semibold leading-normal">
+                                {item.name}
+                              </p>
+                              <p className="text-white/60 text-sm font-normal">
+                                {item.quantity} {item.unit}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleMoveToPantry(item.id)}
+                                className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#30D158] hover:bg-[#30D158]/90"
+                                title="Alındı - Dolabıma Ekle"
+                              >
+                                <span className="material-symbols-outlined text-[#121212] text-xl">
+                                  check_circle
+                                </span>
+                              </button>
+                              <button
+                                onClick={() => handleDelete(item.id)}
+                                className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-500/80 hover:bg-red-500"
+                                title="Sil"
+                              >
+                                <span className="material-symbols-outlined text-white text-xl">
+                                  delete
+                                </span>
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </details>
                   ))}
-                </select>
               </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Miktar
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.quantity}
-                    onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Birim
-                  </label>
-                  <select
-                    value={formData.unit}
-                    onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                    required
-                  >
-                    <option value="adet">Adet</option>
-                    <option value="kg">Kg</option>
-                    <option value="gram">Gram</option>
-                    <option value="litre">Litre</option>
-                    <option value="ml">ML</option>
-                    <option value="paket">Paket</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  type="submit"
-                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
-                >
-                  {editingItem ? 'Güncelle' : 'Ekle'}
-                </button>
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-md"
-                >
-                  İptal
-                </button>
-              </div>
-            </form>
-          </div>
+            )}
+          </main>
         </div>
-      )}
 
-      {/* Mobile Sidebar Drawer */}
-      {showSidebar && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="md:hidden fixed inset-0 bg-black/50 z-40"
-            onClick={() => setShowSidebar(false)}
-          ></div>
-          
-          {/* Drawer */}
-          <div className="md:hidden fixed top-0 left-0 bottom-0 w-80 bg-gray-900 z-50 shadow-2xl overflow-y-auto">
-            <div className="p-4">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold">Kategoriler</h2>
-                <button
-                  onClick={() => setShowSidebar(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800"
-                >
-                  ✕
-                </button>
-              </div>
+        {/* Floating Add Button */}
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="fixed bottom-24 right-4 lg:bottom-8 flex items-center justify-center w-14 h-14 bg-[#30D158] rounded-full shadow-lg shadow-[#30D158]/20 hover:bg-[#30D158]/90 transition-colors z-10"
+          title="Ürün Ekle"
+        >
+          <span className="material-symbols-outlined text-3xl text-[#121212]">add</span>
+        </button>
 
-              {/* Categories */}
-              <div className="space-y-2">
-                <button
-                  onClick={() => {
-                    setSelectedCategory('');
-                    setShowSidebar(false);
-                  }}
-                  className={`w-full text-left px-4 py-3 rounded ${
-                    selectedCategory === '' ? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700'
-                  }`}
-                >
-                  📦 Tümü ({pendingItems.length})
-                </button>
-                {categories.map((cat) => (
+        {/* Bottom Navigation */}
+        <BottomNav />
+
+        {/* Add Item Modal */}
+        {showAddModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="flex w-full max-w-sm flex-col overflow-hidden bg-[#121212] rounded-xl max-h-[85vh]">
+              <div className="flex shrink-0 items-center border-b border-[#3A3A3C] px-4 py-3">
+                <div className="w-8"></div>
+                <h2 className="flex-1 text-center text-base font-bold tracking-tight text-white">
+                  Ürün Ekle
+                </h2>
+                <div className="flex w-8 items-center justify-end">
                   <button
-                    key={cat.id}
-                    onClick={() => {
-                      setSelectedCategory(cat.name);
-                      setShowSidebar(false);
-                    }}
-                    className={`w-full text-left px-4 py-3 rounded ${
-                      selectedCategory === cat.name
-                        ? 'bg-blue-600'
-                        : 'bg-gray-800 hover:bg-gray-700'
-                    }`}
+                    onClick={() => setShowAddModal(false)}
+                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-white transition-colors hover:bg-white/10"
                   >
-                    {cat.icon} {cat.name}
+                    <span className="material-symbols-outlined text-xl">close</span>
                   </button>
-                ))}
+                </div>
+              </div>
+              <form onSubmit={handleAdd} className="flex-1 space-y-4 overflow-y-auto p-4">
+                <label className="flex flex-col relative">
+                  <p className="pb-1.5 text-sm font-medium text-white">Ürün Adı *</p>
+                  <input 
+                    required 
+                    value={newItemName} 
+                    onChange={(e) => handleIngredientNameChange(e.target.value)}
+                    onFocus={() => newItemName.length >= 2 && setShowSuggestions(true)}
+                    className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]" 
+                    placeholder="Örn: Domates"
+                    autoComplete="off"
+                  />
+                  {/* Autocomplete Suggestions */}
+                  {showSuggestions && ingredientSuggestions.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-[#1E1E1E] border border-[#3A3A3C] rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
+                      {ingredientSuggestions.map((ingredient, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => selectIngredient(ingredient)}
+                          className="w-full text-left px-3 py-2 hover:bg-[#30D158]/10 text-white text-sm border-b border-[#3A3A3C] last:border-b-0"
+                        >
+                          <div className="font-medium">{ingredient.name}</div>
+                          <div className="text-xs text-[#A0A0A0]">
+                            {ingredient.category.name} • {ingredient.defaultUnit}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </label>
+                <label className="flex flex-col">
+                  <p className="pb-1.5 text-sm font-medium text-white">Kategori *</p>
+                  <select required value={newItemCategory} onChange={(e) => setNewItemCategory(e.target.value)} className="form-select w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]">
+                    <option value="">Kategori Seç</option>
+                    <option value="SEBZELER">Sebzeler</option>
+                    <option value="MEYVELER">Meyveler</option>
+                    <option value="ET_URUNLERI">Et Ürünleri</option>
+                    <option value="SUT_URUNLERI">Süt Ürünleri</option>
+                    <option value="TAHILLAR">Tahıllar</option>
+                    <option value="BAHARATLAR">Baharatlar</option>
+                    <option value="ICECEKLER">İçecekler</option>
+                    <option value="ATISTIRMALIKLAR">Atıştırmalıklar</option>
+                  </select>
+                </label>
+                <div className="flex items-end gap-3">
+                  <label className="flex min-w-0 flex-[2] flex-col">
+                    <p className="pb-1.5 text-sm font-medium text-white">Miktar</p>
+                    <input type="number" min="0" step="0.1" value={newItemQuantity} onChange={(e) => setNewItemQuantity(e.target.value)} className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]" placeholder="0" />
+                  </label>
+                  <label className="flex min-w-0 flex-1 flex-col">
+                    <p className="pb-1.5 text-sm font-medium text-white">Birim</p>
+                    <select value={newItemUnit} onChange={(e) => setNewItemUnit(e.target.value)} className="form-select w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]">
+                      <option value="adet">adet</option>
+                      <option value="kg">kg</option>
+                      <option value="gr">gr</option>
+                      <option value="litre">litre</option>
+                      <option value="ml">ml</option>
+                    </select>
+                  </label>
+                </div>
+              </form>
+              <div className="flex shrink-0 flex-col space-y-2 border-t border-[#3A3A3C] p-4">
+                <button onClick={handleAdd} type="button" className="flex h-11 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#30D158] text-sm font-bold text-white transition-opacity hover:opacity-90">Ekle</button>
+                <button onClick={() => setShowAddModal(false)} type="button" className="flex h-11 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-transparent text-sm font-bold text-[#A0A0A0] transition-colors hover:bg-white/10">İptal</button>
               </div>
             </div>
           </div>
-        </>
-      )}
+        )}
+      </div>
     </ProtectedRoute>
   );
 }
