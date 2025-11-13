@@ -12,7 +12,6 @@ export default function BottomNav() {
     { href: '/dashboard/market', icon: 'shopping_cart', label: 'Market' },
     { href: '/dashboard/recipe-add', icon: 'add_circle', label: 'Ekle' },
     { href: '/dashboard/recipe-search', icon: 'search', label: 'Ara' },
-    { href: '/dashboard/profile', icon: 'person', label: 'Profil' },
   ];
 
   const isActive = (href: string) => {

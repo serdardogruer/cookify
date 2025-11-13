@@ -7,12 +7,14 @@ import Link from 'next/link';
 import { showToast } from '@/lib/toast';
 
 export default function KitchenPage() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [kitchen, setKitchen] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [inviteCode, setInviteCode] = useState('');
   const [joining, setJoining] = useState(false);
+  
+  const isOwner = kitchen?.ownerId === user?.id;
 
   useEffect(() => {
     loadKitchen();
@@ -66,6 +68,38 @@ export default function KitchenPage() {
       loadKitchen();
     } else {
       showToast(response.error?.message || 'Mutfağa katılırken hata oluştu', 'error');
+    }
+  };
+
+  const handleLeaveKitchen = async () => {
+    if (!token) {
+      showToast('Oturum bulunamadı', 'error');
+      return;
+    }
+
+    const response = await api.post<any>('/api/kitchen/leave', {}, token);
+
+    if (response.success) {
+      showToast('Mutfaktan ayrıldınız', 'success');
+      loadKitchen();
+    } else {
+      showToast(response.error?.message || 'Mutfaktan ayrılırken hata oluştu', 'error');
+    }
+  };
+
+  const handleRemoveMember = async (memberId: number, memberName: string) => {
+    if (!token) {
+      showToast('Oturum bulunamadı', 'error');
+      return;
+    }
+
+    const response = await api.post<any>('/api/kitchen/remove-member', { memberId }, token);
+
+    if (response.success) {
+      showToast(`${memberName} mutfaktan çıkarıldı`, 'success');
+      loadKitchen();
+    } else {
+      showToast(response.error?.message || 'Üye çıkarılırken hata oluştu', 'error');
     }
   };
 
@@ -169,15 +203,26 @@ export default function KitchenPage() {
                     <p className="text-sm text-[#A0A0A0]">{member.user?.email}</p>
                   </div>
                 </div>
-                <span
-                  className={`rounded-full px-3 py-1 text-xs font-medium ${
-                    member.role === 'OWNER'
-                      ? 'bg-yellow-500/20 text-yellow-400'
-                      : 'bg-gray-500/30 text-gray-300'
-                  }`}
-                >
-                  {member.role === 'OWNER' ? 'Sahip' : 'Üye'}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-medium ${
+                      member.role === 'OWNER'
+                        ? 'bg-yellow-500/20 text-yellow-400'
+                        : 'bg-gray-500/30 text-gray-300'
+                    }`}
+                  >
+                    {member.role === 'OWNER' ? 'Sahip' : 'Üye'}
+                  </span>
+                  {isOwner && member.role !== 'OWNER' && (
+                    <button
+                      onClick={() => handleRemoveMember(member.user.id, member.user.name)}
+                      className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500/20 text-red-400 transition-colors hover:bg-red-500/30 active:scale-95"
+                      title="Mutfaktan Çıkar"
+                    >
+                      <span className="material-symbols-outlined text-base">person_remove</span>
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -193,6 +238,15 @@ export default function KitchenPage() {
             <span className="material-symbols-outlined">link</span>
             Başka Bir Mutfağa Katıl
           </button>
+          {!isOwner && (
+            <button 
+              onClick={handleLeaveKitchen}
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-red-500/20 text-base font-medium text-red-400 transition-colors hover:bg-red-500/30 active:scale-95"
+            >
+              <span className="material-symbols-outlined">logout</span>
+              Mutfaktan Ayrıl
+            </button>
+          )}
         </section>
       </main>
 

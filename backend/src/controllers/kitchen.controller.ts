@@ -224,4 +224,113 @@ export const kitchenController = {
       });
     }
   },
+
+  async removeMember(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user?.userId;
+      const { memberId } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: { code: 1004, message: 'Unauthorized' },
+        });
+      }
+
+      if (!memberId) {
+        return res.status(400).json({
+          success: false,
+          error: { code: 2001, message: 'Member ID is required' },
+        });
+      }
+
+      // Kullanıcının mutfağını kontrol et
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: { kitchen: true },
+      });
+
+      if (!user?.kitchen) {
+        return res.status(404).json({
+          success: false,
+          error: { code: 3002, message: 'No active kitchen' },
+        });
+      }
+
+      // Sadece mutfak sahibi üye çıkarabilir
+      if (user.kitchen.ownerId !== userId) {
+        return res.status(403).json({
+          success: false,
+          error: { code: 4004, message: 'Only kitchen owner can remove members' },
+        });
+      }
+
+      // Kendini çıkaramaz
+      if (memberId === userId) {
+        return res.status(400).json({
+          success: false,
+          error: { code: 4005, message: 'Cannot remove yourself' },
+        });
+      }
+
+      // Üyeyi kontrol et
+      const member = await prisma.kitchenMember.findFirst({
+        where: {
+          kitchenId: user.kitchen.id,
+          userId: memberId,
+        },
+      });
+
+      if (!member) {
+        return res.status(404).json({
+          success: false,
+          error: { code: 3003, message: 'Member not found in this kitchen' },
+        });
+      }
+
+      // Üyeyi sil
+      await prisma.kitchenMember.delete({
+        where: { id: member.id },
+      });
+
+      // Üyenin kendi mutfağını bul veya oluştur
+      const memberUser = await prisma.user.findUnique({
+        where: { id: memberId },
+        include: { ownedKitchens: true },
+      });
+
+      if (memberUser) {
+        let newKitchen = memberUser.ownedKitchens.find((k) => k.ownerId === memberId);
+
+        if (newKitchen) {
+          await prisma.kitchen.update({
+            where: { id: newKitchen.id },
+            data: { status: 'ACTIVE' },
+          });
+        } else {
+          const result = await kitchenService.createKitchenForNewUser(memberId, memberUser.name);
+          newKitchen = result.kitchen;
+        }
+
+        // Üyenin aktif mutfağını güncelle
+        await prisma.user.update({
+          where: { id: memberId },
+          data: { kitchenId: newKitchen.id },
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: { message: 'Member removed successfully' },
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 5000,
+          message: error.message || 'Failed to remove member',
+        },
+      });
+    }
+  },
 };
