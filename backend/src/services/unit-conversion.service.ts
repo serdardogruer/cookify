@@ -51,6 +51,40 @@ export class UnitConversionService {
       };
     }
 
+    // İki aşamalı dönüşüm: yemek kaşığı → gr → kg veya su bardağı → ml → litre
+    let intermediateUnit: string | null = null;
+    if (normalizedTo === 'kg') intermediateUnit = 'gr';
+    if (normalizedTo === 'litre') intermediateUnit = 'ml';
+
+    if (intermediateUnit) {
+      // 1. Adım: from → intermediate
+      const step1 = await prisma.unitConversion.findFirst({
+        where: {
+          unitFrom: normalizedFrom,
+          unitTo: intermediateUnit,
+        },
+      });
+
+      if (step1) {
+        const intermediateQty = quantity * step1.multiplier;
+
+        // 2. Adım: intermediate → to
+        const step2 = await prisma.unitConversion.findFirst({
+          where: {
+            unitFrom: intermediateUnit,
+            unitTo: normalizedTo,
+          },
+        });
+
+        if (step2) {
+          return {
+            quantity: intermediateQty * step2.multiplier,
+            unit: toUnit,
+          };
+        }
+      }
+    }
+
     // Adet → Gram dönüşümü (malzeme bazlı)
     if (normalizedFrom === 'adet' && (normalizedTo === 'gr' || normalizedTo === 'kg')) {
       if (ingredientName) {

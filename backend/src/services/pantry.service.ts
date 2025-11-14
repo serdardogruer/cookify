@@ -14,6 +14,52 @@ export interface PantryItemInput {
 
 export class PantryService {
   /**
+   * Malzemenin defaultUnit'ini bulur
+   * Önce verilen kategoride arar, bulamazsa tüm kategorilerde arar
+   */
+  private async getDefaultUnit(name: string, categoryName: string): Promise<string | null> {
+    try {
+      // 1. Önce verilen kategoride ara
+      const category = await prisma.category.findFirst({
+        where: { name: categoryName },
+      });
+
+      if (category) {
+        const ingredient = await prisma.ingredient.findFirst({
+          where: {
+            name: name,
+            categoryId: category.id,
+          },
+        });
+
+        if (ingredient?.defaultUnit) {
+          return ingredient.defaultUnit;
+        }
+      }
+
+      // 2. Kategoride bulunamadı, tüm kategorilerde ara (tam eşleşme)
+      const ingredientAnyCategory = await prisma.ingredient.findFirst({
+        where: { name: name },
+      });
+
+      if (ingredientAnyCategory?.defaultUnit) {
+        return ingredientAnyCategory.defaultUnit;
+      }
+
+      // 3. Tam eşleşme yok, benzer isim ara (kısmi eşleşme)
+      const allIngredients = await prisma.ingredient.findMany();
+      const similarIngredient = allIngredients.find(ing => 
+        ing.name.toLowerCase().includes(name.toLowerCase()) ||
+        name.toLowerCase().includes(ing.name.toLowerCase())
+      );
+
+      return similarIngredient?.defaultUnit || null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
    * Dolap malzemelerini listeler
    */
   async getPantryItems(kitchenId: number, category?: string) {
@@ -33,6 +79,32 @@ export class PantryService {
    * Tekli malzeme ekler - Birim dönüştürme ile birleştirme yapar
    */
   async addPantryItem(kitchenId: number, data: PantryItemInput) {
+    // Malzemenin defaultUnit'ini bul
+    const defaultUnit = await this.getDefaultUnit(data.name, data.category);
+    
+    // Kullanıcının girdiği birimi defaultUnit'e dönüştür
+    let finalQuantity = data.quantity;
+    let finalUnit = data.unit;
+    
+    if (defaultUnit && data.unit.toLowerCase() !== defaultUnit.toLowerCase()) {
+      const converted = await unitConversionService.convert(
+        data.quantity,
+        data.unit,
+        defaultUnit,
+        data.name
+      );
+      
+      if (converted) {
+        finalQuantity = converted.quantity;
+        finalUnit = converted.unit;
+      } else {
+        // Dönüştürülemezse kullanıcının girdiği birimi kullan
+        finalUnit = data.unit;
+      }
+    } else if (defaultUnit) {
+      finalUnit = defaultUnit;
+    }
+
     // Aynı isim ve kategoride malzeme var mı kontrol et (birim farketmeksizin)
     const existingItem = await prisma.pantryItem.findFirst({
       where: {
@@ -43,30 +115,21 @@ export class PantryService {
     });
 
     if (existingItem) {
-      // Birim dönüştürme ile birleştirmeyi dene
-      const merged = await unitConversionService.tryMergeItems(
-        { quantity: existingItem.quantity, unit: existingItem.unit },
-        { quantity: data.quantity, unit: data.unit, name: data.name }
-      );
-
-      if (merged) {
-        // Birleştirme başarılı - mevcut malzemeyi güncelle
-        return await prisma.pantryItem.update({
-          where: { id: existingItem.id },
-          data: {
-            quantity: merged.quantity,
-            unit: merged.unit,
-            initialQuantity: existingItem.initialQuantity + data.quantity,
-            // Yeni SKT daha yakınsa güncelle
-            expiryDate: data.expiryDate 
-              ? (existingItem.expiryDate && new Date(data.expiryDate) > existingItem.expiryDate
-                  ? existingItem.expiryDate
-                  : new Date(data.expiryDate))
-              : existingItem.expiryDate,
-          },
-        });
-      }
-      // Birleştirme başarısız - farklı birimler, yeni satır olarak ekle
+      // Mevcut malzeme varsa, miktarı topla (artık aynı birimde olmalılar)
+      return await prisma.pantryItem.update({
+        where: { id: existingItem.id },
+        data: {
+          quantity: existingItem.quantity + finalQuantity,
+          unit: finalUnit,
+          initialQuantity: existingItem.initialQuantity + finalQuantity,
+          // Yeni SKT daha yakınsa güncelle
+          expiryDate: data.expiryDate 
+            ? (existingItem.expiryDate && new Date(data.expiryDate) > existingItem.expiryDate
+                ? existingItem.expiryDate
+                : new Date(data.expiryDate))
+            : existingItem.expiryDate,
+        },
+      });
     }
 
     // Yeni malzeme ekle
@@ -75,10 +138,10 @@ export class PantryService {
         kitchenId,
         name: data.name,
         category: data.category,
-        quantity: data.quantity,
-        initialQuantity: data.quantity,
+        quantity: finalQuantity,
+        initialQuantity: finalQuantity,
         minQuantity: data.minQuantity || 0,
-        unit: data.unit,
+        unit: finalUnit,
         expiryDate: data.expiryDate ? new Date(data.expiryDate) : null,
       },
     });
@@ -88,20 +151,13 @@ export class PantryService {
    * Toplu malzeme ekler
    */
   async addMultiplePantryItems(kitchenId: number, items: PantryItemInput[]) {
-    const data = items.map((item) => ({
-      kitchenId,
-      name: item.name,
-      category: item.category,
-      quantity: item.quantity,
-      initialQuantity: item.quantity, // Başlangıç miktarı = ilk miktar
-      minQuantity: item.minQuantity || 0,
-      unit: item.unit,
-      expiryDate: item.expiryDate ? new Date(item.expiryDate) : null,
-    }));
-
-    return await prisma.pantryItem.createMany({
-      data,
-    });
+    // Her malzemeyi tek tek ekle (birim dönüşümü için)
+    const results = [];
+    for (const item of items) {
+      const result = await this.addPantryItem(kitchenId, item);
+      results.push(result);
+    }
+    return results;
   }
 
   /**
@@ -224,8 +280,28 @@ export class PantryService {
       }
 
       try {
+        // Tarif malzemesini dolaptaki birime dönüştür
+        let consumeQuantity = ingredient.quantity;
+        
+        if (ingredient.unit.toLowerCase() !== pantryItem.unit.toLowerCase()) {
+          const converted = await unitConversionService.convert(
+            ingredient.quantity,
+            ingredient.unit,
+            pantryItem.unit,
+            ingredient.name
+          );
+          
+          if (converted) {
+            consumeQuantity = converted.quantity;
+          } else {
+            // Dönüştürülemezse, birimler uyumsuz - atla
+            results.failed.push(`${ingredient.name} (birim uyumsuz: ${ingredient.unit} → ${pantryItem.unit})`);
+            continue;
+          }
+        }
+
         // Miktarı düş
-        const newQuantity = Math.max(0, pantryItem.quantity - ingredient.quantity);
+        const newQuantity = Math.max(0, pantryItem.quantity - consumeQuantity);
 
         if (newQuantity === 0) {
           // Miktar sıfır olduysa sil

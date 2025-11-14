@@ -13,6 +13,8 @@ interface MarketItem {
   name: string;
   quantity: number;
   unit: string;
+  marketQuantity?: number;
+  marketUnit?: string;
   category: string;
   completed: boolean;
 }
@@ -20,12 +22,16 @@ interface MarketItem {
 export default function MarketPage() {
   const { token } = useAuth();
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingItem, setEditingItem] = useState<MarketItem | null>(null);
   
   // Form states
   const [newItemName, setNewItemName] = useState('');
   const [newItemCategory, setNewItemCategory] = useState('');
   const [newItemQuantity, setNewItemQuantity] = useState('');
   const [newItemUnit, setNewItemUnit] = useState('adet');
+  const [editMarketQuantity, setEditMarketQuantity] = useState('');
+  const [editMarketUnit, setEditMarketUnit] = useState('');
   const [items, setItems] = useState<MarketItem[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -59,6 +65,35 @@ export default function MarketPage() {
       loadMarketItems();
     } else {
       toast.error('Ürün eklenemedi');
+    }
+  };
+
+  const handleEdit = (item: MarketItem) => {
+    setEditingItem(item);
+    setEditMarketQuantity((item.marketQuantity || item.quantity).toString());
+    setEditMarketUnit(item.marketUnit || item.unit);
+    setShowEditModal(true);
+  };
+
+  const handleUpdate = async () => {
+    if (!token || !editingItem) return;
+
+    const response = await api.put(
+      `/api/market/${editingItem.id}`,
+      {
+        marketQuantity: parseFloat(editMarketQuantity),
+        marketUnit: editMarketUnit,
+      },
+      token
+    );
+
+    if (response.success) {
+      toast.success('Market paketi güncellendi');
+      setShowEditModal(false);
+      setEditingItem(null);
+      loadMarketItems();
+    } else {
+      toast.error('Güncelleme başarısız');
     }
   };
 
@@ -265,11 +300,25 @@ export default function MarketPage() {
                               <p className="text-white text-base font-semibold leading-normal">
                                 {item.name}
                               </p>
-                              <p className="text-white/60 text-sm font-normal">
-                                {item.quantity} {item.unit}
-                              </p>
+                              <div className="flex flex-col gap-0.5">
+                                <p className="text-white/40 text-xs font-normal">
+                                  Gereken: {item.quantity} {item.unit}
+                                </p>
+                                <p className="text-[#30D158] text-sm font-medium">
+                                  Alınacak: {item.marketQuantity || item.quantity} {item.marketUnit || item.unit}
+                                </p>
+                              </div>
                             </div>
                             <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleEdit(item)}
+                                className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/80 hover:bg-blue-500"
+                                title="Düzenle"
+                              >
+                                <span className="material-symbols-outlined text-white text-xl">
+                                  edit
+                                </span>
+                              </button>
                               <button
                                 onClick={() => handleMoveToPantry(item.id)}
                                 className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#30D158] hover:bg-[#30D158]/90"
@@ -310,6 +359,88 @@ export default function MarketPage() {
 
         {/* Bottom Navigation */}
         <BottomNav />
+
+        {/* Edit Market Package Modal */}
+        {showEditModal && editingItem && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="flex w-full max-w-sm flex-col overflow-hidden bg-[#121212] rounded-xl">
+              <div className="flex shrink-0 items-center border-b border-[#3A3A3C] px-4 py-3">
+                <div className="w-8"></div>
+                <h2 className="flex-1 text-center text-base font-bold tracking-tight text-white">
+                  Market Paketi Düzenle
+                </h2>
+                <button
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setEditingItem(null);
+                  }}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-white hover:bg-white/10"
+                >
+                  <span className="material-symbols-outlined text-xl">close</span>
+                </button>
+              </div>
+
+              <div className="flex-1 space-y-4 p-4">
+                <div className="rounded-lg bg-[#1E1E1E] p-3">
+                  <p className="text-sm text-white/60 mb-1">Malzeme</p>
+                  <p className="text-base font-semibold text-white">{editingItem.name}</p>
+                </div>
+
+                <div className="rounded-lg bg-[#1E1E1E] p-3">
+                  <p className="text-sm text-white/60 mb-1">Tariften Gereken</p>
+                  <p className="text-base text-white/80">
+                    {editingItem.quantity} {editingItem.unit}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-white">Market'ten Alınacak</p>
+                  <div className="flex items-end gap-3">
+                    <label className="flex min-w-0 flex-[2] flex-col">
+                      <p className="pb-1.5 text-sm font-medium text-white">Miktar</p>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.1"
+                        value={editMarketQuantity}
+                        onChange={(e) => setEditMarketQuantity(e.target.value)}
+                        className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                        placeholder="0"
+                      />
+                    </label>
+                    <label className="flex min-w-0 flex-1 flex-col">
+                      <p className="pb-1.5 text-sm font-medium text-white">Birim</p>
+                      <select
+                        value={editMarketUnit}
+                        onChange={(e) => setEditMarketUnit(e.target.value)}
+                        className="form-select w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                      >
+                        <option value="adet">adet</option>
+                        <option value="paket">paket</option>
+                        <option value="kg">kg</option>
+                        <option value="gr">gr</option>
+                        <option value="litre">litre</option>
+                        <option value="ml">ml</option>
+                      </select>
+                    </label>
+                  </div>
+                  <p className="text-xs text-white/40">
+                    Örn: Tarif 5 gr vanilya istiyor, market'ten 1 paket alacaksınız
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex shrink-0 border-t border-[#3A3A3C] p-4">
+                <button
+                  onClick={handleUpdate}
+                  className="flex h-11 w-full items-center justify-center rounded-lg bg-[#30D158] text-sm font-bold text-white hover:opacity-90"
+                >
+                  Güncelle
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Add Item Modal */}
         {showAddModal && (

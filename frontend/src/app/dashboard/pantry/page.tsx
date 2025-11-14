@@ -35,6 +35,7 @@ export default function PantryPage() {
   const [newItemName, setNewItemName] = useState('');
   const [newItemCategory, setNewItemCategory] = useState('');
   const [newItemQuantity, setNewItemQuantity] = useState('');
+  const [newItemMinQuantity, setNewItemMinQuantity] = useState('');
   const [newItemUnit, setNewItemUnit] = useState('adet');
   const [newItemExpiryDate, setNewItemExpiryDate] = useState('');
   
@@ -156,6 +157,18 @@ export default function PantryPage() {
     searchIngredients(value);
   };
 
+  const handleQuantityChange = (value: string) => {
+    setNewItemQuantity(value);
+    // Miktar değiştiğinde minimum miktarı otomatik hesapla (%20)
+    const quantity = parseFloat(value);
+    if (!isNaN(quantity) && quantity > 0) {
+      const minQty = Math.round(quantity * 0.2 * 10) / 10; // %20'si, 1 ondalık basamak
+      setNewItemMinQuantity(minQty.toString());
+    } else {
+      setNewItemMinQuantity('');
+    }
+  };
+
   const selectIngredient = (ingredient: any) => {
     setNewItemName(ingredient.name);
     // Backend'den gelen kategori zaten doğru formatta (SEBZELER, MEYVELER, vb.)
@@ -184,6 +197,7 @@ export default function PantryPage() {
       name: newItemName,
       category: newItemCategory,
       quantity: parseFloat(newItemQuantity) || 1,
+      minQuantity: parseFloat(newItemMinQuantity) || 0,
       unit: newItemUnit,
       expiryDate: newItemExpiryDate || null,
     }, token);
@@ -194,6 +208,7 @@ export default function PantryPage() {
       setNewItemName('');
       setNewItemCategory('');
       setNewItemQuantity('');
+      setNewItemMinQuantity('');
       setNewItemUnit('adet');
       setNewItemExpiryDate('');
       setShowSuggestions(false);
@@ -209,6 +224,7 @@ export default function PantryPage() {
     setNewItemName(item.name);
     setNewItemCategory(item.category);
     setNewItemQuantity(item.quantity.toString());
+    setNewItemMinQuantity(item.minQuantity?.toString() || '0');
     setNewItemUnit(item.unit);
     setNewItemExpiryDate(item.expiryDate ? new Date(item.expiryDate).toISOString().split('T')[0] : '');
     setShowEditModal(true);
@@ -222,6 +238,7 @@ export default function PantryPage() {
       name: newItemName,
       category: newItemCategory,
       quantity: parseFloat(newItemQuantity) || 1,
+      minQuantity: parseFloat(newItemMinQuantity) || 0,
       unit: newItemUnit,
       expiryDate: newItemExpiryDate || null,
     }, token);
@@ -233,6 +250,7 @@ export default function PantryPage() {
       setNewItemName('');
       setNewItemCategory('');
       setNewItemQuantity('');
+      setNewItemMinQuantity('');
       setNewItemUnit('adet');
       setNewItemExpiryDate('');
       loadPantryItems();
@@ -532,7 +550,9 @@ export default function PantryPage() {
                               <div className="h-1.5 w-full rounded-full bg-black/20">
                                 <div
                                   className={`h-full rounded-full ${
-                                    percentage > 50
+                                    item.quantity <= item.minQuantity
+                                      ? 'bg-red-500'
+                                      : percentage > 50
                                       ? 'bg-[#30D158]'
                                       : percentage > 20
                                       ? 'bg-yellow-500'
@@ -597,13 +617,13 @@ export default function PantryPage() {
         {/* Edit Item Modal */}
         {showEditModal && editingItem && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="flex w-full max-w-sm flex-col overflow-hidden bg-[#121212] rounded-xl max-h-[85vh]">
-              <div className="flex shrink-0 items-center border-b border-[#3A3A3C] px-4 py-3">
-                <div className="w-8"></div>
-                <h2 className="flex-1 text-center text-base font-bold tracking-tight text-white">
+            <div className="flex w-full max-w-sm flex-col overflow-hidden bg-[#121212] rounded-xl">
+              <div className="flex shrink-0 items-center border-b border-[#3A3A3C] px-3 py-2">
+                <div className="w-6"></div>
+                <h2 className="flex-1 text-center text-sm font-bold tracking-tight text-white">
                   Malzeme Düzenle
                 </h2>
-                <div className="flex w-8 items-center justify-end">
+                <div className="flex w-6 items-center justify-end">
                   <button
                     onClick={() => {
                       setShowEditModal(false);
@@ -614,32 +634,32 @@ export default function PantryPage() {
                       setNewItemUnit('adet');
                       setNewItemExpiryDate('');
                     }}
-                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-white transition-colors hover:bg-white/10"
+                    className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-white transition-colors hover:bg-white/10"
                   >
-                    <span className="material-symbols-outlined text-xl">close</span>
+                    <span className="material-symbols-outlined text-lg">close</span>
                   </button>
                 </div>
               </div>
 
-              <form onSubmit={handleUpdate} className="flex-1 space-y-4 overflow-y-auto p-4">
+              <form onSubmit={handleUpdate} className="flex-1 space-y-3 p-3">
                 <label className="flex flex-col">
-                  <p className="pb-1.5 text-sm font-medium text-white">Malzeme Adı *</p>
+                  <p className="pb-1 text-xs font-medium text-white">Malzeme Adı *</p>
                   <input
                     required
                     value={newItemName}
                     onChange={(e) => setNewItemName(e.target.value)}
-                    className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                    className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-2 text-xs text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
                     placeholder="Örn: Domates"
                   />
                 </label>
 
                 <label className="flex flex-col">
-                  <p className="pb-1.5 text-sm font-medium text-white">Kategori *</p>
+                  <p className="pb-1 text-xs font-medium text-white">Kategori *</p>
                   <select
                     required
                     value={newItemCategory}
                     onChange={(e) => setNewItemCategory(e.target.value)}
-                    className="form-select w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                    className="form-select w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-2 text-xs text-white focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
                   >
                     <option value="">Kategori Seç</option>
                     <option value="SEBZELER">Sebzeler</option>
@@ -653,25 +673,25 @@ export default function PantryPage() {
                   </select>
                 </label>
 
-                <div className="flex items-end gap-3">
+                <div className="flex items-end gap-2">
                   <label className="flex min-w-0 flex-[2] flex-col">
-                    <p className="pb-1.5 text-sm font-medium text-white">Miktar</p>
+                    <p className="pb-1 text-xs font-medium text-white">Miktar</p>
                     <input
                       type="number"
                       min="0"
                       step="0.1"
                       value={newItemQuantity}
                       onChange={(e) => setNewItemQuantity(e.target.value)}
-                      className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                      className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-2 text-xs text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
                       placeholder="0"
                     />
                   </label>
                   <label className="flex min-w-0 flex-1 flex-col">
-                    <p className="pb-1.5 text-sm font-medium text-white">Birim</p>
+                    <p className="pb-1 text-xs font-medium text-white">Birim</p>
                     <select
                       value={newItemUnit}
                       onChange={(e) => setNewItemUnit(e.target.value)}
-                      className="form-select w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                      className="form-select w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-2 text-xs text-white focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
                     >
                       <option value="adet">adet</option>
                       <option value="kg">kg</option>
@@ -683,32 +703,43 @@ export default function PantryPage() {
                 </div>
 
                 <label className="flex flex-col">
-                  <p className="pb-1.5 text-sm font-medium text-white">
-                    Son Kullanma Tarihi (Opsiyonel)
+                  <p className="pb-1 text-xs font-medium text-white">
+                    Min. Miktar
+                  </p>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    value={newItemMinQuantity}
+                    onChange={(e) => setNewItemMinQuantity(e.target.value)}
+                    className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-2 text-xs text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                    placeholder="Örn: 1"
+                  />
+                  <p className="pt-0.5 text-[10px] text-[#A0A0A0]">
+                    Bu miktarın altında kırmızı gösterilir
+                  </p>
+                </label>
+
+                <label className="flex flex-col">
+                  <p className="pb-1 text-xs font-medium text-white">
+                    Son Kullanma Tarihi
                   </p>
                   <div className="relative flex w-full items-stretch rounded-lg">
                     <input
                       type="date"
                       value={newItemExpiryDate}
                       onChange={(e) => setNewItemExpiryDate(e.target.value)}
-                      className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] py-3 pl-3 pr-10 text-sm text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                      className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] py-2 pl-2 pr-8 text-xs text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
                       placeholder="Tarih Seç"
                     />
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-[#A0A0A0]">
-                      <span className="material-symbols-outlined text-lg">calendar_today</span>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-[#A0A0A0]">
+                      <span className="material-symbols-outlined text-base">calendar_today</span>
                     </div>
                   </div>
                 </label>
               </form>
 
-              <div className="flex shrink-0 flex-col space-y-2 border-t border-[#3A3A3C] p-4">
-                <button
-                  onClick={handleUpdate}
-                  type="button"
-                  className="flex h-11 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#30D158] text-sm font-bold text-white transition-opacity hover:opacity-90"
-                >
-                  Güncelle
-                </button>
+              <div className="flex shrink-0 gap-2 border-t border-[#3A3A3C] p-3">
                 <button
                   onClick={() => {
                     setShowEditModal(false);
@@ -720,9 +751,16 @@ export default function PantryPage() {
                     setNewItemExpiryDate('');
                   }}
                   type="button"
-                  className="flex h-11 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-transparent text-sm font-bold text-[#A0A0A0] transition-colors hover:bg-white/10"
+                  className="flex h-9 flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-transparent text-xs font-bold text-[#A0A0A0] transition-colors hover:bg-white/10"
                 >
                   İptal
+                </button>
+                <button
+                  onClick={handleUpdate}
+                  type="button"
+                  className="flex h-9 flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#30D158] text-xs font-bold text-white transition-opacity hover:opacity-90"
+                >
+                  Güncelle
                 </button>
               </div>
             </div>
@@ -732,28 +770,28 @@ export default function PantryPage() {
         {/* Add Item Modal */}
         {showAddModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="flex w-full max-w-sm flex-col overflow-hidden bg-[#121212] rounded-xl max-h-[85vh]">
+            <div className="flex w-full max-w-sm flex-col overflow-hidden bg-[#121212] rounded-xl">
               {/* Modal Header */}
-              <div className="flex shrink-0 items-center border-b border-[#3A3A3C] px-4 py-3">
-                <div className="w-8"></div>
-                <h2 className="flex-1 text-center text-base font-bold tracking-tight text-white">
+              <div className="flex shrink-0 items-center border-b border-[#3A3A3C] px-3 py-2">
+                <div className="w-6"></div>
+                <h2 className="flex-1 text-center text-sm font-bold tracking-tight text-white">
                   Malzeme Ekle
                 </h2>
-                <div className="flex w-8 items-center justify-end">
+                <div className="flex w-6 items-center justify-end">
                   <button
                     onClick={() => setShowAddModal(false)}
-                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-white transition-colors hover:bg-white/10"
+                    className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-white transition-colors hover:bg-white/10"
                   >
-                    <span className="material-symbols-outlined text-xl">close</span>
+                    <span className="material-symbols-outlined text-lg">close</span>
                   </button>
                 </div>
               </div>
 
               {/* Form Content */}
-              <form onSubmit={handleAdd} className="flex-1 space-y-4 overflow-y-auto p-4">
+              <form onSubmit={handleAdd} className="flex-1 space-y-3 p-3">
                 {/* Ingredient Name */}
                 <label className="flex flex-col relative">
-                  <p className="pb-1.5 text-sm font-medium text-white">
+                  <p className="pb-1 text-xs font-medium text-white">
                     Malzeme Adı *
                   </p>
                   <input
@@ -761,22 +799,22 @@ export default function PantryPage() {
                     value={newItemName}
                     onChange={(e) => handleIngredientNameChange(e.target.value)}
                     onFocus={() => newItemName.length >= 2 && setShowSuggestions(true)}
-                    className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                    className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-2 text-xs text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
                     placeholder="Örn: Domates"
                     autoComplete="off"
                   />
                   {/* Autocomplete Suggestions */}
                   {showSuggestions && ingredientSuggestions.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-[#1E1E1E] border border-[#3A3A3C] rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-[#1E1E1E] border border-[#3A3A3C] rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto">
                       {ingredientSuggestions.map((ingredient, index) => (
                         <button
                           key={index}
                           type="button"
                           onClick={() => selectIngredient(ingredient)}
-                          className="w-full text-left px-3 py-2 hover:bg-[#30D158]/10 text-white text-sm border-b border-[#3A3A3C] last:border-b-0"
+                          className="w-full text-left px-2 py-1.5 hover:bg-[#30D158]/10 text-white text-xs border-b border-[#3A3A3C] last:border-b-0"
                         >
                           <div className="font-medium">{ingredient.name}</div>
-                          <div className="text-xs text-[#A0A0A0]">
+                          <div className="text-[10px] text-[#A0A0A0]">
                             {ingredient.category.name} • {ingredient.defaultUnit}
                           </div>
                         </button>
@@ -787,14 +825,14 @@ export default function PantryPage() {
 
                 {/* Category */}
                 <label className="flex flex-col">
-                  <p className="pb-1.5 text-sm font-medium text-white">
+                  <p className="pb-1 text-xs font-medium text-white">
                     Kategori *
                   </p>
                   <select
                     required
                     value={newItemCategory}
                     onChange={(e) => setNewItemCategory(e.target.value)}
-                    className="form-select w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                    className="form-select w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-2 text-xs text-white focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
                   >
                     <option value="">Kategori Seç</option>
                     <option value="SEBZELER">Sebzeler</option>
@@ -809,25 +847,25 @@ export default function PantryPage() {
                 </label>
 
                 {/* Quantity & Unit */}
-                <div className="flex items-end gap-3">
+                <div className="flex items-end gap-2">
                   <label className="flex min-w-0 flex-[2] flex-col">
-                    <p className="pb-1.5 text-sm font-medium text-white">Miktar</p>
+                    <p className="pb-1 text-xs font-medium text-white">Miktar</p>
                     <input
                       type="number"
                       min="0"
                       step="0.1"
                       value={newItemQuantity}
-                      onChange={(e) => setNewItemQuantity(e.target.value)}
-                      className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                      onChange={(e) => handleQuantityChange(e.target.value)}
+                      className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-2 text-xs text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
                       placeholder="0"
                     />
                   </label>
                   <label className="flex min-w-0 flex-1 flex-col">
-                    <p className="pb-1.5 text-sm font-medium text-white">Birim</p>
+                    <p className="pb-1 text-xs font-medium text-white">Birim</p>
                     <select
                       value={newItemUnit}
                       onChange={(e) => setNewItemUnit(e.target.value)}
-                      className="form-select w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-3 text-sm text-white focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                      className="form-select w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-2 text-xs text-white focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
                     >
                       <option value="adet">adet</option>
                       <option value="kg">kg</option>
@@ -838,41 +876,60 @@ export default function PantryPage() {
                   </label>
                 </div>
 
+                {/* Min Quantity */}
+                <label className="flex flex-col">
+                  <p className="pb-1 text-xs font-medium text-white">
+                    Min. Miktar
+                  </p>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    value={newItemMinQuantity}
+                    onChange={(e) => setNewItemMinQuantity(e.target.value)}
+                    className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] p-2 text-xs text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                    placeholder="Otomatik"
+                  />
+                  <p className="pt-0.5 text-[10px] text-[#A0A0A0]">
+                    Otomatik: Miktarın %20'si
+                  </p>
+                </label>
+
                 {/* Expiry Date */}
                 <label className="flex flex-col">
-                  <p className="pb-1.5 text-sm font-medium text-white">
-                    Son Kullanma Tarihi (Opsiyonel)
+                  <p className="pb-1 text-xs font-medium text-white">
+                    Son Kullanma Tarihi
                   </p>
                   <div className="relative flex w-full items-stretch rounded-lg">
                     <input
                       type="date"
                       value={newItemExpiryDate}
                       onChange={(e) => setNewItemExpiryDate(e.target.value)}
-                      className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] py-3 pl-3 pr-10 text-sm text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
+                      className="form-input flex w-full rounded-lg border border-[#3A3A3C] bg-[#1E1E1E] py-2 pl-2 pr-8 text-xs text-white placeholder:text-[#A0A0A0] focus:border-[#30D158] focus:outline-0 focus:ring-1 focus:ring-[#30D158]"
                       placeholder="Tarih Seç"
                     />
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-[#A0A0A0]">
-                      <span className="material-symbols-outlined text-lg">calendar_today</span>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-[#A0A0A0]">
+                      <span className="material-symbols-outlined text-base">calendar_today</span>
                     </div>
                   </div>
                 </label>
               </form>
 
               {/* Modal Actions */}
-              <div className="flex shrink-0 flex-col space-y-2 border-t border-[#3A3A3C] p-4">
-                <button
-                  onClick={handleAdd}
-                  type="button"
-                  className="flex h-11 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#30D158] text-sm font-bold text-white transition-opacity hover:opacity-90"
-                >
-                  Ekle
-                </button>
+              <div className="flex shrink-0 gap-2 border-t border-[#3A3A3C] p-3">
                 <button
                   onClick={() => setShowAddModal(false)}
                   type="button"
-                  className="flex h-11 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-transparent text-sm font-bold text-[#A0A0A0] transition-colors hover:bg-white/10"
+                  className="flex h-9 flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-transparent text-xs font-bold text-[#A0A0A0] transition-colors hover:bg-white/10"
                 >
                   İptal
+                </button>
+                <button
+                  onClick={handleAdd}
+                  type="button"
+                  className="flex h-9 flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#30D158] text-xs font-bold text-white transition-opacity hover:opacity-90"
+                >
+                  Ekle
                 </button>
               </div>
             </div>

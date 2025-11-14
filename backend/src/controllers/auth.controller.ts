@@ -63,4 +63,35 @@ export const authController = {
       });
     }
   },
+
+  async googleAuth(req: Request, res: Response) {
+    try {
+      const { token } = req.body;
+
+      if (!token) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 2001,
+            message: 'Google token gerekli',
+          },
+        });
+      }
+
+      const result = await authService.googleAuth(token);
+
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error: any) {
+      return res.status(401).json({
+        success: false,
+        error: {
+          code: error.code || 1002,
+          message: error.message || 'Google girişi başarısız',
+        },
+      });
+    }
+  },
 };

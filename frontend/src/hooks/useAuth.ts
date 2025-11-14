@@ -66,6 +66,24 @@ export const useAuth = () => {
     return { success: false, error: response.error?.message || 'Registration failed' };
   };
 
+  const googleLogin = async (googleToken: string) => {
+    const response = await api.post<AuthResponse>('/api/auth/google', { token: googleToken });
+
+    if (response.success && response.data) {
+      const { user, token } = response.data;
+      setUser(user);
+      setToken(token);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+      router.push('/dashboard');
+      return { success: true };
+    }
+
+    return { success: false, error: response.error?.message || 'Google login failed' };
+  };
+
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -82,6 +100,7 @@ export const useAuth = () => {
     loading,
     login,
     register,
+    googleLogin,
     logout,
     isAuthenticated: !!user,
   };

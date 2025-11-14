@@ -108,7 +108,7 @@ export const marketController = {
     try {
       const userId = req.user?.userId;
       const { id } = req.params;
-      const { name, category, quantity, unit } = req.body;
+      const { name, category, quantity, unit, marketQuantity, marketUnit } = req.body;
 
       if (!userId) {
         return res.status(401).json({
@@ -131,7 +131,7 @@ export const marketController = {
       const item = await marketService.updateMarketItem(
         parseInt(id),
         user.kitchenId,
-        { name, category, quantity, unit }
+        { name, category, quantity, unit, marketQuantity, marketUnit }
       );
 
       return res.status(200).json({

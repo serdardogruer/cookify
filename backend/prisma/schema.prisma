@@ -14,8 +14,11 @@ model User {
   id            Int             @id @default(autoincrement())
   name          String
   email         String          @unique
-  password      String
+  password      String?         // Google ile giriş yapanlar için opsiyonel
+  googleId      String?         @unique // Google OAuth ID
   profileImage  String?
+  phone         String?         // Telefon numarası
+  phoneVerified Boolean         @default(false) // Telefon doğrulandı mı
   kitchenId     Int?
   kitchen       Kitchen?        @relation("ActiveKitchen", fields: [kitchenId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   ownedKitchens Kitchen[]       @relation("KitchenOwner")
@@ -116,16 +119,18 @@ model PantryItem {
 
 // Market Item Model
 model MarketItem {
-  id        Int          @id @default(autoincrement())
-  kitchenId Int
-  kitchen   Kitchen      @relation(fields: [kitchenId], references: [id])
-  name      String
-  category  String
-  quantity  Float
-  unit      String
-  status    String       @default("PENDING")
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id                Int          @id @default(autoincrement())
+  kitchenId         Int
+  kitchen           Kitchen      @relation(fields: [kitchenId], references: [id])
+  name              String
+  category          String
+  quantity          Float        // Tariften gelen miktar (defaultUnit ile)
+  unit              String       // Tariften gelen birim (defaultUnit)
+  marketQuantity    Float?       // Kullanıcının alacağı miktar (market paketi)
+  marketUnit        String?      // Kullanıcının alacağı birim (market paketi)
+  status            String       @default("PENDING")
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
 
   @@map("market_items")
 }
