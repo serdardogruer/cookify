@@ -8,6 +8,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import { PantryItem } from '@/types/pantry';
+import ConsumeModal from '@/components/ConsumeModal';
+import CustomMealModal from '@/components/CustomMealModal';
+import AddCustomMealModal from '@/components/AddCustomMealModal';
 
 export default function PantryPage() {
   const { token } = useAuth();
@@ -17,8 +20,16 @@ export default function PantryPage() {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showConsumeModal, setShowConsumeModal] = useState(false);
+  const [consumingItem, setConsumingItem] = useState<PantryItem | null>(null);
+  const [consumeAmount, setConsumeAmount] = useState('');
   const [editingItem, setEditingItem] = useState<PantryItem | null>(null);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+  
+  // Custom meals
+  const [showMealModal, setShowMealModal] = useState(false);
+  const [customMeals, setCustomMeals] = useState<any[]>([]);
+  const [showAddMealModal, setShowAddMealModal] = useState(false);
   
   // Form states
   const [newItemName, setNewItemName] = useState('');
@@ -55,7 +66,58 @@ export default function PantryPage() {
 
   useEffect(() => {
     loadPantryItems();
+    loadCustomMeals();
   }, [token]);
+
+  const loadCustomMeals = async () => {
+    if (!token) return;
+
+    const response = await api.get<any[]>('/api/custom-meals', token);
+    if (response.success && response.data) {
+      setCustomMeals(response.data);
+    }
+  };
+
+  const handleMealConsume = async (mealId: number, servings: number) => {
+    if (!token) return;
+
+    const response = await api.post(
+      '/api/custom-meals/consume',
+      { mealId, servings },
+      token
+    );
+
+    if (response.success) {
+      toast.success('Malzemeler düşüldü!');
+      setShowMealModal(false);
+      loadPantryItems();
+    } else {
+      toast.error('İşlem başarısız');
+    }
+  };
+
+  const handleAddMeal = () => {
+    setShowMealModal(false);
+    setShowAddMealModal(true);
+  };
+
+  const handleSaveMeal = async (name: string, ingredients: any[]) => {
+    if (!token) return;
+
+    const response = await api.post(
+      '/api/custom-meals',
+      { name, ingredients },
+      token
+    );
+
+    if (response.success) {
+      toast.success('Yemek eklendi!');
+      setShowAddMealModal(false);
+      loadCustomMeals();
+    } else {
+      toast.error('Kayıt başarısız');
+    }
+  };
 
   const loadPantryItems = async () => {
     if (!token) {
@@ -191,6 +253,45 @@ export default function PantryPage() {
     }
   };
 
+  const handleConsumeClick = (item: PantryItem) => {
+    setConsumingItem(item);
+    setConsumeAmount('');
+    setShowConsumeModal(true);
+  };
+
+  const handleConsumeSubmit = async () => {
+    if (!token || !consumingItem) return;
+    
+    const amount = parseFloat(consumeAmount);
+    if (isNaN(amount) || amount <= 0) {
+      toast.error('Geçerli bir miktar girin');
+      return;
+    }
+
+    if (amount > consumingItem.quantity) {
+      toast.error('Stoktan fazla miktar düşülemez');
+      return;
+    }
+
+    const newQuantity = consumingItem.quantity - amount;
+
+    const response = await api.put(
+      `/api/pantry/${consumingItem.id}`,
+      { quantity: newQuantity },
+      token
+    );
+
+    if (response.success) {
+      toast.success(`${amount} ${consumingItem.unit} düşüldü`);
+      setShowConsumeModal(false);
+      setConsumingItem(null);
+      setConsumeAmount('');
+      loadPantryItems();
+    } else {
+      toast.error('İşlem başarısız');
+    }
+  };
+
   const handleAddToMarket = async (id: number) => {
     if (!token) return;
 
@@ -278,8 +379,15 @@ export default function PantryPage() {
         {/* Content Container */}
         <div className="max-w-7xl mx-auto w-full">
           {/* Page Header */}
-          <div className="px-4 py-4">
+          <div className="px-4 py-4 flex items-center justify-between">
             <h1 className="text-white text-2xl font-bold">Dolabım</h1>
+            <button
+              onClick={() => setShowMealModal(true)}
+              className="flex items-center gap-2 rounded-lg bg-[#30D158] px-4 py-2 text-sm font-medium text-white hover:bg-[#30D158]/90 transition"
+            >
+              <span className="material-symbols-outlined text-base">restaurant</span>
+              Yemek Yaptım
+            </button>
           </div>
 
           {/* Search Bar */}
@@ -383,6 +491,15 @@ export default function PantryPage() {
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <button
+                                    onClick={() => handleConsumeClick(item)}
+                                    className="flex h-7 w-7 items-center justify-center rounded bg-orange-600 text-white hover:bg-orange-700"
+                                    title="Stok Düş"
+                                  >
+                                    <span className="material-symbols-outlined text-base">
+                                      remove
+                                    </span>
+                                  </button>
+                                  <button
                                     onClick={() => handleAddToMarket(item.id)}
                                     className="flex h-7 w-7 items-center justify-center rounded bg-blue-600 text-white hover:bg-blue-700"
                                     title="Market'e ekle"
@@ -446,6 +563,36 @@ export default function PantryPage() {
 
         {/* Bottom Navigation */}
         <BottomNav />
+
+        {/* Consume Modal */}
+        <ConsumeModal
+          isOpen={showConsumeModal}
+          onClose={() => {
+            setShowConsumeModal(false);
+            setConsumingItem(null);
+            setConsumeAmount('');
+          }}
+          item={consumingItem}
+          consumeAmount={consumeAmount}
+          setConsumeAmount={setConsumeAmount}
+          onSubmit={handleConsumeSubmit}
+        />
+
+        {/* Custom Meal Modal */}
+        <CustomMealModal
+          isOpen={showMealModal}
+          onClose={() => setShowMealModal(false)}
+          meals={customMeals}
+          onSelectMeal={handleMealConsume}
+          onAddMeal={handleAddMeal}
+        />
+
+        {/* Add Custom Meal Modal */}
+        <AddCustomMealModal
+          isOpen={showAddMealModal}
+          onClose={() => setShowAddMealModal(false)}
+          onSubmit={handleSaveMeal}
+        />
 
         {/* Edit Item Modal */}
         {showEditModal && editingItem && (

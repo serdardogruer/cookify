@@ -2,879 +2,524 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
+import { toast } from '@/lib/toast';
 
-export default function EditRecipePage() {
+interface Recipe {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+  video?: string;
+  prepTime?: number;
+  cookTime?: number;
+  servings: number;
+  difficulty: string;
+  category: string;
+  cuisine: string;
+  tags: string[];
+  ingredients: RecipeIngredient[];
+  instructions: RecipeInstruction[];
+}
+
+interface RecipeIngredient {
+  name: string;
+  quantity: number;
+  unit: string;
+}
+
+interface RecipeInstruction {
+  stepNumber: number;
+  instruction: string;
+}
+
+export default function RecipeEditPage() {
   const router = useRouter();
   const params = useParams();
-  const { token } = useAuth();
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const { token, user } = useAuth();
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    image: '',
-    video: '',
-    prepTime: '',
-    cookTime: '',
-    servings: '4',
-    difficulty: 'MEDIUM',
-    category: '',
-    cuisine: '',
-  });
-
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>('');
-  const [uploadingImage, setUploadingImage] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     loadRecipe();
   }, [params.id, token]);
 
   const loadRecipe = async () => {
-    if (!token) return;
+    if (!token || !params.id) {
+      setLoading(false);
+      return;
+    }
 
-    const response = await api.get<any>(`/api/recipes/${params.id}`, token);
-    if (response.success && response.data) {
-      const recipe = response.data;
-      setFormData({
-        title: recipe.title || '',
-        description: recipe.description || '',
-        image: recipe.image || '',
-        video: recipe.video || '',
-        prepTime: recipe.prepTime?.toString() || '',
-        cookTime: recipe.cookTime?.toString() || '',
-        servings: recipe.servings?.toString() || '4',
-        difficulty: recipe.difficulty || 'MEDIUM',
-        category: recipe.category || '',
-        cuisine: recipe.cuisine || '',
-      });
-      
-      setIngredients(recipe.ingredients?.map((ing: any) => ({
+    const recipeResponse = await api.get<any>(`/api/recipes/${params.id}`, token);
+    
+    if (!recipeResponse.success || !recipeResponse.data) {
+      toast.error('Tarif bulunamadı');
+      router.push('/dashboard/recipe-search');
+      return;
+    }
+
+    const recipeData = recipeResponse.data;
+
+    // Yetki kontrolü
+    if (user && recipeData.userId !== user.id) {
+      toast.error('Bu tarifi düzenleme yetkiniz yok');
+      router.push(`/dashboard/recipe-detail/${params.id}`);
+      return;
+    }
+
+    setRecipe({
+      id: recipeData.id,
+      title: recipeData.title,
+      description: recipeData.description || '',
+      image: recipeData.image || '',
+      video: recipeData.video || '',
+      prepTime: recipeData.prepTime,
+      cookTime: recipeData.cookTime,
+      servings: recipeData.servings,
+      difficulty: recipeData.difficulty,
+      category: recipeData.category || '',
+      cuisine: recipeData.cuisine || '',
+      tags: recipeData.tags?.map((t: any) => t.tag) || [],
+      ingredients: recipeData.ingredients.map((ing: any) => ({
         name: ing.name,
-        quantity: ing.quantity.toString(),
+        quantity: ing.quantity,
         unit: ing.unit,
-        order: ing.order,
-      })) || [{ name: '', quantity: '', unit: 'adet', order: 0 }]);
-
-      setInstructions(recipe.instructions?.map((inst: any) => ({
+      })),
+      instructions: recipeData.instructions.map((inst: any) => ({
         stepNumber: inst.stepNumber,
         instruction: inst.instruction,
-        image: inst.image || '',
-      })) || [{ stepNumber: 1, instruction: '', image: '' }]);
+      })),
+    });
 
-      setTags(recipe.tags?.map((t: any) => t.tag) || []);
-      
-      if (recipe.image) {
-        setImagePreview(recipe.image);
-      }
-    } else {
-      setError('Tarif bulunamadı');
-    }
     setLoading(false);
   };
 
-  const [ingredients, setIngredients] = useState([
-    { name: '', quantity: '', unit: 'adet', order: 0 },
-  ]);
+  const getDifficultyText = (difficulty: string) => {
+    switch (difficulty) {
+      case 'EASY': return 'Kolay';
+      case 'MEDIUM': return 'Orta';
+      case 'HARD': return 'Zor';
+      default: return difficulty;
+    }
+  };
 
-  const [instructions, setInstructions] = useState([
-    { stepNumber: 1, instruction: '', image: '' },
-  ]);
+  const handleUpdate = (field: keyof Recipe, value: any) => {
+    if (recipe) {
+      setRecipe({ ...recipe, [field]: value });
+    }
+  };
 
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState('');
+  const handleIngredientUpdate = (index: number, field: keyof RecipeIngredient, value: any) => {
+    if (recipe) {
+      const newIngredients = [...recipe.ingredients];
+      newIngredients[index] = { ...newIngredients[index], [field]: value };
+      setRecipe({ ...recipe, ingredients: newIngredients });
+    }
+  };
 
-  const [showSauceSection, setShowSauceSection] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
-  const [sauces, setSauces] = useState([
-    { name: '', ingredients: '', instructions: '' },
-  ]);
+  const handleInstructionUpdate = (index: number, value: string) => {
+    if (recipe) {
+      const newInstructions = [...recipe.instructions];
+      newInstructions[index] = { ...newInstructions[index], instruction: value };
+      setRecipe({ ...recipe, instructions: newInstructions });
+    }
+  };
 
   const addIngredient = () => {
-    setIngredients([
-      ...ingredients,
-      { name: '', quantity: '', unit: 'adet', order: ingredients.length },
-    ]);
+    if (recipe) {
+      setRecipe({
+        ...recipe,
+        ingredients: [...recipe.ingredients, { name: '', quantity: 0, unit: 'Adet' }],
+      });
+    }
   };
 
   const removeIngredient = (index: number) => {
-    setIngredients(ingredients.filter((_, i) => i !== index));
-  };
-
-  const updateIngredient = (index: number, field: string, value: string) => {
-    const updated = [...ingredients];
-    updated[index] = { ...updated[index], [field]: value };
-    setIngredients(updated);
+    if (recipe) {
+      setRecipe({
+        ...recipe,
+        ingredients: recipe.ingredients.filter((_, i) => i !== index),
+      });
+    }
   };
 
   const addInstruction = () => {
-    setInstructions([
-      ...instructions,
-      { stepNumber: instructions.length + 1, instruction: '', image: '' },
-    ]);
+    if (recipe) {
+      setRecipe({
+        ...recipe,
+        instructions: [
+          ...recipe.instructions,
+          { stepNumber: recipe.instructions.length + 1, instruction: '' },
+        ],
+      });
+    }
   };
 
   const removeInstruction = (index: number) => {
-    const updated = instructions.filter((_, i) => i !== index);
-    // Adım numaralarını yeniden düzenle
-    updated.forEach((inst, i) => {
-      inst.stepNumber = i + 1;
-    });
-    setInstructions(updated);
+    if (recipe) {
+      const newInstructions = recipe.instructions
+        .filter((_, i) => i !== index)
+        .map((inst, i) => ({ ...inst, stepNumber: i + 1 }));
+      setRecipe({ ...recipe, instructions: newInstructions });
+    }
   };
 
-  const updateInstruction = (index: number, field: string, value: string) => {
-    const updated = [...instructions];
-    updated[index] = { ...updated[index], [field]: value };
-    setInstructions(updated);
-  };
-
-  const addTag = () => {
-    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
-      setTags([...tags, tagInput.trim()]);
-      setTagInput('');
+  const addTag = (tag: string) => {
+    if (recipe && tag.trim() && !recipe.tags.includes(tag.trim())) {
+      setRecipe({ ...recipe, tags: [...recipe.tags, tag.trim()] });
     }
   };
 
   const removeTag = (tag: string) => {
-    setTags(tags.filter((t) => t !== tag));
-  };
-
-  const addSauce = () => {
-    setSauces([...sauces, { name: '', ingredients: '', instructions: '' }]);
-  };
-
-  const removeSauce = (index: number) => {
-    setSauces(sauces.filter((_, i) => i !== index));
-  };
-
-  const updateSauce = (index: number, field: string, value: string) => {
-    const updated = [...sauces];
-    updated[index] = { ...updated[index], [field]: value };
-    setSauces(updated);
-  };
-
-  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      // Preview oluştur
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-      // URL inputunu temizle
-      setFormData({ ...formData, image: '' });
+    if (recipe) {
+      setRecipe({ ...recipe, tags: recipe.tags.filter(t => t !== tag) });
     }
   };
 
-  const uploadImage = async (): Promise<string | null> => {
-    if (!imageFile || !token) return null;
+  const handleSave = async () => {
+    if (!recipe || !token) return;
 
-    setUploadingImage(true);
-    const formDataUpload = new FormData();
-    formDataUpload.append('image', imageFile);
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/recipes/upload-image`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: formDataUpload,
-      });
-
-      const data = await response.json();
-      setUploadingImage(false);
-
-      if (data.success && data.imageUrl) {
-        return data.imageUrl;
-      }
-      return null;
-    } catch (error) {
-      setUploadingImage(false);
-      console.error('Image upload error:', error);
-      return null;
+    // Validation
+    if (!recipe.title.trim()) {
+      toast.error('Lütfen tarif adını girin');
+      return;
     }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-    setLoading(true);
-
-    if (!token) {
-      setError('Oturum açmanız gerekiyor');
-      setLoading(false);
+    if (recipe.servings < 1) {
+      toast.error('Lütfen kişi sayısını girin');
+      return;
+    }
+    if (recipe.ingredients.length === 0) {
+      toast.error('Lütfen en az bir malzeme ekleyin');
+      return;
+    }
+    if (recipe.instructions.length === 0) {
+      toast.error('Lütfen en az bir adım ekleyin');
       return;
     }
 
-    // Validasyon
-    if (ingredients.filter((i) => i.name.trim()).length === 0) {
-      setError('En az bir malzeme eklemelisiniz');
-      setLoading(false);
-      return;
-    }
+    setSaving(true);
 
-    if (instructions.filter((i) => i.instruction.trim()).length === 0) {
-      setError('En az bir talimat eklemelisiniz');
-      setLoading(false);
-      return;
-    }
-
-    // Görsel yükleme (eğer dosya seçildiyse)
-    let imageUrl = formData.image;
-    if (imageFile) {
-      const uploadedUrl = await uploadImage();
-      if (uploadedUrl) {
-        imageUrl = uploadedUrl;
-      } else {
-        setError('Görsel yüklenemedi');
-        setLoading(false);
-        return;
-      }
-    }
-
-    const data = {
-      title: formData.title,
-      description: formData.description || undefined,
-      image: imageUrl || undefined,
-      video: formData.video || undefined,
-      prepTime: formData.prepTime ? parseInt(formData.prepTime) : undefined,
-      cookTime: formData.cookTime ? parseInt(formData.cookTime) : undefined,
-      servings: parseInt(formData.servings),
-      difficulty: formData.difficulty,
-      category: formData.category || undefined,
-      cuisine: formData.cuisine || undefined,
-      ingredients: ingredients
-        .filter((i) => i.name.trim())
-        .map((i, idx) => ({
-          name: i.name,
-          quantity: parseFloat(i.quantity),
-          unit: i.unit,
-          order: idx,
-        })),
-      instructions: instructions
-        .filter((i) => i.instruction.trim())
-        .map((i) => ({
-          stepNumber: i.stepNumber,
-          instruction: i.instruction,
-          image: i.image || undefined,
-        })),
-      tags: tags.length > 0 ? tags : undefined,
+    const recipeData = {
+      title: recipe.title.trim(),
+      description: recipe.description.trim() || undefined,
+      image: recipe.image || undefined,
+      video: recipe.video || undefined,
+      prepTime: recipe.prepTime || undefined,
+      cookTime: recipe.cookTime || undefined,
+      servings: recipe.servings,
+      difficulty: recipe.difficulty,
+      category: recipe.category || undefined,
+      cuisine: recipe.cuisine || undefined,
+      ingredients: recipe.ingredients.map((ing, index) => ({
+        name: ing.name.trim(),
+        quantity: ing.quantity,
+        unit: ing.unit,
+        order: index + 1,
+      })),
+      instructions: recipe.instructions.map((inst) => ({
+        stepNumber: inst.stepNumber,
+        instruction: inst.instruction.trim(),
+      })),
+      tags: recipe.tags,
     };
 
-    const response = await api.put(`/api/recipes/${params.id}`, data, token);
+    const response = await api.put(`/api/recipes/${params.id}`, recipeData, token);
 
     if (response.success) {
-      setSuccess('Tarif başarıyla güncellendi!');
-      setTimeout(() => {
-        router.push(`/dashboard/recipe-detail/${params.id}`);
-      }, 1500);
+      toast.success('Tarif başarıyla güncellendi!');
+      router.push(`/dashboard/recipe-detail/${params.id}`);
     } else {
-      setError(response.error?.message || 'Tarif güncellenemedi');
+      toast.error(response.error?.message || 'Tarif güncellenirken hata oluştu');
     }
 
-    setLoading(false);
+    setSaving(false);
   };
 
-  if (loading) {
+  if (loading || !recipe) {
     return (
-      <ProtectedRoute>
-        <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-            <p>Yükleniyor...</p>
-          </div>
-        </div>
-      </ProtectedRoute>
+      <div className="min-h-screen flex items-center justify-center bg-[#121212]">
+        <div className="text-white text-xl">Yükleniyor...</div>
+      </div>
     );
   }
 
   return (
-    <ProtectedRoute>
-      <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-8 flex items-center justify-end">
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setShowSidebar(true)}
-              className="md:hidden px-4 py-2 bg-gray-800 rounded-lg border border-gray-700 flex items-center gap-2"
-            >
-              <span>📋</span>
-              <span className="text-sm">İpuçları</span>
-            </button>
-          </div>
+    <div className="relative w-full min-h-screen flex flex-col bg-[#121212]">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-[#121212]/80 backdrop-blur-sm border-b border-[#3A3A3C]">
+        <div className="max-w-4xl mx-auto p-4">
+          <input
+            type="text"
+            value={recipe.title}
+            onChange={(e) => handleUpdate('title', e.target.value)}
+            className="w-full text-xl font-bold text-white text-center bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-[#30D158] rounded px-2"
+            placeholder="Tarif Adı"
+          />
+        </div>
+      </div>
 
-          <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-            {/* Sidebar - Desktop only */}
-            <div className="hidden md:block w-64 space-y-4">
-              <div className="bg-gray-800 rounded-lg p-4">
-                <h2 className="text-lg font-semibold mb-4">📝 İpuçları</h2>
-                <div className="text-sm text-gray-400 space-y-3">
-                  <p>
-                    <strong className="text-white">Başlık:</strong> Kısa ve açıklayıcı olsun
-                  </p>
-                  <p>
-                    <strong className="text-white">Malzemeler:</strong> Miktarları net belirtin
-                  </p>
-                  <p>
-                    <strong className="text-white">Adımlar:</strong> Sıralı ve anlaşılır yazın
-                  </p>
-                  <p>
-                    <strong className="text-white">Soslar:</strong> Özel sos varsa ekleyin
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-gray-800 rounded-lg p-4">
-                <h2 className="text-lg font-semibold mb-4">🎯 Hızlı Erişim</h2>
-                <div className="space-y-2">
-                  <button
-                    onClick={() => document.getElementById('ingredients')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="w-full text-left px-3 py-2 rounded hover:bg-gray-700 text-sm"
-                  >
-                    🥘 Malzemeler
-                  </button>
-                  <button
-                    onClick={() => document.getElementById('instructions')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="w-full text-left px-3 py-2 rounded hover:bg-gray-700 text-sm"
-                  >
-                    📋 Yapılışı
-                  </button>
-                  <button
-                    onClick={() => document.getElementById('sauces')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="w-full text-left px-3 py-2 rounded hover:bg-gray-700 text-sm"
-                  >
-                    🍯 Soslar
-                  </button>
-                  <button
-                    onClick={() => document.getElementById('tags')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="w-full text-left px-3 py-2 rounded hover:bg-gray-700 text-sm"
-                  >
-                    🏷️ Etiketler
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="flex-1">
-
-          {error && (
-            <div className="mb-4 bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded">
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="mb-4 bg-green-500/10 border border-green-500 text-green-500 px-4 py-3 rounded">
-              {success}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Temel Bilgiler */}
-            <div className="bg-gray-800 rounded-lg p-4 md:p-6">
-              <h2 className="text-xl font-semibold mb-4">📝 Temel Bilgiler</h2>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Tarif Adı *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.title}
-                    onChange={(e) =>
-                      setFormData({ ...formData, title: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                    placeholder="Örn: Mercimek Çorbası"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Açıklama
-                  </label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                    rows={3}
-                    placeholder="Tarif hakkında kısa bir açıklama..."
-                  />
-                </div>
-
-                {/* Görsel Yükleme */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Tarif Görseli
-                  </label>
-                  
-                  {/* Preview */}
-                  {(imagePreview || formData.image) && (
-                    <div className="mb-3">
-                      <img
-                        src={imagePreview || formData.image}
-                        alt="Preview"
-                        className="w-full h-48 object-cover rounded-lg"
-                      />
-                    </div>
-                  )}
-
-                  {/* Dosya Yükleme */}
-                  <div className="mb-3">
-                    <label className="block w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg cursor-pointer text-center">
-                      📁 Bilgisayardan Görsel Seç
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageFileChange}
-                        className="hidden"
-                      />
-                    </label>
-                  </div>
-
-                  {/* URL Girişi */}
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex-1 h-px bg-gray-600"></div>
-                    <span className="text-sm text-gray-400">veya</span>
-                    <div className="flex-1 h-px bg-gray-600"></div>
-                  </div>
-                  
-                  <input
-                    type="url"
-                    value={formData.image}
-                    onChange={(e) => {
-                      setFormData({ ...formData, image: e.target.value });
-                      setImageFile(null);
-                      setImagePreview('');
-                    }}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                    placeholder="Görsel URL'i yapıştır (https://...)"
-                    disabled={!!imageFile}
-                  />
-                  {imageFile && (
-                    <p className="text-xs text-gray-400 mt-1">
-                      Dosya seçildi: {imageFile.name}
-                    </p>
-                  )}
-                </div>
-
-                {/* Video URL */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Video URL (YouTube/Vimeo)
-                  </label>
-                  <input
-                    type="url"
-                    value={formData.video}
-                    onChange={(e) =>
-                      setFormData({ ...formData, video: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                    placeholder="https://youtube.com/watch?v=..."
-                  />
-                  <p className="text-xs text-gray-400 mt-1">
-                    YouTube veya Vimeo video linkini yapıştırın
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Hazırlık (dk)
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.prepTime}
-                      onChange={(e) =>
-                        setFormData({ ...formData, prepTime: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      placeholder="15"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Pişirme (dk)
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.cookTime}
-                      onChange={(e) =>
-                        setFormData({ ...formData, cookTime: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      placeholder="30"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Kişi Sayısı *
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.servings}
-                      onChange={(e) =>
-                        setFormData({ ...formData, servings: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      required
-                      min="1"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Zorluk *
-                    </label>
-                    <select
-                      value={formData.difficulty}
-                      onChange={(e) =>
-                        setFormData({ ...formData, difficulty: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      required
-                    >
-                      <option value="EASY">Kolay</option>
-                      <option value="MEDIUM">Orta</option>
-                      <option value="HARD">Zor</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Kategori
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.category}
-                      onChange={(e) =>
-                        setFormData({ ...formData, category: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      placeholder="Örn: Çorba, Ana Yemek, Tatlı"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Mutfak
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.cuisine}
-                      onChange={(e) =>
-                        setFormData({ ...formData, cuisine: e.target.value })
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      placeholder="Örn: Türk, İtalyan, Çin"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Malzemeler */}
-            <div id="ingredients" className="bg-gray-800 rounded-lg p-4 md:p-6">
-              <h2 className="text-xl font-semibold mb-4">🥘 Malzemeler</h2>
-
-              <div className="space-y-3">
-                {ingredients.map((ingredient, index) => (
-                  <div key={index} className="space-y-2 p-3 bg-gray-700/50 rounded-lg">
-                    {/* Malzeme Adı - Üstte */}
-                    <input
-                      type="text"
-                      value={ingredient.name}
-                      onChange={(e) =>
-                        updateIngredient(index, 'name', e.target.value)
-                      }
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      placeholder="Malzeme adı"
-                    />
-                    
-                    {/* Miktar, Birim, Sil - Altta yan yana */}
-                    <div className="flex gap-2">
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={ingredient.quantity}
-                        onChange={(e) =>
-                          updateIngredient(index, 'quantity', e.target.value)
-                        }
-                        className="w-20 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                        placeholder="Miktar"
-                      />
-                      <select
-                        value={ingredient.unit}
-                        onChange={(e) =>
-                          updateIngredient(index, 'unit', e.target.value)
-                        }
-                        className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      >
-                        <option value="adet">Adet</option>
-                        <option value="kg">Kg</option>
-                        <option value="gram">Gram</option>
-                        <option value="litre">Litre</option>
-                        <option value="ml">ML</option>
-                        <option value="su bardağı">Su Bardağı</option>
-                        <option value="çay kaşığı">Çay Kaşığı</option>
-                        <option value="yemek kaşığı">Yemek Kaşığı</option>
-                      </select>
-                      <button
-                        type="button"
-                        onClick={() => removeIngredient(index)}
-                        className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-md"
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                onClick={addIngredient}
-                className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
-              >
-                + Malzeme Ekle
-              </button>
-            </div>
-
-            {/* Talimatlar */}
-            <div id="instructions" className="bg-gray-800 rounded-lg p-4 md:p-6">
-              <h2 className="text-xl font-semibold mb-4">📋 Yapılışı</h2>
-
-              <div className="space-y-4">
-                {instructions.map((instruction, index) => (
-                  <div key={index} className="flex gap-2">
-                    <div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center font-semibold">
-                      {instruction.stepNumber}
-                    </div>
-                    <div className="flex-1">
-                      <textarea
-                        value={instruction.instruction}
-                        onChange={(e) =>
-                          updateInstruction(index, 'instruction', e.target.value)
-                        }
-                        className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                        rows={2}
-                        placeholder="Adım açıklaması..."
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeInstruction(index)}
-                      className="px-3 py-2 bg-red-600 hover:bg-red-700 rounded-md h-fit"
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                onClick={addInstruction}
-                className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
-              >
-                + Adım Ekle
-              </button>
-            </div>
-
-            {/* Soslar */}
-            <div id="sauces" className="bg-gray-800 rounded-lg p-4 md:p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">🍯 Soslar (Opsiyonel)</h2>
-                <button
-                  type="button"
-                  onClick={() => setShowSauceSection(!showSauceSection)}
-                  className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm"
+      {/* Content */}
+      <div className="px-4 py-4 space-y-6 max-w-4xl mx-auto w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Left Column */}
+          <div className="flex flex-col gap-4">
+            {/* Details Card */}
+            <div className="bg-[#1E1E1E] p-4 rounded-lg space-y-3">
+              <h2 className="text-sm font-semibold text-[#A0A0A0] uppercase tracking-wider">
+                Detaylar
+              </h2>
+              
+              <div className="space-y-2">
+                <label className="text-[#A0A0A0] text-xs">Zorluk</label>
+                <select
+                  value={recipe.difficulty}
+                  onChange={(e) => handleUpdate('difficulty', e.target.value)}
+                  className="w-full bg-[#121212] text-white rounded px-3 py-2 text-sm"
                 >
-                  {showSauceSection ? '▼ Gizle' : '▶ Göster'}
-                </button>
+                  <option value="EASY">Kolay</option>
+                  <option value="MEDIUM">Orta</option>
+                  <option value="HARD">Zor</option>
+                </select>
               </div>
 
-              {showSauceSection && (
-                <>
-                  <p className="text-sm text-gray-400 mb-4">
-                    Tarifin özel sosları varsa buraya ekleyebilirsiniz
-                  </p>
-                  <div className="space-y-4">
-                    {sauces.map((sauce, index) => (
-                      <div key={index} className="bg-gray-700/50 rounded-lg p-4">
-                        <div className="flex items-center justify-between mb-3">
-                          <h3 className="font-semibold">Sos #{index + 1}</h3>
-                          {sauces.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => removeSauce(index)}
-                              className="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-sm"
-                            >
-                              🗑️
-                            </button>
-                          )}
-                        </div>
-                        <div className="space-y-3">
-                          <input
-                            type="text"
-                            value={sauce.name}
-                            onChange={(e) => updateSauce(index, 'name', e.target.value)}
-                            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                            placeholder="Sos adı (örn: Domates Sosu)"
-                          />
-                          <textarea
-                            value={sauce.ingredients}
-                            onChange={(e) => updateSauce(index, 'ingredients', e.target.value)}
-                            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                            rows={2}
-                            placeholder="Malzemeler (örn: 2 domates, 1 soğan, tuz)"
-                          />
-                          <textarea
-                            value={sauce.instructions}
-                            onChange={(e) => updateSauce(index, 'instructions', e.target.value)}
-                            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                            rows={3}
-                            placeholder="Yapılışı..."
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={addSauce}
-                    className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
-                  >
-                    + Sos Ekle
-                  </button>
-                </>
-              )}
-            </div>
-
-            {/* Etiketler */}
-            <div id="tags" className="bg-gray-800 rounded-lg p-4 md:p-6">
-              <h2 className="text-xl font-semibold mb-4">🏷️ Etiketler</h2>
-
-              <div className="flex gap-2 mb-4">
+              <div className="space-y-2">
+                <label className="text-[#A0A0A0] text-xs">Kategori</label>
                 <input
                   type="text"
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                  className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                  placeholder="Etiket ekle (örn: vegan, glutensiz)"
+                  value={recipe.category}
+                  onChange={(e) => handleUpdate('category', e.target.value)}
+                  className="w-full bg-[#121212] text-white rounded px-3 py-2 text-sm"
+                  placeholder="Ana Yemek, Tatlı, vb."
                 />
-                <button
-                  type="button"
-                  onClick={addTag}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md"
-                >
-                  Ekle
-                </button>
               </div>
 
+              <div className="space-y-2">
+                <label className="text-[#A0A0A0] text-xs">Mutfak</label>
+                <input
+                  type="text"
+                  value={recipe.cuisine}
+                  onChange={(e) => handleUpdate('cuisine', e.target.value)}
+                  className="w-full bg-[#121212] text-white rounded px-3 py-2 text-sm"
+                  placeholder="Türk, İtalyan, vb."
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-2">
+                  <label className="text-[#A0A0A0] text-xs">Hazırlık (dk)</label>
+                  <input
+                    type="number"
+                    value={recipe.prepTime || ''}
+                    onChange={(e) => handleUpdate('prepTime', parseInt(e.target.value) || undefined)}
+                    className="w-full bg-[#121212] text-white rounded px-3 py-2 text-sm"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[#A0A0A0] text-xs">Pişirme (dk)</label>
+                  <input
+                    type="number"
+                    value={recipe.cookTime || ''}
+                    onChange={(e) => handleUpdate('cookTime', parseInt(e.target.value) || undefined)}
+                    className="w-full bg-[#121212] text-white rounded px-3 py-2 text-sm"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[#A0A0A0] text-xs">Kişi</label>
+                  <input
+                    type="number"
+                    value={recipe.servings}
+                    onChange={(e) => handleUpdate('servings', parseInt(e.target.value) || 1)}
+                    className="w-full bg-[#121212] text-white rounded px-3 py-2 text-sm"
+                    min="1"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Tags Card */}
+            <div className="bg-[#1E1E1E] p-4 rounded-lg space-y-3">
+              <h2 className="text-sm font-semibold text-[#A0A0A0] uppercase tracking-wider">
+                Etiketler
+              </h2>
               <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => (
+                {recipe.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-3 py-1 bg-blue-600 rounded-full text-sm flex items-center gap-2"
+                    className="bg-[#121212] text-white text-xs font-medium px-2.5 py-1 rounded flex items-center gap-1"
                   >
                     {tag}
                     <button
-                      type="button"
                       onClick={() => removeTag(tag)}
-                      className="hover:text-red-300"
+                      className="text-red-500 hover:text-red-400"
                     >
                       ×
                     </button>
                   </span>
                 ))}
+                <input
+                  type="text"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      addTag((e.target as HTMLInputElement).value);
+                      (e.target as HTMLInputElement).value = '';
+                    }
+                  }}
+                  className="bg-[#121212] text-white text-xs px-2.5 py-1 rounded"
+                  placeholder="+ Etiket ekle"
+                />
               </div>
             </div>
 
-            {/* Submit */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 rounded-md font-semibold disabled:opacity-50"
-              >
-                {loading ? 'Güncelleniyor...' : '✓ Tarifi Güncelle'}
-              </button>
-              <button
-                type="button"
-                onClick={() => router.back()}
-                className="px-6 py-3 bg-gray-600 hover:bg-gray-500 rounded-md"
-              >
-                İptal
-              </button>
+            {/* Description */}
+            <div className="bg-[#1E1E1E] p-4 rounded-lg space-y-3">
+              <h2 className="text-sm font-semibold text-[#A0A0A0] uppercase tracking-wider">
+                Açıklama
+              </h2>
+              <textarea
+                value={recipe.description}
+                onChange={(e) => handleUpdate('description', e.target.value)}
+                className="w-full bg-[#121212] text-white rounded px-3 py-2 text-sm min-h-24"
+                placeholder="Tarif hakkında kısa bir açıklama..."
+              />
             </div>
-          </form>
-            </div>
+          </div>
+
+          {/* Recipe Image */}
+          <div className="space-y-3">
+            <div
+              className="aspect-square bg-cover bg-center rounded-lg"
+              style={{ backgroundImage: `url(${recipe.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800'})` }}
+            />
+            <input
+              type="text"
+              value={recipe.image}
+              onChange={(e) => handleUpdate('image', e.target.value)}
+              className="w-full bg-[#1E1E1E] text-white rounded px-3 py-2 text-sm"
+              placeholder="Resim URL'i"
+            />
+            <input
+              type="text"
+              value={recipe.video || ''}
+              onChange={(e) => handleUpdate('video', e.target.value)}
+              className="w-full bg-[#1E1E1E] text-white rounded px-3 py-2 text-sm"
+              placeholder="Video URL'i (YouTube/Vimeo)"
+            />
           </div>
         </div>
-      </div>
 
-      {/* Mobile Sidebar Drawer */}
-      {showSidebar && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="md:hidden fixed inset-0 bg-black/50 z-40"
-            onClick={() => setShowSidebar(false)}
-          ></div>
-          
-          {/* Drawer */}
-          <div className="md:hidden fixed top-0 left-0 bottom-0 w-80 bg-gray-900 z-50 shadow-2xl overflow-y-auto">
-            <div className="p-4">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold">İpuçları</h2>
-                <button
-                  onClick={() => setShowSidebar(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800"
+        {/* Ingredients */}
+        <div className="bg-[#1E1E1E] p-4 rounded-lg space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-sm font-semibold text-[#A0A0A0] uppercase tracking-wider">
+              Malzemeler
+            </h2>
+            <button
+              onClick={addIngredient}
+              className="text-[#30D158] text-sm font-bold flex items-center gap-1"
+            >
+              <span className="material-symbols-outlined text-lg">add_circle</span>
+              Ekle
+            </button>
+          </div>
+          <div className="space-y-2">
+            {recipe.ingredients.map((ingredient, index) => (
+              <div key={index} className="flex items-center gap-2 bg-[#121212] p-2 rounded">
+                <input
+                  type="number"
+                  value={ingredient.quantity}
+                  onChange={(e) => handleIngredientUpdate(index, 'quantity', parseFloat(e.target.value) || 0)}
+                  className="w-20 bg-transparent text-white text-sm px-2 py-1"
+                  placeholder="Miktar"
+                />
+                <select
+                  value={ingredient.unit}
+                  onChange={(e) => handleIngredientUpdate(index, 'unit', e.target.value)}
+                  className="w-28 bg-transparent text-white text-sm"
                 >
-                  ✕
+                  <option>Adet</option>
+                  <option>Kg</option>
+                  <option>Gram</option>
+                  <option>Litre</option>
+                  <option>ML</option>
+                  <option>Su Bardağı</option>
+                  <option>Çay Kaşığı</option>
+                  <option>Yemek Kaşığı</option>
+                </select>
+                <input
+                  type="text"
+                  value={ingredient.name}
+                  onChange={(e) => handleIngredientUpdate(index, 'name', e.target.value)}
+                  className="flex-1 bg-transparent text-white text-sm px-2 py-1"
+                  placeholder="Malzeme adı"
+                />
+                <button
+                  onClick={() => removeIngredient(index)}
+                  className="text-red-500 hover:text-red-400"
+                >
+                  <span className="material-symbols-outlined text-lg">delete</span>
                 </button>
               </div>
-
-              {/* Tips */}
-              <div className="bg-gray-800 rounded-lg p-4">
-                <h3 className="text-lg font-semibold mb-4">📝 İpuçları</h3>
-                <ul className="space-y-2 text-sm text-gray-400">
-                  <li>• Tarif başlığı açık ve çekici olsun</li>
-                  <li>• Malzemeleri net bir şekilde belirtin</li>
-                  <li>• Adımları sıralı ve anlaşılır yazın</li>
-                  <li>• Fotoğraf eklemek tarifi daha çekici yapar</li>
-                  <li>• Video linki ekleyerek tarifi zenginleştirin</li>
-                </ul>
-              </div>
-            </div>
+            ))}
           </div>
-        </>
-      )}
-    </ProtectedRoute>
+        </div>
+
+        {/* Steps */}
+        <div className="bg-[#1E1E1E] p-4 rounded-lg space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-sm font-semibold text-[#A0A0A0] uppercase tracking-wider">
+              Yapılışı
+            </h2>
+            <button
+              onClick={addInstruction}
+              className="text-[#30D158] text-sm font-bold flex items-center gap-1"
+            >
+              <span className="material-symbols-outlined text-lg">add_circle</span>
+              Ekle
+            </button>
+          </div>
+          <div className="space-y-3">
+            {recipe.instructions.map((step, index) => (
+              <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-[#121212]">
+                <div className="flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold bg-[#30D158] text-[#121212]">
+                  {index + 1}
+                </div>
+                <textarea
+                  value={step.instruction}
+                  onChange={(e) => handleInstructionUpdate(index, e.target.value)}
+                  className="flex-1 bg-transparent text-white text-sm resize-none"
+                  placeholder="Adım açıklaması..."
+                  rows={2}
+                />
+                <button
+                  onClick={() => removeInstruction(index)}
+                  className="text-red-500 hover:text-red-400"
+                >
+                  <span className="material-symbols-outlined text-lg">delete</span>
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Save Button */}
+        <div className="flex gap-4 pb-8">
+          <button
+            onClick={() => router.back()}
+            className="flex-1 h-14 rounded-full border-2 border-[#A0A0A0] text-[#A0A0A0] font-bold text-base hover:bg-[#A0A0A0]/10 transition"
+          >
+            İptal
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="flex-1 h-14 rounded-full bg-[#30D158] text-[#121212] font-bold text-base hover:bg-[#30D158]/90 transition disabled:opacity-50"
+          >
+            {saving ? 'Güncelleniyor...' : 'Güncelle'}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
-
-
-

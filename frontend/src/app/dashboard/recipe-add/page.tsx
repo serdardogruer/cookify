@@ -26,26 +26,40 @@ interface Sauce {
 export default function RecipeAddPage() {
   const router = useRouter();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState('');
   const [showSauces, setShowSauces] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  
+  // Form fields
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('');
+  const [cuisine, setCuisine] = useState('');
+  const [prepTime, setPrepTime] = useState('');
+  const [cookTime, setCookTime] = useState('');
+  const [servings, setServings] = useState('4');
+  const [difficulty, setDifficulty] = useState('');
   
   const [ingredients, setIngredients] = useState<Ingredient[]>([
-    { id: '1', amount: '1', unit: 'Adet', name: 'soğan' },
-    { id: '2', amount: '500', unit: 'Gram', name: 'tavuk göğsü' }
+    { id: '1', amount: '', unit: '', name: '' }
   ]);
   const [steps, setSteps] = useState<Step[]>([
-    { id: '1', description: 'Soğanları doğrayın ve tavada pembeleşinceye kadar kavurun.' },
-    { id: '2', description: 'Tavukları ekleyin ve rengi dönene kadar pişirin.' }
+    { id: '1', description: '' }
   ]);
   const [sauces, setSauces] = useState<Sauce[]>([]);
 
   const units = ['Adet', 'Kg', 'Gram', 'Litre', 'ML', 'Su Bardağı', 'Çay Kaşığı', 'Yemek Kaşığı'];
+  
+  // Boş malzeme için başlangıç birimi
+  const defaultUnit = 'Adet';
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -56,7 +70,7 @@ export default function RecipeAddPage() {
 
   const addIngredient = () => {
     const newId = (Math.max(...ingredients.map(i => parseInt(i.id)), 0) + 1).toString();
-    setIngredients([...ingredients, { id: newId, amount: '', unit: 'Adet', name: '' }]);
+    setIngredients([...ingredients, { id: newId, amount: '', unit: '', name: '' }]);
   };
 
   const removeIngredient = (id: string) => {
@@ -98,13 +112,114 @@ export default function RecipeAddPage() {
     // Taslak kaydetme işlemi
   };
 
-  const handlePublish = () => {
-    // Yayınlama işlemi
+  const handlePublish = async () => {
+    // Validation
+    if (!title.trim()) {
+      alert('Lütfen tarif adını girin');
+      return;
+    }
+    if (!servings || parseInt(servings) < 1) {
+      alert('Lütfen kişi sayısını girin');
+      return;
+    }
+    if (!difficulty) {
+      alert('Lütfen zorluk seviyesini seçin');
+      return;
+    }
+    if (ingredients.length === 0) {
+      alert('Lütfen en az bir malzeme ekleyin');
+      return;
+    }
+    if (steps.length === 0) {
+      alert('Lütfen en az bir adım ekleyin');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Oturum bulunamadı');
+        router.push('/login');
+        return;
+      }
+
+      // Önce resim yükle (varsa)
+      let uploadedImageUrl = undefined;
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+
+        const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/recipes/upload-image`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: formData,
+        });
+
+        const uploadResult = await uploadResponse.json();
+        if (uploadResult.success) {
+          uploadedImageUrl = uploadResult.imageUrl;
+        }
+      }
+
+      // Tarif verisini hazırla
+      const recipeData = {
+        title: title.trim(),
+        description: description.trim() || undefined,
+        image: uploadedImageUrl,
+        category: category || undefined,
+        cuisine: cuisine || undefined,
+        prepTime: prepTime ? parseInt(prepTime) : undefined,
+        cookTime: cookTime ? parseInt(cookTime) : undefined,
+        servings: parseInt(servings),
+        difficulty: difficulty === 'Kolay' ? 'EASY' : difficulty === 'Orta' ? 'MEDIUM' : 'HARD',
+        video: videoUrl.trim() || undefined,
+        ingredients: ingredients.map((ing, index) => ({
+          name: ing.name.trim(),
+          quantity: parseFloat(ing.amount),
+          unit: ing.unit,
+          order: index + 1,
+        })),
+        instructions: steps.map((step, index) => ({
+          stepNumber: index + 1,
+          instruction: step.description.trim(),
+        })),
+        tags: tags,
+      };
+
+      // API'ye gönder
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/recipes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(recipeData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert('Tarif başarıyla eklendi!');
+        router.push('/dashboard/recipe-search');
+      } else {
+        alert(result.error?.message || 'Tarif eklenirken hata oluştu');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Bir hata oluştu');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = () => {
-    // Silme işlemi
-    router.back();
+    if (confirm('Tarifiniz kaydedilmeyecek. Çıkmak istediğinize emin misiniz?')) {
+      router.back();
+    }
   };
 
   return (
@@ -122,35 +237,48 @@ export default function RecipeAddPage() {
       <main className="flex-grow pb-8 w-full max-w-4xl mx-auto">
         {/* Header Image/Video Uploader */}
         <div className="p-4">
-          <label className="flex flex-col gap-2">
+          <label className="flex flex-col gap-2 cursor-pointer">
             <p className="text-white text-base font-medium leading-normal">
-              Tarif Görseli
+              Tarif Görseli <span className="text-[#A9A9A9] text-sm">(Kartlarda gösterilecek)</span>
             </p>
-            <div className="block w-full bg-[#1E1E1E] border-2 border-dashed border-[#3A3A3C] flex flex-col justify-center items-center overflow-hidden rounded-xl min-h-60 text-center cursor-pointer">
+            <div className="relative block w-full bg-[#1E1E1E] border-2 border-dashed border-[#3A3A3C] flex flex-col justify-center items-center overflow-hidden rounded-xl min-h-60 text-center">
               {imagePreview ? (
-                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                <>
+                  <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setImagePreview(null);
+                      setImageFile(null);
+                    }}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
+                  >
+                    <span className="material-symbols-outlined text-lg">close</span>
+                  </button>
+                </>
               ) : (
                 <>
                   <span className="material-symbols-outlined text-[#A9A9A9] text-5xl">
                     add_photo_alternate
                   </span>
                   <p className="text-[#A9A9A9] mt-2">📁 Bilgisayardan Görsel Seç</p>
+                  <p className="text-[#A9A9A9] text-xs mt-1">Max 5MB - JPG, PNG, GIF, WEBP</p>
                 </>
               )}
-              <input 
-                type="file" 
-                accept="image/*" 
-                className="hidden" 
-                onChange={handleImageUpload}
-              />
             </div>
+            <input 
+              type="file" 
+              accept="image/*" 
+              className="hidden" 
+              onChange={handleImageUpload}
+            />
           </label>
 
           <div className="mt-4">
-            <p className="text-[#A9A9A9] text-center mb-2">veya</p>
             <label className="flex flex-col">
               <p className="text-white text-base font-medium leading-normal pb-2">
-                Video URL (YouTube/Vimeo)
+                Video URL <span className="text-[#A9A9A9] text-sm">(Detay sayfasında gösterilecek)</span>
               </p>
               <input 
                 type="url"
@@ -175,6 +303,8 @@ export default function RecipeAddPage() {
               </p>
               <input 
                 required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 className="form-input w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 placeholder:text-[#A9A9A9] p-4 text-base font-normal leading-normal"
                 placeholder="Örn: Kremalı Mantarlı Tavuk"
               />
@@ -185,6 +315,8 @@ export default function RecipeAddPage() {
                 Açıklama
               </p>
               <textarea 
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 className="form-textarea w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] min-h-32 placeholder:text-[#A9A9A9] p-4 text-base font-normal leading-normal"
                 placeholder="Tarifiniz hakkında kısa bir açıklama yapın"
               />
@@ -195,7 +327,11 @@ export default function RecipeAddPage() {
                 Kategori
               </p>
               <div className="relative">
-                <select className="form-select appearance-none w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 p-4 text-base font-normal leading-normal">
+                <select 
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="form-select appearance-none w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 p-4 text-base font-normal leading-normal"
+                >
                   <option value="">Kategori Seçin</option>
                   <option>Ana Yemek</option>
                   <option>Tatlı</option>
@@ -214,7 +350,11 @@ export default function RecipeAddPage() {
                 Mutfak
               </p>
               <div className="relative">
-                <select className="form-select appearance-none w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 p-4 text-base font-normal leading-normal">
+                <select 
+                  value={cuisine}
+                  onChange={(e) => setCuisine(e.target.value)}
+                  className="form-select appearance-none w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 p-4 text-base font-normal leading-normal"
+                >
                   <option value="">Mutfak Seçin</option>
                   <option>Türk Mutfağı</option>
                   <option>İtalyan Mutfağı</option>
@@ -243,6 +383,8 @@ export default function RecipeAddPage() {
               <input 
                 type="number"
                 min="0"
+                value={prepTime}
+                onChange={(e) => setPrepTime(e.target.value)}
                 className="form-input w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 placeholder:text-[#A9A9A9] p-4 text-base font-normal"
                 placeholder="20"
               />
@@ -255,6 +397,8 @@ export default function RecipeAddPage() {
               <input 
                 type="number"
                 min="0"
+                value={cookTime}
+                onChange={(e) => setCookTime(e.target.value)}
                 className="form-input w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 placeholder:text-[#A9A9A9] p-4 text-base font-normal"
                 placeholder="45"
               />
@@ -268,6 +412,8 @@ export default function RecipeAddPage() {
                 type="number"
                 min="1"
                 required
+                value={servings}
+                onChange={(e) => setServings(e.target.value)}
                 className="form-input w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 placeholder:text-[#A9A9A9] p-4 text-base font-normal"
                 placeholder="4"
               />
@@ -278,7 +424,12 @@ export default function RecipeAddPage() {
                 Zorluk <span className="text-red-500">*</span>
               </p>
               <div className="relative">
-                <select required className="form-select appearance-none w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 p-4 text-base font-normal">
+                <select 
+                  required
+                  value={difficulty}
+                  onChange={(e) => setDifficulty(e.target.value)}
+                  className="form-select appearance-none w-full rounded-lg text-white focus:outline-0 focus:ring-2 focus:ring-[#30D158]/50 border-none bg-[#1E1E1E] h-14 p-4 text-base font-normal"
+                >
                   <option value="">Seçin</option>
                   <option>Kolay</option>
                   <option>Orta</option>
@@ -324,6 +475,7 @@ export default function RecipeAddPage() {
                     onChange={(e) => updateIngredient(ingredient.id, 'unit', e.target.value)}
                     className="form-select appearance-none w-full bg-transparent text-white text-sm outline-none border-b border-[#3A3A3C] focus:border-[#30D158]"
                   >
+                    <option value="" className="bg-[#1E1E1E]">Birim</option>
                     {units.map(unit => (
                       <option key={unit} value={unit} className="bg-[#1E1E1E]">{unit}</option>
                     ))}
@@ -376,7 +528,12 @@ export default function RecipeAddPage() {
                     <textarea 
                       className="bg-transparent text-white font-medium ml-2 flex-1 outline-none resize-none"
                       placeholder="Adım açıklaması yazın..."
-                      defaultValue={step.description}
+                      value={step.description}
+                      onChange={(e) => {
+                        const newSteps = [...steps];
+                        newSteps[index].description = e.target.value;
+                        setSteps(newSteps);
+                      }}
                       rows={2}
                     />
                   </div>
@@ -476,9 +633,10 @@ export default function RecipeAddPage() {
             </button>
             <button 
               onClick={handlePublish}
-              className="w-full h-14 rounded-full bg-[#30D158] text-[#121212] font-bold text-base hover:bg-[#30D158]/90 transition"
+              disabled={loading}
+              className="w-full h-14 rounded-full bg-[#30D158] text-[#121212] font-bold text-base hover:bg-[#30D158]/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Kaydet
+              {loading ? 'Kaydediliyor...' : 'Kaydet'}
             </button>
           </div>
         </section>

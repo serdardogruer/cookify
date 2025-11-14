@@ -5,9 +5,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
-  relationMode = "prisma"
 }
 
 // User Model
@@ -18,10 +17,11 @@ model User {
   password      String
   profileImage  String?
   kitchenId     Int?
-  kitchen       Kitchen?        @relation("ActiveKitchen", fields: [kitchenId], references: [id])
+  kitchen       Kitchen?        @relation("ActiveKitchen", fields: [kitchenId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   ownedKitchens Kitchen[]       @relation("KitchenOwner")
   memberships   KitchenMember[]
   recipes       Recipe[]
+  customMeals   CustomMeal[]
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 
@@ -230,4 +230,30 @@ model RecipeTag {
   tag      String
 
   @@map("recipe_tags")
+}
+
+
+// Custom Meal Model (Kullanıcının kendi yemekleri)
+model CustomMeal {
+  id          Int                    @id @default(autoincrement())
+  userId      Int
+  user        User                   @relation(fields: [userId], references: [id])
+  name        String
+  ingredients CustomMealIngredient[]
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+
+  @@map("custom_meals")
+}
+
+// Custom Meal Ingredient Model
+model CustomMealIngredient {
+  id           Int        @id @default(autoincrement())
+  customMealId Int
+  customMeal   CustomMeal @relation(fields: [customMealId], references: [id], onDelete: Cascade)
+  name         String
+  quantity     Float
+  unit         String
+
+  @@map("custom_meal_ingredients")
 }

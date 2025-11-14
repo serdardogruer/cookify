@@ -8,6 +8,8 @@ import BottomNav from '@/components/BottomNav';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 import { Recipe } from '@/types/recipe';
+import { toast } from '@/lib/toast';
+import MealConsumptionModal from '@/components/MealConsumptionModal';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -16,10 +18,25 @@ export default function DashboardPage() {
   const [pantryCount, setPantryCount] = useState(0);
   const [marketCount, setMarketCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [showMealModal, setShowMealModal] = useState(false);
 
   useEffect(() => {
     loadData();
+    checkMealPopup();
   }, [token]);
+
+  const checkMealPopup = () => {
+    const lastShown = localStorage.getItem('lastMealPopup');
+    const today = new Date().toDateString();
+    
+    if (lastShown !== today) {
+      // 3 saniye sonra göster (kullanıcı sayfayı görsün)
+      setTimeout(() => {
+        setShowMealModal(true);
+        localStorage.setItem('lastMealPopup', today);
+      }, 3000);
+    }
+  };
 
   const loadData = async () => {
     if (!token) {
@@ -46,6 +63,28 @@ export default function DashboardPage() {
     }
 
     setLoading(false);
+  };
+
+  const handleMealSubmit = async (category: string, servings: number) => {
+    if (!token) return;
+
+    try {
+      // Backend'e yemek tüketimi kaydet
+      const response = await api.post(
+        '/api/consumption/log',
+        { category, servings },
+        token
+      );
+
+      if (response.success) {
+        toast.success('Tüketim kaydedildi! Malzemeler güncellendi.');
+      } else {
+        toast.error('Kayıt başarısız');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Bir hata oluştu');
+    }
   };
 
   const getDifficultyText = (difficulty: string) => {
@@ -234,6 +273,13 @@ export default function DashboardPage() {
 
         {/* Bottom Navigation */}
         <BottomNav />
+
+        {/* Meal Consumption Modal */}
+        <MealConsumptionModal
+          isOpen={showMealModal}
+          onClose={() => setShowMealModal(false)}
+          onSubmit={handleMealSubmit}
+        />
       </div>
     </ProtectedRoute>
   );

@@ -10,8 +10,10 @@ interface Recipe {
   id: number;
   title: string;
   image: string;
+  video?: string;
   author: string;
   authorImage: string;
+  userId: number;
   date: string;
   difficulty: string;
   category: string;
@@ -38,10 +40,13 @@ interface PantryItem {
 export default function RecipeDetailPage() {
   const router = useRouter();
   const params = useParams();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
+  const [isReading, setIsReading] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [showVideoModal, setShowVideoModal] = useState(false);
 
   useEffect(() => {
     loadRecipe();
@@ -73,8 +78,10 @@ export default function RecipeDetailPage() {
       id: recipeData.id,
       title: recipeData.title,
       image: recipeData.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800',
+      video: recipeData.video,
       author: recipeData.user.name,
       authorImage: recipeData.user.profileImage || '',
+      userId: recipeData.userId,
       date: new Date(recipeData.createdAt).toLocaleDateString('tr-TR'),
       difficulty: getDifficultyText(recipeData.difficulty),
       category: recipeData.category || 'Genel',
@@ -109,6 +116,52 @@ export default function RecipeDetailPage() {
       default:
         return difficulty;
     }
+  };
+
+  const handleStartReading = () => {
+    if (!recipe || !('speechSynthesis' in window)) {
+      toast.error('Tarayıcınız seslendirmeyi desteklemiyor');
+      return;
+    }
+
+    if (isReading) {
+      // Durdur
+      window.speechSynthesis.cancel();
+      setIsReading(false);
+      setCurrentStep(0);
+      return;
+    }
+
+    // Başlat
+    setIsReading(true);
+    setCurrentStep(0);
+    readStep(0);
+  };
+
+  const readStep = (stepIndex: number) => {
+    if (!recipe || stepIndex >= recipe.steps.length) {
+      setIsReading(false);
+      setCurrentStep(0);
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(recipe.steps[stepIndex]);
+    utterance.lang = 'tr-TR';
+    utterance.rate = 0.9;
+
+    utterance.onend = () => {
+      const nextStep = stepIndex + 1;
+      if (nextStep < recipe.steps.length) {
+        setCurrentStep(nextStep);
+        setTimeout(() => readStep(nextStep), 1000);
+      } else {
+        setIsReading(false);
+        setCurrentStep(0);
+        toast.success('Tarif tamamlandı!');
+      }
+    };
+
+    window.speechSynthesis.speak(utterance);
   };
 
   const handleMarkAsDone = async () => {
@@ -229,17 +282,34 @@ export default function RecipeDetailPage() {
                 Tarif Sahibi
               </h2>
               <div className="flex items-center gap-3">
-                <img
-                  src={recipe.authorImage}
-                  alt={recipe.author}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
+                {recipe.authorImage ? (
+                  <img
+                    src={recipe.authorImage.startsWith('http') ? recipe.authorImage : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${recipe.authorImage}`}
+                    alt={recipe.author}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-[#30D158] flex items-center justify-center">
+                    <span className="text-white font-bold text-lg">
+                      {recipe.author.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
                 <div>
                   <p className="text-white font-semibold">{recipe.author}</p>
                   <p className="text-[#A0A0A0] text-xs">{recipe.date}</p>
                 </div>
               </div>
               <div className="flex flex-col gap-2">
+                {user?.id === recipe.userId && (
+                  <button
+                    onClick={() => router.push(`/dashboard/recipe-edit/${recipe.id}`)}
+                    className="w-full flex items-center justify-center rounded-lg h-10 px-5 bg-[#007AFF] text-white text-sm font-bold hover:bg-[#007AFF]/90 transition"
+                  >
+                    <span className="material-symbols-outlined mr-2 text-lg">edit</span>
+                    Düzenle
+                  </button>
+                )}
                 <button
                   onClick={handleMarkAsDone}
                   className="w-full flex items-center justify-center rounded-lg h-10 px-5 bg-[#30D158] text-white text-sm font-bold"
@@ -294,11 +364,35 @@ export default function RecipeDetailPage() {
           </div>
 
           {/* Recipe Image */}
-          <div
-            className="aspect-square bg-cover bg-center rounded-lg"
+          <div className="relative aspect-square bg-cover bg-center rounded-lg overflow-hidden group cursor-pointer"
             style={{ backgroundImage: `url(${recipe.image})` }}
-          />
+            onClick={() => recipe.video && setShowVideoModal(true)}
+          >
+            {recipe.video && (
+              <>
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-all" />
+                {/* Play Button */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-20 h-20 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all flex items-center justify-center shadow-2xl">
+                    <span className="material-symbols-outlined text-[#121212] text-5xl ml-1">
+                      play_arrow
+                    </span>
+                  </div>
+                </div>
+                {/* Video Badge */}
+                <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1">
+                  <span className="material-symbols-outlined text-white text-sm">
+                    videocam
+                  </span>
+                  <span className="text-white text-xs font-medium">Video</span>
+                </div>
+              </>
+            )}
+          </div>
         </div>
+
+
 
         {/* Ingredients */}
         <div className="bg-[#1E1E1E] p-4 rounded-lg space-y-4">
@@ -348,15 +442,35 @@ export default function RecipeDetailPage() {
             <h2 className="text-sm font-semibold text-[#A0A0A0] uppercase tracking-wider">
               Yapılışı
             </h2>
-            <button className="flex items-center gap-2 bg-[#30D158]/20 text-[#30D158] text-xs font-bold px-3 py-1.5 rounded-md">
-              <span className="material-symbols-outlined text-base">play_arrow</span>
-              Başlat
+            <button 
+              onClick={handleStartReading}
+              className={`flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-md transition ${
+                isReading 
+                  ? 'bg-red-500/20 text-red-500' 
+                  : 'bg-[#30D158]/20 text-[#30D158]'
+              }`}
+            >
+              <span className="material-symbols-outlined text-base">
+                {isReading ? 'stop' : 'play_arrow'}
+              </span>
+              {isReading ? 'Durdur' : 'Başlat'}
             </button>
           </div>
           <div className="space-y-3">
             {recipe.steps.map((step, index) => (
-              <div key={index} className="flex items-start gap-3 bg-[#121212] p-3 rounded-lg">
-                <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[#30D158] text-[#121212] text-xs font-bold">
+              <div 
+                key={index} 
+                className={`flex items-start gap-3 p-3 rounded-lg transition ${
+                  isReading && currentStep === index
+                    ? 'bg-[#30D158]/20 border-2 border-[#30D158]'
+                    : 'bg-[#121212]'
+                }`}
+              >
+                <div className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                  isReading && currentStep === index
+                    ? 'bg-[#30D158] text-[#121212]'
+                    : 'bg-[#30D158] text-[#121212]'
+                }`}>
                   {index + 1}
                 </div>
                 <p className="text-white text-sm flex-1 pt-0.5">{step}</p>
@@ -367,6 +481,53 @@ export default function RecipeDetailPage() {
 
         <div className="h-10"></div>
       </div>
+
+      {/* Video Modal */}
+      {showVideoModal && recipe.video && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+          onClick={() => setShowVideoModal(false)}
+        >
+          <div 
+            className="relative w-full max-w-5xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setShowVideoModal(false)}
+              className="absolute -top-12 right-0 text-white hover:text-[#30D158] transition"
+            >
+              <span className="material-symbols-outlined text-4xl">close</span>
+            </button>
+
+            {/* Video Container */}
+            <div className="aspect-video w-full rounded-lg overflow-hidden bg-black shadow-2xl">
+              {recipe.video.includes('youtube.com') || recipe.video.includes('youtu.be') ? (
+                <iframe
+                  className="w-full h-full"
+                  src={recipe.video.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
+                  title="Recipe Video"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : recipe.video.includes('vimeo.com') ? (
+                <iframe
+                  className="w-full h-full"
+                  src={recipe.video.replace('vimeo.com/', 'player.vimeo.com/video/')}
+                  title="Recipe Video"
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <video className="w-full h-full" controls autoPlay>
+                  <source src={recipe.video} type="video/mp4" />
+                  Tarayıcınız video oynatmayı desteklemiyor.
+                </video>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

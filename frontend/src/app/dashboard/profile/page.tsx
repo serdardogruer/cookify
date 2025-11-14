@@ -17,6 +17,8 @@ export default function ProfilePage() {
   const [bio, setBio] = useState('');
   const [uploading, setUploading] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
+  const [customMeals, setCustomMeals] = useState<any[]>([]);
+  const [showAddMealModal, setShowAddMealModal] = useState(false);
 
   useEffect(() => {
     loadProfile();
