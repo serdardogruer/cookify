@@ -1,0 +1,7701 @@
+{
+  "categories": [
+    {
+      "id": 10,
+      "name": "YEŞİLLİKLER",
+      "icon": "🌿",
+      "createdAt": "2025-11-10T09:43:41.951Z"
+    },
+    {
+      "id": 12,
+      "name": "ET ÜRÜNLERİ",
+      "icon": "🥩",
+      "createdAt": "2025-11-10T09:43:41.961Z"
+    },
+    {
+      "id": 13,
+      "name": "DENİZ ÜRÜNLERİ",
+      "icon": "🐟",
+      "createdAt": "2025-11-10T09:43:41.965Z"
+    },
+    {
+      "id": 14,
+      "name": "SÜT ÜRÜNLERİ",
+      "icon": "🥛",
+      "createdAt": "2025-11-10T09:43:41.969Z"
+    },
+    {
+      "id": 15,
+      "name": "BAHARATLAR",
+      "icon": "🌶️",
+      "createdAt": "2025-11-10T09:43:41.972Z"
+    },
+    {
+      "id": 16,
+      "name": "KURUYEMİŞLER",
+      "icon": "🥜",
+      "createdAt": "2025-11-10T09:43:41.974Z"
+    },
+    {
+      "id": 17,
+      "name": "TAHILLAR",
+      "icon": "🌾",
+      "createdAt": "2025-11-10T09:43:41.977Z"
+    },
+    {
+      "id": 18,
+      "name": "BAKLİYATLAR",
+      "icon": "🫘",
+      "createdAt": "2025-11-10T09:43:41.980Z"
+    },
+    {
+      "id": 19,
+      "name": "HAMUR ÜRÜNLERİ",
+      "icon": "🍝",
+      "createdAt": "2025-11-10T09:43:41.984Z"
+    },
+    {
+      "id": 20,
+      "name": "SOSLAR",
+      "icon": "🍯",
+      "createdAt": "2025-11-10T09:43:41.986Z"
+    },
+    {
+      "id": 21,
+      "name": "TATLANDIRICILAR",
+      "icon": "🍯",
+      "createdAt": "2025-11-10T09:43:41.989Z"
+    },
+    {
+      "id": 23,
+      "name": "YAĞLAR",
+      "icon": "🫒",
+      "createdAt": "2025-11-10T09:43:41.993Z"
+    },
+    {
+      "id": 24,
+      "name": "TEMEL MALZEMELER",
+      "icon": "🥚",
+      "createdAt": "2025-11-10T09:43:41.996Z"
+    },
+    {
+      "id": 25,
+      "name": "DİĞER",
+      "icon": "📦",
+      "createdAt": "2025-11-10T09:43:41.999Z"
+    },
+    {
+      "id": 34,
+      "name": "MEYVELER",
+      "icon": null,
+      "createdAt": "2025-11-14T20:01:43.784Z"
+    },
+    {
+      "id": 35,
+      "name": "SEBZELER",
+      "icon": null,
+      "createdAt": "2025-11-14T20:01:43.800Z"
+    },
+    {
+      "id": 36,
+      "name": "İÇECEKLER",
+      "icon": null,
+      "createdAt": "2025-11-14T20:01:43.822Z"
+    }
+  ],
+  "ingredients": [
+    {
+      "id": 14,
+      "name": "Tavuk",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T07:59:28.282Z"
+    },
+    {
+      "id": 15,
+      "name": "Kıyma",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 1,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T07:59:28.288Z"
+    },
+    {
+      "id": 16,
+      "name": "Kuşbaşı Et",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T07:59:28.296Z"
+    },
+    {
+      "id": 26,
+      "name": "Makarna",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T07:59:28.366Z"
+    },
+    {
+      "id": 31,
+      "name": "Tuz",
+      "categoryId": 25,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 9999,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T07:59:28.398Z"
+    },
+    {
+      "id": 32,
+      "name": "Şeker",
+      "categoryId": 25,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T07:59:28.404Z"
+    },
+    {
+      "id": 33,
+      "name": "Yağ",
+      "categoryId": 25,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T07:59:28.412Z"
+    },
+    {
+      "id": 34,
+      "name": "Salça",
+      "categoryId": 25,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T07:59:28.419Z"
+    },
+    {
+      "id": 35,
+      "name": "Soğan",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": 150,
+      "createdAt": "2025-11-10T09:43:42.003Z"
+    },
+    {
+      "id": 36,
+      "name": "Salatalık",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": 200,
+      "createdAt": "2025-11-10T09:43:42.006Z"
+    },
+    {
+      "id": 37,
+      "name": "Brokoli",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": 300,
+      "createdAt": "2025-11-10T09:43:42.009Z"
+    },
+    {
+      "id": 38,
+      "name": "Taze Soğan",
+      "categoryId": 35,
+      "defaultUnit": "demet",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.011Z"
+    },
+    {
+      "id": 39,
+      "name": "Lahana",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 14,
+      "averageWeightPerUnit": 1000,
+      "createdAt": "2025-11-10T09:43:42.015Z"
+    },
+    {
+      "id": 40,
+      "name": "Biber",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": 100,
+      "createdAt": "2025-11-10T09:43:42.019Z"
+    },
+    {
+      "id": 41,
+      "name": "Havuç",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 21,
+      "averageWeightPerUnit": 100,
+      "createdAt": "2025-11-10T09:43:42.023Z"
+    },
+    {
+      "id": 42,
+      "name": "Ispanak",
+      "categoryId": 35,
+      "defaultUnit": "demet",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.025Z"
+    },
+    {
+      "id": 43,
+      "name": "Kabak",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": 300,
+      "createdAt": "2025-11-10T09:43:42.028Z"
+    },
+    {
+      "id": 44,
+      "name": "Patates",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": 200,
+      "createdAt": "2025-11-10T09:43:42.031Z"
+    },
+    {
+      "id": 45,
+      "name": "Domates",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": 150,
+      "createdAt": "2025-11-10T09:43:42.035Z"
+    },
+    {
+      "id": 46,
+      "name": "Karnabahar",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": 500,
+      "createdAt": "2025-11-10T09:43:42.038Z"
+    },
+    {
+      "id": 47,
+      "name": "Kırmızı Biber",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": 100,
+      "createdAt": "2025-11-10T09:43:42.041Z"
+    },
+    {
+      "id": 48,
+      "name": "Yeşil Biber",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": 80,
+      "createdAt": "2025-11-10T09:43:42.044Z"
+    },
+    {
+      "id": 49,
+      "name": "Patlıcan",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": 250,
+      "createdAt": "2025-11-10T09:43:42.046Z"
+    },
+    {
+      "id": 51,
+      "name": "Kereviz",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 14,
+      "averageWeightPerUnit": 150,
+      "createdAt": "2025-11-10T09:43:42.053Z"
+    },
+    {
+      "id": 52,
+      "name": "Turp",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 10,
+      "averageWeightPerUnit": 50,
+      "createdAt": "2025-11-10T09:43:42.056Z"
+    },
+    {
+      "id": 53,
+      "name": "Pancar",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 14,
+      "averageWeightPerUnit": 150,
+      "createdAt": "2025-11-10T09:43:42.059Z"
+    },
+    {
+      "id": 54,
+      "name": "Bamya",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 4,
+      "averageWeightPerUnit": 10,
+      "createdAt": "2025-11-10T09:43:42.061Z"
+    },
+    {
+      "id": 55,
+      "name": "Mısır",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": 200,
+      "createdAt": "2025-11-10T09:43:42.064Z"
+    },
+    {
+      "id": 56,
+      "name": "Pırasa",
+      "categoryId": 35,
+      "defaultUnit": "demet",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": 200,
+      "createdAt": "2025-11-10T09:43:42.068Z"
+    },
+    {
+      "id": 57,
+      "name": "Kapya Biber",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.071Z"
+    },
+    {
+      "id": 58,
+      "name": "Dolmalık Biber",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.073Z"
+    },
+    {
+      "id": 59,
+      "name": "Dereotu",
+      "categoryId": 10,
+      "defaultUnit": "demet",
+      "shelfLifeDays": 4,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.076Z"
+    },
+    {
+      "id": 60,
+      "name": "Roka",
+      "categoryId": 10,
+      "defaultUnit": "demet",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.078Z"
+    },
+    {
+      "id": 61,
+      "name": "Fesleğen",
+      "categoryId": 10,
+      "defaultUnit": "demet",
+      "shelfLifeDays": 4,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.082Z"
+    },
+    {
+      "id": 62,
+      "name": "Marul",
+      "categoryId": 10,
+      "defaultUnit": "demet",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.086Z"
+    },
+    {
+      "id": 63,
+      "name": "Maydanoz",
+      "categoryId": 10,
+      "defaultUnit": "demet",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.088Z"
+    },
+    {
+      "id": 64,
+      "name": "Nane",
+      "categoryId": 10,
+      "defaultUnit": "demet",
+      "shelfLifeDays": 4,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.091Z"
+    },
+    {
+      "id": 65,
+      "name": "Biberiye",
+      "categoryId": 10,
+      "defaultUnit": "demet",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.093Z"
+    },
+    {
+      "id": 66,
+      "name": "Tere",
+      "categoryId": 10,
+      "defaultUnit": "demet",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.097Z"
+    },
+    {
+      "id": 67,
+      "name": "Semizotu",
+      "categoryId": 10,
+      "defaultUnit": "demet",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.100Z"
+    },
+    {
+      "id": 68,
+      "name": "Pazı",
+      "categoryId": 10,
+      "defaultUnit": "demet",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.103Z"
+    },
+    {
+      "id": 69,
+      "name": "Çilek",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": 15,
+      "createdAt": "2025-11-10T09:43:42.106Z"
+    },
+    {
+      "id": 70,
+      "name": "Portakal",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 14,
+      "averageWeightPerUnit": 200,
+      "createdAt": "2025-11-10T09:43:42.108Z"
+    },
+    {
+      "id": 71,
+      "name": "Elma",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 21,
+      "averageWeightPerUnit": 150,
+      "createdAt": "2025-11-10T09:43:42.111Z"
+    },
+    {
+      "id": 72,
+      "name": "Muz",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": 120,
+      "createdAt": "2025-11-10T09:43:42.114Z"
+    },
+    {
+      "id": 73,
+      "name": "Hurma",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": 20,
+      "createdAt": "2025-11-10T09:43:42.118Z"
+    },
+    {
+      "id": 74,
+      "name": "Armut",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 10,
+      "averageWeightPerUnit": 150,
+      "createdAt": "2025-11-10T09:43:42.121Z"
+    },
+    {
+      "id": 75,
+      "name": "Şeftali",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": 150,
+      "createdAt": "2025-11-10T09:43:42.124Z"
+    },
+    {
+      "id": 76,
+      "name": "Kayısı",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": 40,
+      "createdAt": "2025-11-10T09:43:42.126Z"
+    },
+    {
+      "id": 77,
+      "name": "Kiraz",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": 5,
+      "createdAt": "2025-11-10T09:43:42.129Z"
+    },
+    {
+      "id": 78,
+      "name": "Vişne",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": 5,
+      "createdAt": "2025-11-10T09:43:42.134Z"
+    },
+    {
+      "id": 79,
+      "name": "Üzüm",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": 5,
+      "createdAt": "2025-11-10T09:43:42.137Z"
+    },
+    {
+      "id": 80,
+      "name": "Karpuz",
+      "categoryId": 34,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 14,
+      "averageWeightPerUnit": 5000,
+      "createdAt": "2025-11-10T09:43:42.140Z"
+    },
+    {
+      "id": 81,
+      "name": "Kavun",
+      "categoryId": 34,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 10,
+      "averageWeightPerUnit": 2000,
+      "createdAt": "2025-11-10T09:43:42.143Z"
+    },
+    {
+      "id": 82,
+      "name": "Ananas",
+      "categoryId": 34,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": 1500,
+      "createdAt": "2025-11-10T09:43:42.146Z"
+    },
+    {
+      "id": 83,
+      "name": "Kivi",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 14,
+      "averageWeightPerUnit": 80,
+      "createdAt": "2025-11-10T09:43:42.149Z"
+    },
+    {
+      "id": 84,
+      "name": "Avokado",
+      "categoryId": 34,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": 200,
+      "createdAt": "2025-11-10T09:43:42.153Z"
+    },
+    {
+      "id": 85,
+      "name": "Nar",
+      "categoryId": 34,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": 250,
+      "createdAt": "2025-11-10T09:43:42.156Z"
+    },
+    {
+      "id": 86,
+      "name": "Greyfurt",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 21,
+      "averageWeightPerUnit": 250,
+      "createdAt": "2025-11-10T09:43:42.159Z"
+    },
+    {
+      "id": 87,
+      "name": "Mandalina",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 14,
+      "averageWeightPerUnit": 80,
+      "createdAt": "2025-11-10T09:43:42.162Z"
+    },
+    {
+      "id": 88,
+      "name": "Limon",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 21,
+      "averageWeightPerUnit": 60,
+      "createdAt": "2025-11-10T09:43:42.165Z"
+    },
+    {
+      "id": 89,
+      "name": "Mango",
+      "categoryId": 34,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": 300,
+      "createdAt": "2025-11-10T09:43:42.169Z"
+    },
+    {
+      "id": 90,
+      "name": "Tavuk Göğsü",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": 200,
+      "createdAt": "2025-11-10T09:43:42.172Z"
+    },
+    {
+      "id": 91,
+      "name": "Sosis",
+      "categoryId": 12,
+      "defaultUnit": "şişe",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.175Z"
+    },
+    {
+      "id": 92,
+      "name": "Hindi Eti",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.179Z"
+    },
+    {
+      "id": 93,
+      "name": "Sucuk",
+      "categoryId": 12,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.181Z"
+    },
+    {
+      "id": 94,
+      "name": "Pastırma",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.185Z"
+    },
+    {
+      "id": 95,
+      "name": "Dana Kıyma",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.188Z"
+    },
+    {
+      "id": 96,
+      "name": "Kuzu Eti",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.191Z"
+    },
+    {
+      "id": 97,
+      "name": "Tavuk But",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": 300,
+      "createdAt": "2025-11-10T09:43:42.194Z"
+    },
+    {
+      "id": 98,
+      "name": "Tavuk Kanat",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.197Z"
+    },
+    {
+      "id": 99,
+      "name": "Dana Eti",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.201Z"
+    },
+    {
+      "id": 100,
+      "name": "Kuzu Kıyma",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.204Z"
+    },
+    {
+      "id": 101,
+      "name": "Salam",
+      "categoryId": 12,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 14,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.207Z"
+    },
+    {
+      "id": 102,
+      "name": "Jambon",
+      "categoryId": 12,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.210Z"
+    },
+    {
+      "id": 103,
+      "name": "Balık Fileto",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.213Z"
+    },
+    {
+      "id": 104,
+      "name": "Somon",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.215Z"
+    },
+    {
+      "id": 105,
+      "name": "Karides",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.219Z"
+    },
+    {
+      "id": 106,
+      "name": "Ton Balığı",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.221Z"
+    },
+    {
+      "id": 107,
+      "name": "Sardalya",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.224Z"
+    },
+    {
+      "id": 108,
+      "name": "Hamsi",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 1,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.227Z"
+    },
+    {
+      "id": 109,
+      "name": "Levrek",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.230Z"
+    },
+    {
+      "id": 110,
+      "name": "Çupra",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.234Z"
+    },
+    {
+      "id": 111,
+      "name": "Alabalık",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.237Z"
+    },
+    {
+      "id": 112,
+      "name": "Palamut",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.239Z"
+    },
+    {
+      "id": 113,
+      "name": "Uskumru",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.242Z"
+    },
+    {
+      "id": 114,
+      "name": "Midye",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 1,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.246Z"
+    },
+    {
+      "id": 115,
+      "name": "Yoğurt",
+      "categoryId": 14,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 14,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.248Z"
+    },
+    {
+      "id": 116,
+      "name": "Tereyağı",
+      "categoryId": 14,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.251Z"
+    },
+    {
+      "id": 117,
+      "name": "Peynir",
+      "categoryId": 14,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 21,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.254Z"
+    },
+    {
+      "id": 118,
+      "name": "Süt",
+      "categoryId": 14,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.257Z"
+    },
+    {
+      "id": 119,
+      "name": "Krema",
+      "categoryId": 14,
+      "defaultUnit": "ml",
+      "shelfLifeDays": 10,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.260Z"
+    },
+    {
+      "id": 120,
+      "name": "Ayran",
+      "categoryId": 14,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.263Z"
+    },
+    {
+      "id": 121,
+      "name": "Labne",
+      "categoryId": 14,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 14,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.265Z"
+    },
+    {
+      "id": 122,
+      "name": "Kefir",
+      "categoryId": 14,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.269Z"
+    },
+    {
+      "id": 123,
+      "name": "Çökelek",
+      "categoryId": 14,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.272Z"
+    },
+    {
+      "id": 124,
+      "name": "Kaşar",
+      "categoryId": 14,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.274Z"
+    },
+    {
+      "id": 125,
+      "name": "Mozzarella",
+      "categoryId": 14,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 14,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.277Z"
+    },
+    {
+      "id": 126,
+      "name": "Parmesan",
+      "categoryId": 14,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.280Z"
+    },
+    {
+      "id": 127,
+      "name": "Zencefil",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 21,
+      "averageWeightPerUnit": 30,
+      "createdAt": "2025-11-10T09:43:42.284Z"
+    },
+    {
+      "id": 128,
+      "name": "Kekik",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.287Z"
+    },
+    {
+      "id": 129,
+      "name": "Vanilin",
+      "categoryId": 15,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.291Z"
+    },
+    {
+      "id": 130,
+      "name": "Sarımsak",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": 5,
+      "createdAt": "2025-11-10T09:43:42.295Z"
+    },
+    {
+      "id": 131,
+      "name": "Kimyon",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.302Z"
+    },
+    {
+      "id": 132,
+      "name": "Zerdeçal",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.307Z"
+    },
+    {
+      "id": 134,
+      "name": "Karabiber",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.317Z"
+    },
+    {
+      "id": 135,
+      "name": "Pul Biber",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.324Z"
+    },
+    {
+      "id": 136,
+      "name": "Tarçın",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.329Z"
+    },
+    {
+      "id": 137,
+      "name": "Kırmızı Toz Biber",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.334Z"
+    },
+    {
+      "id": 138,
+      "name": "Karanfil",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.337Z"
+    },
+    {
+      "id": 139,
+      "name": "Sumak",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.340Z"
+    },
+    {
+      "id": 140,
+      "name": "Köri",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.343Z"
+    },
+    {
+      "id": 141,
+      "name": "Paprika",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.346Z"
+    },
+    {
+      "id": 142,
+      "name": "Badem",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.350Z"
+    },
+    {
+      "id": 143,
+      "name": "Ceviz",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.354Z"
+    },
+    {
+      "id": 144,
+      "name": "Fındık",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.357Z"
+    },
+    {
+      "id": 145,
+      "name": "Chia Tohumu",
+      "categoryId": 16,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.359Z"
+    },
+    {
+      "id": 146,
+      "name": "Kaju",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.362Z"
+    },
+    {
+      "id": 147,
+      "name": "Susam",
+      "categoryId": 16,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 120,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.364Z"
+    },
+    {
+      "id": 148,
+      "name": "Ayçiçek Çekirdeği",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.368Z"
+    },
+    {
+      "id": 149,
+      "name": "Kabak Çekirdeği",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.371Z"
+    },
+    {
+      "id": 150,
+      "name": "Antep Fıstığı",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 60,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.374Z"
+    },
+    {
+      "id": 151,
+      "name": "Kuru Üzüm",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.376Z"
+    },
+    {
+      "id": 152,
+      "name": "Kuru İncir",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.379Z"
+    },
+    {
+      "id": 153,
+      "name": "Kuru Kayısı",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.383Z"
+    },
+    {
+      "id": 154,
+      "name": "Buğday Nişastası",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.386Z"
+    },
+    {
+      "id": 155,
+      "name": "Mısır Nişastası",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.389Z"
+    },
+    {
+      "id": 156,
+      "name": "Bulgur",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.392Z"
+    },
+    {
+      "id": 157,
+      "name": "Kinoa",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.394Z"
+    },
+    {
+      "id": 158,
+      "name": "Yulaf",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.397Z"
+    },
+    {
+      "id": 159,
+      "name": "Un",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.400Z"
+    },
+    {
+      "id": 160,
+      "name": "Pirinç",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.403Z"
+    },
+    {
+      "id": 161,
+      "name": "Ekmek",
+      "categoryId": 17,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.406Z"
+    },
+    {
+      "id": 162,
+      "name": "Barbunya",
+      "categoryId": 18,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.408Z"
+    },
+    {
+      "id": 163,
+      "name": "Nohut",
+      "categoryId": 18,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.411Z"
+    },
+    {
+      "id": 164,
+      "name": "Bezelye",
+      "categoryId": 18,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.414Z"
+    },
+    {
+      "id": 165,
+      "name": "Mercimek",
+      "categoryId": 18,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.418Z"
+    },
+    {
+      "id": 166,
+      "name": "Fasulye",
+      "categoryId": 18,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.421Z"
+    },
+    {
+      "id": 167,
+      "name": "Kırmızı Mercimek",
+      "categoryId": 18,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.424Z"
+    },
+    {
+      "id": 168,
+      "name": "Yeşil Mercimek",
+      "categoryId": 18,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.427Z"
+    },
+    {
+      "id": 169,
+      "name": "Kuru Fasulye",
+      "categoryId": 18,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.429Z"
+    },
+    {
+      "id": 170,
+      "name": "Erişte",
+      "categoryId": 19,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.432Z"
+    },
+    {
+      "id": 172,
+      "name": "Kabartma Tozu",
+      "categoryId": 19,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.439Z"
+    },
+    {
+      "id": 173,
+      "name": "Maya",
+      "categoryId": 19,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.442Z"
+    },
+    {
+      "id": 174,
+      "name": "Karbonat",
+      "categoryId": 19,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.445Z"
+    },
+    {
+      "id": 175,
+      "name": "Ketçap",
+      "categoryId": 20,
+      "defaultUnit": "ml",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.447Z"
+    },
+    {
+      "id": 176,
+      "name": "Nar Ekşisi",
+      "categoryId": 20,
+      "defaultUnit": "ml",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.451Z"
+    },
+    {
+      "id": 177,
+      "name": "Mayonez",
+      "categoryId": 20,
+      "defaultUnit": "ml",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.455Z"
+    },
+    {
+      "id": 178,
+      "name": "Hardal",
+      "categoryId": 20,
+      "defaultUnit": "ml",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.457Z"
+    },
+    {
+      "id": 179,
+      "name": "Soya Sosu",
+      "categoryId": 20,
+      "defaultUnit": "ml",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.460Z"
+    },
+    {
+      "id": 180,
+      "name": "Sirke",
+      "categoryId": 20,
+      "defaultUnit": "ml",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.464Z"
+    },
+    {
+      "id": 181,
+      "name": "Domates Salçası",
+      "categoryId": 20,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.467Z"
+    },
+    {
+      "id": 182,
+      "name": "Domates Sosu",
+      "categoryId": 20,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.471Z"
+    },
+    {
+      "id": 184,
+      "name": "Çikolata",
+      "categoryId": 21,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.477Z"
+    },
+    {
+      "id": 185,
+      "name": "Kakao",
+      "categoryId": 21,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.480Z"
+    },
+    {
+      "id": 186,
+      "name": "Toz Şeker",
+      "categoryId": 21,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.483Z"
+    },
+    {
+      "id": 187,
+      "name": "Bal",
+      "categoryId": 21,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 9999,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.486Z"
+    },
+    {
+      "id": 188,
+      "name": "Pekmez",
+      "categoryId": 21,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.489Z"
+    },
+    {
+      "id": 189,
+      "name": "Kahve",
+      "categoryId": 36,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.492Z"
+    },
+    {
+      "id": 190,
+      "name": "Soda",
+      "categoryId": 36,
+      "defaultUnit": "şişe",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.494Z"
+    },
+    {
+      "id": 191,
+      "name": "Maden Suyu",
+      "categoryId": 36,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.497Z"
+    },
+    {
+      "id": 192,
+      "name": "Su",
+      "categoryId": 36,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 9999,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.500Z"
+    },
+    {
+      "id": 193,
+      "name": "Çay",
+      "categoryId": 36,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.503Z"
+    },
+    {
+      "id": 194,
+      "name": "Meyve Suyu",
+      "categoryId": 36,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.506Z"
+    },
+    {
+      "id": 195,
+      "name": "Zeytinyağı",
+      "categoryId": 23,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.509Z"
+    },
+    {
+      "id": 196,
+      "name": "Ayçiçek Yağı",
+      "categoryId": 23,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.512Z"
+    },
+    {
+      "id": 198,
+      "name": "Sıvı Yağ",
+      "categoryId": 23,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.518Z"
+    },
+    {
+      "id": 199,
+      "name": "Yumurta",
+      "categoryId": 24,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 28,
+      "averageWeightPerUnit": 60,
+      "createdAt": "2025-11-10T09:43:42.521Z"
+    },
+    {
+      "id": 200,
+      "name": "Dondurma",
+      "categoryId": 25,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.524Z"
+    },
+    {
+      "id": 201,
+      "name": "Protein",
+      "categoryId": 25,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:43:42.528Z"
+    },
+    {
+      "id": 202,
+      "name": "Kereviz Sapı",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.744Z"
+    },
+    {
+      "id": 203,
+      "name": "Hindiba",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 4,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.749Z"
+    },
+    {
+      "id": 204,
+      "name": "Radika",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 4,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.752Z"
+    },
+    {
+      "id": 205,
+      "name": "Ebegümeci",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.754Z"
+    },
+    {
+      "id": 206,
+      "name": "Gelincik",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.757Z"
+    },
+    {
+      "id": 207,
+      "name": "Sirken",
+      "categoryId": 35,
+      "defaultUnit": "şişe",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.760Z"
+    },
+    {
+      "id": 208,
+      "name": "Kazayağı",
+      "categoryId": 35,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.766Z"
+    },
+    {
+      "id": 209,
+      "name": "Yabani Turp",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.770Z"
+    },
+    {
+      "id": 210,
+      "name": "Çiriş",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.773Z"
+    },
+    {
+      "id": 211,
+      "name": "Kuzukulağı",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.775Z"
+    },
+    {
+      "id": 212,
+      "name": "Labada",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.778Z"
+    },
+    {
+      "id": 213,
+      "name": "Kırmızı Lahana",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 21,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.781Z"
+    },
+    {
+      "id": 214,
+      "name": "Beyaz Lahana",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 21,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.785Z"
+    },
+    {
+      "id": 215,
+      "name": "Brüksel Lahanası",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 10,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.788Z"
+    },
+    {
+      "id": 216,
+      "name": "Çin Lahanası",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.790Z"
+    },
+    {
+      "id": 217,
+      "name": "Karalahana",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.793Z"
+    },
+    {
+      "id": 218,
+      "name": "Karnıbahar",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.796Z"
+    },
+    {
+      "id": 219,
+      "name": "Romanesco",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.800Z"
+    },
+    {
+      "id": 220,
+      "name": "Brokoli Çiçeği",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.804Z"
+    },
+    {
+      "id": 221,
+      "name": "Brokoli Sapı",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.806Z"
+    },
+    {
+      "id": 222,
+      "name": "Kuşkonmaz",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 4,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.809Z"
+    },
+    {
+      "id": 223,
+      "name": "Bamya Çiçeği",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.813Z"
+    },
+    {
+      "id": 224,
+      "name": "Kabak Çiçeği",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.816Z"
+    },
+    {
+      "id": 225,
+      "name": "Biber Çiçeği",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.819Z"
+    },
+    {
+      "id": 226,
+      "name": "Patlıcan Çiçeği",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.822Z"
+    },
+    {
+      "id": 227,
+      "name": "Kornişon",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.825Z"
+    },
+    {
+      "id": 228,
+      "name": "Turşuluk Biber",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.828Z"
+    },
+    {
+      "id": 229,
+      "name": "Turşuluk Domates",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.832Z"
+    },
+    {
+      "id": 230,
+      "name": "Turşuluk Lahana",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.834Z"
+    },
+    {
+      "id": 231,
+      "name": "Turşuluk Havuç",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.838Z"
+    },
+    {
+      "id": 232,
+      "name": "Turşuluk Pancar",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.840Z"
+    },
+    {
+      "id": 233,
+      "name": "Turşuluk Turp",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.843Z"
+    },
+    {
+      "id": 234,
+      "name": "Turşuluk Soğan",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.847Z"
+    },
+    {
+      "id": 235,
+      "name": "Turşuluk Sarımsak",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.850Z"
+    },
+    {
+      "id": 236,
+      "name": "Kırmızı Soğan",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.852Z"
+    },
+    {
+      "id": 237,
+      "name": "Beyaz Soğan",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.856Z"
+    },
+    {
+      "id": 238,
+      "name": "Sarı Soğan",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.859Z"
+    },
+    {
+      "id": 239,
+      "name": "Mor Soğan",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.861Z"
+    },
+    {
+      "id": 240,
+      "name": "Arpacık Soğan",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.865Z"
+    },
+    {
+      "id": 241,
+      "name": "Yalova Soğanı",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.868Z"
+    },
+    {
+      "id": 242,
+      "name": "Dolma Biberi",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.871Z"
+    },
+    {
+      "id": 243,
+      "name": "Dondurulmuş Sebze",
+      "categoryId": 35,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.874Z"
+    },
+    {
+      "id": 244,
+      "name": "Domates Yaprağı",
+      "categoryId": 35,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.877Z"
+    },
+    {
+      "id": 245,
+      "name": "Dere Otu",
+      "categoryId": 10,
+      "defaultUnit": "demet",
+      "shelfLifeDays": 4,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.887Z"
+    },
+    {
+      "id": 246,
+      "name": "Lime",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 14,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.902Z"
+    },
+    {
+      "id": 247,
+      "name": "Hindistan Cevizi",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.907Z"
+    },
+    {
+      "id": 248,
+      "name": "Papaya",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.910Z"
+    },
+    {
+      "id": 249,
+      "name": "Ahududu",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.913Z"
+    },
+    {
+      "id": 250,
+      "name": "Yaban Mersini",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.916Z"
+    },
+    {
+      "id": 251,
+      "name": "Kuşburnu",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.919Z"
+    },
+    {
+      "id": 252,
+      "name": "Alıç",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.921Z"
+    },
+    {
+      "id": 253,
+      "name": "İğde",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 10,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.925Z"
+    },
+    {
+      "id": 254,
+      "name": "Dut",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.928Z"
+    },
+    {
+      "id": 255,
+      "name": "İncir",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": 50,
+      "createdAt": "2025-11-10T09:47:56.932Z"
+    },
+    {
+      "id": 256,
+      "name": "Erik",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": 50,
+      "createdAt": "2025-11-10T09:47:56.934Z"
+    },
+    {
+      "id": 257,
+      "name": "Ayva",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 21,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.937Z"
+    },
+    {
+      "id": 258,
+      "name": "Muşmula",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.940Z"
+    },
+    {
+      "id": 259,
+      "name": "Trabzon Hurması",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 10,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.943Z"
+    },
+    {
+      "id": 260,
+      "name": "Kızılcık",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 14,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.947Z"
+    },
+    {
+      "id": 261,
+      "name": "Yenidünya",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.950Z"
+    },
+    {
+      "id": 262,
+      "name": "Frenk Üzümü",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.952Z"
+    },
+    {
+      "id": 263,
+      "name": "Bektaşi Üzümü",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.955Z"
+    },
+    {
+      "id": 264,
+      "name": "Karadut",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.957Z"
+    },
+    {
+      "id": 265,
+      "name": "Akdut",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.961Z"
+    },
+    {
+      "id": 266,
+      "name": "Kırmızı İncir",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.965Z"
+    },
+    {
+      "id": 267,
+      "name": "Beyaz İncir",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.967Z"
+    },
+    {
+      "id": 268,
+      "name": "Siyah İncir",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.970Z"
+    },
+    {
+      "id": 269,
+      "name": "Yeşil İncir",
+      "categoryId": 34,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.972Z"
+    },
+    {
+      "id": 270,
+      "name": "Tavuk Ciğeri",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.987Z"
+    },
+    {
+      "id": 271,
+      "name": "Kuzu Pirzola",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.992Z"
+    },
+    {
+      "id": 272,
+      "name": "Dana Bonfile",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.994Z"
+    },
+    {
+      "id": 273,
+      "name": "Kuzu Bonfile",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:56.998Z"
+    },
+    {
+      "id": 274,
+      "name": "Tavuk Bonfile",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.000Z"
+    },
+    {
+      "id": 275,
+      "name": "Hindi Bonfile",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.004Z"
+    },
+    {
+      "id": 276,
+      "name": "Kavurma",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 5,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.008Z"
+    },
+    {
+      "id": 277,
+      "name": "Köfte",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.011Z"
+    },
+    {
+      "id": 278,
+      "name": "Döner",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.014Z"
+    },
+    {
+      "id": 279,
+      "name": "Çiğ Kebap",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.017Z"
+    },
+    {
+      "id": 280,
+      "name": "Adana Kebap",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.021Z"
+    },
+    {
+      "id": 281,
+      "name": "Urfa Kebap",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.023Z"
+    },
+    {
+      "id": 282,
+      "name": "Döner Eti",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.026Z"
+    },
+    {
+      "id": 283,
+      "name": "Domuz Eti",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.028Z"
+    },
+    {
+      "id": 284,
+      "name": "Kuzu Kaburga",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.032Z"
+    },
+    {
+      "id": 285,
+      "name": "Dana Kaburga",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.034Z"
+    },
+    {
+      "id": 286,
+      "name": "Tavuk Kalçası",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.038Z"
+    },
+    {
+      "id": 287,
+      "name": "Hindi Göğsü",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.041Z"
+    },
+    {
+      "id": 288,
+      "name": "Kuzu Kuşbaşı",
+      "categoryId": 12,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.044Z"
+    },
+    {
+      "id": 289,
+      "name": "Mezgit",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.055Z"
+    },
+    {
+      "id": 290,
+      "name": "Kalamar",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.060Z"
+    },
+    {
+      "id": 291,
+      "name": "Ahtapot",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.064Z"
+    },
+    {
+      "id": 292,
+      "name": "İstiridye",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.067Z"
+    },
+    {
+      "id": 293,
+      "name": "Yengeç",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.070Z"
+    },
+    {
+      "id": 294,
+      "name": "Istakoz",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.072Z"
+    },
+    {
+      "id": 295,
+      "name": "Dil Balığı",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.075Z"
+    },
+    {
+      "id": 296,
+      "name": "Kalkan Balığı",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.077Z"
+    },
+    {
+      "id": 297,
+      "name": "Çinekop",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.081Z"
+    },
+    {
+      "id": 298,
+      "name": "Lüfer",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.084Z"
+    },
+    {
+      "id": 299,
+      "name": "Kefal",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.086Z"
+    },
+    {
+      "id": 300,
+      "name": "Tekir",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.089Z"
+    },
+    {
+      "id": 301,
+      "name": "Mercan",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.091Z"
+    },
+    {
+      "id": 302,
+      "name": "Çipura",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.094Z"
+    },
+    {
+      "id": 303,
+      "name": "Orkinos",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.098Z"
+    },
+    {
+      "id": 304,
+      "name": "Kılıç Balığı",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.101Z"
+    },
+    {
+      "id": 305,
+      "name": "Morina",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.103Z"
+    },
+    {
+      "id": 306,
+      "name": "Mürekkep Balığı",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.106Z"
+    },
+    {
+      "id": 307,
+      "name": "Dil Balığı Fileto",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.108Z"
+    },
+    {
+      "id": 308,
+      "name": "Somon Fileto",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.110Z"
+    },
+    {
+      "id": 309,
+      "name": "Ton Balığı Konservesi",
+      "categoryId": 13,
+      "defaultUnit": "kutu",
+      "shelfLifeDays": 365,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.114Z"
+    },
+    {
+      "id": 310,
+      "name": "Karides Kuyrukları",
+      "categoryId": 13,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 2,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.117Z"
+    },
+    {
+      "id": 311,
+      "name": "Soğuk Süt",
+      "categoryId": 14,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.124Z"
+    },
+    {
+      "id": 312,
+      "name": "Taze Kaşar",
+      "categoryId": 14,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 21,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.130Z"
+    },
+    {
+      "id": 313,
+      "name": "Eski Kaşar",
+      "categoryId": 14,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 60,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.134Z"
+    },
+    {
+      "id": 314,
+      "name": "Mascarpone",
+      "categoryId": 14,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 10,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.137Z"
+    },
+    {
+      "id": 315,
+      "name": "Kokonat Sütü",
+      "categoryId": 14,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.141Z"
+    },
+    {
+      "id": 316,
+      "name": "Badem Sütü",
+      "categoryId": 14,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 10,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.143Z"
+    },
+    {
+      "id": 317,
+      "name": "Yulaf Sütü",
+      "categoryId": 14,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 10,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.146Z"
+    },
+    {
+      "id": 318,
+      "name": "Soya Sütü",
+      "categoryId": 14,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 10,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.149Z"
+    },
+    {
+      "id": 319,
+      "name": "Pirinç Sütü",
+      "categoryId": 14,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 10,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.152Z"
+    },
+    {
+      "id": 320,
+      "name": "Yenibahar",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.161Z"
+    },
+    {
+      "id": 321,
+      "name": "Kişniş",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.167Z"
+    },
+    {
+      "id": 322,
+      "name": "Anason",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.170Z"
+    },
+    {
+      "id": 323,
+      "name": "Çörek Otu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.172Z"
+    },
+    {
+      "id": 324,
+      "name": "Taze Sarımsak",
+      "categoryId": 15,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 14,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.175Z"
+    },
+    {
+      "id": 325,
+      "name": "Kuru Sarımsak",
+      "categoryId": 15,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.178Z"
+    },
+    {
+      "id": 326,
+      "name": "Sarımsak Tozu",
+      "categoryId": 15,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.181Z"
+    },
+    {
+      "id": 327,
+      "name": "Soğan Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.184Z"
+    },
+    {
+      "id": 328,
+      "name": "Kırmızı Biber Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.186Z"
+    },
+    {
+      "id": 329,
+      "name": "Yeşil Biber Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.189Z"
+    },
+    {
+      "id": 330,
+      "name": "Domates Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.191Z"
+    },
+    {
+      "id": 331,
+      "name": "Havuç Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.194Z"
+    },
+    {
+      "id": 332,
+      "name": "Pancar Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.198Z"
+    },
+    {
+      "id": 333,
+      "name": "Ispanak Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.201Z"
+    },
+    {
+      "id": 334,
+      "name": "Brokoli Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.203Z"
+    },
+    {
+      "id": 335,
+      "name": "Karnabahar Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.206Z"
+    },
+    {
+      "id": 336,
+      "name": "Kabak Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.208Z"
+    },
+    {
+      "id": 337,
+      "name": "Patlıcan Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.213Z"
+    },
+    {
+      "id": 338,
+      "name": "Kereviz Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.216Z"
+    },
+    {
+      "id": 339,
+      "name": "Maydanoz Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.219Z"
+    },
+    {
+      "id": 340,
+      "name": "Dereotu Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.221Z"
+    },
+    {
+      "id": 341,
+      "name": "Nane Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.224Z"
+    },
+    {
+      "id": 342,
+      "name": "Fesleğen Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.226Z"
+    },
+    {
+      "id": 343,
+      "name": "Kekik Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.231Z"
+    },
+    {
+      "id": 344,
+      "name": "Biberiye Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.234Z"
+    },
+    {
+      "id": 345,
+      "name": "Roka Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.237Z"
+    },
+    {
+      "id": 346,
+      "name": "Marul Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.240Z"
+    },
+    {
+      "id": 347,
+      "name": "Tere Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.243Z"
+    },
+    {
+      "id": 348,
+      "name": "Semizotu Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.247Z"
+    },
+    {
+      "id": 349,
+      "name": "Pazı Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.252Z"
+    },
+    {
+      "id": 350,
+      "name": "Çili",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.256Z"
+    },
+    {
+      "id": 352,
+      "name": "Haşhaş",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.261Z"
+    },
+    {
+      "id": 353,
+      "name": "Çemen",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.265Z"
+    },
+    {
+      "id": 354,
+      "name": "Hardal Tohumu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.269Z"
+    },
+    {
+      "id": 355,
+      "name": "Kenevir Tohumu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.272Z"
+    },
+    {
+      "id": 356,
+      "name": "Keten Tohumu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.274Z"
+    },
+    {
+      "id": 357,
+      "name": "Chia Tohumu Tozu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.277Z"
+    },
+    {
+      "id": 358,
+      "name": "Vanilya Çubuğu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.280Z"
+    },
+    {
+      "id": 359,
+      "name": "Vanilya Özü",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.283Z"
+    },
+    {
+      "id": 360,
+      "name": "Limon Kabuğu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.287Z"
+    },
+    {
+      "id": 361,
+      "name": "Portakal Kabuğu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.289Z"
+    },
+    {
+      "id": 362,
+      "name": "Lime Kabuğu",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.292Z"
+    },
+    {
+      "id": 363,
+      "name": "Bergamot",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.294Z"
+    },
+    {
+      "id": 364,
+      "name": "Lavanta",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.298Z"
+    },
+    {
+      "id": 365,
+      "name": "Safran",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.302Z"
+    },
+    {
+      "id": 366,
+      "name": "Kardamom",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.305Z"
+    },
+    {
+      "id": 367,
+      "name": "Yıldız Anason",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.308Z"
+    },
+    {
+      "id": 368,
+      "name": "Beyaz Biber",
+      "categoryId": 15,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.310Z"
+    },
+    {
+      "id": 369,
+      "name": "Leblebi",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.319Z"
+    },
+    {
+      "id": 370,
+      "name": "Kestane",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.324Z"
+    },
+    {
+      "id": 371,
+      "name": "Çam Fıstığı",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 60,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.327Z"
+    },
+    {
+      "id": 372,
+      "name": "Pekan Cevizi",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.331Z"
+    },
+    {
+      "id": 373,
+      "name": "Macadamia",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.334Z"
+    },
+    {
+      "id": 374,
+      "name": "Brezilya Cevizi",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.336Z"
+    },
+    {
+      "id": 375,
+      "name": "Çiğ Badem",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.338Z"
+    },
+    {
+      "id": 376,
+      "name": "Kavrulmuş Fındık",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 60,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.341Z"
+    },
+    {
+      "id": 377,
+      "name": "Kavrulmuş Ceviz",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 60,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.344Z"
+    },
+    {
+      "id": 378,
+      "name": "Kavrulmuş Badem",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 60,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.348Z"
+    },
+    {
+      "id": 379,
+      "name": "Kavrulmuş Antep Fıstığı",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 45,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.350Z"
+    },
+    {
+      "id": 380,
+      "name": "Kavrulmuş Susam",
+      "categoryId": 16,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.353Z"
+    },
+    {
+      "id": 381,
+      "name": "Kavrulmuş Ayçiçek Çekirdeği",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 60,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.355Z"
+    },
+    {
+      "id": 382,
+      "name": "Kavrulmuş Kabak Çekirdeği",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 60,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.358Z"
+    },
+    {
+      "id": 383,
+      "name": "Çiğ Fındık",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.361Z"
+    },
+    {
+      "id": 384,
+      "name": "Çiğ Ceviz",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.365Z"
+    },
+    {
+      "id": 385,
+      "name": "Çiğ Antep Fıstığı",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 60,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.367Z"
+    },
+    {
+      "id": 386,
+      "name": "Çiğ Susam",
+      "categoryId": 16,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 120,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.370Z"
+    },
+    {
+      "id": 387,
+      "name": "Çiğ Kabak Çekirdeği",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.372Z"
+    },
+    {
+      "id": 388,
+      "name": "Kuru Erik",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.375Z"
+    },
+    {
+      "id": 389,
+      "name": "Kuru Elma",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.378Z"
+    },
+    {
+      "id": 390,
+      "name": "Kuru Armut",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.381Z"
+    },
+    {
+      "id": 391,
+      "name": "Kuru Şeftali",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.384Z"
+    },
+    {
+      "id": 392,
+      "name": "Kuru Muz",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.386Z"
+    },
+    {
+      "id": 393,
+      "name": "Kuru Ananas",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.389Z"
+    },
+    {
+      "id": 394,
+      "name": "Kuru Mango",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.392Z"
+    },
+    {
+      "id": 395,
+      "name": "Kuru Papaya",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.394Z"
+    },
+    {
+      "id": 396,
+      "name": "Kuru Kivi",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.398Z"
+    },
+    {
+      "id": 397,
+      "name": "Kuru Çilek",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.401Z"
+    },
+    {
+      "id": 398,
+      "name": "Kuru Ahududu",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.403Z"
+    },
+    {
+      "id": 399,
+      "name": "Kuru Yaban Mersini",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.406Z"
+    },
+    {
+      "id": 400,
+      "name": "Kuru Kuşburnu",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.409Z"
+    },
+    {
+      "id": 401,
+      "name": "Kuru Alıç",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.412Z"
+    },
+    {
+      "id": 402,
+      "name": "Kuru İğde",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.415Z"
+    },
+    {
+      "id": 403,
+      "name": "Kuru Dut",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.418Z"
+    },
+    {
+      "id": 404,
+      "name": "Kuru Hurma",
+      "categoryId": 16,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.421Z"
+    },
+    {
+      "id": 405,
+      "name": "Hindistan Cevizi Rendesi",
+      "categoryId": 16,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.423Z"
+    },
+    {
+      "id": 406,
+      "name": "Badem Ezmesi",
+      "categoryId": 16,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 60,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.426Z"
+    },
+    {
+      "id": 407,
+      "name": "Fındık Ezmesi",
+      "categoryId": 16,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 60,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.429Z"
+    },
+    {
+      "id": 408,
+      "name": "Tahin",
+      "categoryId": 16,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 90,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.432Z"
+    },
+    {
+      "id": 409,
+      "name": "Fıstık Ezmesi",
+      "categoryId": 16,
+      "defaultUnit": "gr",
+      "shelfLifeDays": 60,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.435Z"
+    },
+    {
+      "id": 410,
+      "name": "Buğday",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.441Z"
+    },
+    {
+      "id": 411,
+      "name": "Arpa",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.446Z"
+    },
+    {
+      "id": 412,
+      "name": "Çavdar",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.449Z"
+    },
+    {
+      "id": 413,
+      "name": "Darı",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.452Z"
+    },
+    {
+      "id": 414,
+      "name": "Amarant",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.454Z"
+    },
+    {
+      "id": 415,
+      "name": "Karabuğday",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.457Z"
+    },
+    {
+      "id": 416,
+      "name": "Sorgum",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.459Z"
+    },
+    {
+      "id": 417,
+      "name": "Teff",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.463Z"
+    },
+    {
+      "id": 418,
+      "name": "Tam Buğday Unu",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 120,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.466Z"
+    },
+    {
+      "id": 419,
+      "name": "Çavdar Unu",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 120,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.469Z"
+    },
+    {
+      "id": 420,
+      "name": "Mısır Unu",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.471Z"
+    },
+    {
+      "id": 421,
+      "name": "Pirinç Unu",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.474Z"
+    },
+    {
+      "id": 422,
+      "name": "Yulaf Unu",
+      "categoryId": 17,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.476Z"
+    },
+    {
+      "id": 423,
+      "name": "Siyah Mercimek",
+      "categoryId": 18,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.487Z"
+    },
+    {
+      "id": 424,
+      "name": "Sarı Mercimek",
+      "categoryId": 18,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.490Z"
+    },
+    {
+      "id": 425,
+      "name": "Börülce",
+      "categoryId": 18,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.492Z"
+    },
+    {
+      "id": 426,
+      "name": "Soya Fasulyesi",
+      "categoryId": 18,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.496Z"
+    },
+    {
+      "id": 427,
+      "name": "Mung Fasulyesi",
+      "categoryId": 18,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.500Z"
+    },
+    {
+      "id": 428,
+      "name": "Adzuki Fasulyesi",
+      "categoryId": 18,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.502Z"
+    },
+    {
+      "id": 429,
+      "name": "Lima Fasulyesi",
+      "categoryId": 18,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.505Z"
+    },
+    {
+      "id": 430,
+      "name": "Pinto Fasulyesi",
+      "categoryId": 18,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.508Z"
+    },
+    {
+      "id": 431,
+      "name": "Kuru Maya",
+      "categoryId": 19,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.517Z"
+    },
+    {
+      "id": 432,
+      "name": "Yaş Maya",
+      "categoryId": 19,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 14,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.520Z"
+    },
+    {
+      "id": 433,
+      "name": "Kremor Tartar",
+      "categoryId": 19,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.523Z"
+    },
+    {
+      "id": 434,
+      "name": "Acı Sos",
+      "categoryId": 20,
+      "defaultUnit": "şişe",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.533Z"
+    },
+    {
+      "id": 435,
+      "name": "Barbekü Sosu",
+      "categoryId": 20,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.536Z"
+    },
+    {
+      "id": 436,
+      "name": "Balzamik Sirke",
+      "categoryId": 20,
+      "defaultUnit": "şişe",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.538Z"
+    },
+    {
+      "id": 437,
+      "name": "Elma Sirkesi",
+      "categoryId": 20,
+      "defaultUnit": "şişe",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.548Z"
+    },
+    {
+      "id": 438,
+      "name": "Üzüm Sirkesi",
+      "categoryId": 20,
+      "defaultUnit": "şişe",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.551Z"
+    },
+    {
+      "id": 439,
+      "name": "Pirinç Sirkesi",
+      "categoryId": 20,
+      "defaultUnit": "şişe",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.553Z"
+    },
+    {
+      "id": 440,
+      "name": "Teriyaki Sos",
+      "categoryId": 20,
+      "defaultUnit": "şişe",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.556Z"
+    },
+    {
+      "id": 441,
+      "name": "Worcestershire Sos",
+      "categoryId": 20,
+      "defaultUnit": "şişe",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.559Z"
+    },
+    {
+      "id": 442,
+      "name": "Tabasco",
+      "categoryId": 20,
+      "defaultUnit": "şişe",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.561Z"
+    },
+    {
+      "id": 443,
+      "name": "Çin Sosu",
+      "categoryId": 20,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.565Z"
+    },
+    {
+      "id": 444,
+      "name": "Oyster Sos",
+      "categoryId": 20,
+      "defaultUnit": "şişe",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.568Z"
+    },
+    {
+      "id": 445,
+      "name": "Hoisin Sos",
+      "categoryId": 20,
+      "defaultUnit": "şişe",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.570Z"
+    },
+    {
+      "id": 446,
+      "name": "Sriracha",
+      "categoryId": 20,
+      "defaultUnit": "şişe",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.573Z"
+    },
+    {
+      "id": 447,
+      "name": "Chipotle Sos",
+      "categoryId": 20,
+      "defaultUnit": "şişe",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.576Z"
+    },
+    {
+      "id": 448,
+      "name": "Pudra Şekeri",
+      "categoryId": 21,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.586Z"
+    },
+    {
+      "id": 449,
+      "name": "Esmer Şeker",
+      "categoryId": 21,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.588Z"
+    },
+    {
+      "id": 450,
+      "name": "Agave Şurubu",
+      "categoryId": 21,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.592Z"
+    },
+    {
+      "id": 451,
+      "name": "Akçaağaç Şurubu",
+      "categoryId": 21,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.595Z"
+    },
+    {
+      "id": 452,
+      "name": "Hindistan Cevizi Şekeri",
+      "categoryId": 21,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.599Z"
+    },
+    {
+      "id": 453,
+      "name": "Stevia",
+      "categoryId": 21,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.601Z"
+    },
+    {
+      "id": 454,
+      "name": "Eritritol",
+      "categoryId": 21,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.604Z"
+    },
+    {
+      "id": 455,
+      "name": "Xylitol",
+      "categoryId": 21,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.606Z"
+    },
+    {
+      "id": 456,
+      "name": "Monk Fruit",
+      "categoryId": 21,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.609Z"
+    },
+    {
+      "id": 457,
+      "name": "Kola",
+      "categoryId": 36,
+      "defaultUnit": "şişe",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.619Z"
+    },
+    {
+      "id": 458,
+      "name": "Limon Suyu",
+      "categoryId": 36,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 14,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.623Z"
+    },
+    {
+      "id": 459,
+      "name": "Portakal Suyu",
+      "categoryId": 36,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.626Z"
+    },
+    {
+      "id": 460,
+      "name": "Nar Suyu",
+      "categoryId": 36,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 7,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.629Z"
+    },
+    {
+      "id": 461,
+      "name": "Yeşil Çay",
+      "categoryId": 36,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.632Z"
+    },
+    {
+      "id": 462,
+      "name": "Siyah Çay",
+      "categoryId": 36,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.636Z"
+    },
+    {
+      "id": 463,
+      "name": "Beyaz Çay",
+      "categoryId": 36,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.638Z"
+    },
+    {
+      "id": 464,
+      "name": "Oolong Çay",
+      "categoryId": 36,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.641Z"
+    },
+    {
+      "id": 465,
+      "name": "Bitki Çayı",
+      "categoryId": 36,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.643Z"
+    },
+    {
+      "id": 466,
+      "name": "Papatya Çayı",
+      "categoryId": 36,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.647Z"
+    },
+    {
+      "id": 467,
+      "name": "Nane Çayı",
+      "categoryId": 36,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.651Z"
+    },
+    {
+      "id": 468,
+      "name": "Adaçayı",
+      "categoryId": 36,
+      "defaultUnit": "paket",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.653Z"
+    },
+    {
+      "id": 469,
+      "name": "Sıcak Su",
+      "categoryId": 36,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.656Z"
+    },
+    {
+      "id": 470,
+      "name": "Mısır Yağı",
+      "categoryId": 23,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.660Z"
+    },
+    {
+      "id": 471,
+      "name": "Kanola Yağı",
+      "categoryId": 23,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.663Z"
+    },
+    {
+      "id": 472,
+      "name": "Susam Yağı",
+      "categoryId": 23,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.666Z"
+    },
+    {
+      "id": 473,
+      "name": "Hindistan Cevizi Yağı",
+      "categoryId": 23,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 360,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.669Z"
+    },
+    {
+      "id": 474,
+      "name": "Avokado Yağı",
+      "categoryId": 23,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.672Z"
+    },
+    {
+      "id": 475,
+      "name": "Badem Yağı",
+      "categoryId": 23,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.674Z"
+    },
+    {
+      "id": 476,
+      "name": "Ceviz Yağı",
+      "categoryId": 23,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.677Z"
+    },
+    {
+      "id": 477,
+      "name": "Fındık Yağı",
+      "categoryId": 23,
+      "defaultUnit": "litre",
+      "shelfLifeDays": 180,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.680Z"
+    },
+    {
+      "id": 479,
+      "name": "Tavuk Yumurtası",
+      "categoryId": 24,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 28,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.688Z"
+    },
+    {
+      "id": 480,
+      "name": "Bıldırcın Yumurtası",
+      "categoryId": 24,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 21,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.691Z"
+    },
+    {
+      "id": 481,
+      "name": "Kaz Yumurtası",
+      "categoryId": 24,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 21,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.693Z"
+    },
+    {
+      "id": 482,
+      "name": "Tatlı",
+      "categoryId": 25,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 3,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.698Z"
+    },
+    {
+      "id": 483,
+      "name": "Kuru Gıda",
+      "categoryId": 25,
+      "defaultUnit": "adet",
+      "shelfLifeDays": 30,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-10T09:47:57.702Z"
+    },
+    {
+      "id": 556,
+      "name": "Beyaz Peynir",
+      "categoryId": 24,
+      "defaultUnit": "kg",
+      "shelfLifeDays": 21,
+      "averageWeightPerUnit": null,
+      "createdAt": "2025-11-13T17:10:03.130Z"
+    }
+  ],
+  "modules": [
+    {
+      "id": 1,
+      "name": "Dolabım",
+      "slug": "pantry",
+      "description": "Evdeki malzemelerinizi takip edin",
+      "icon": "🏠",
+      "isCore": true,
+      "isActive": true,
+      "createdAt": "2025-11-10T07:59:28.427Z"
+    },
+    {
+      "id": 2,
+      "name": "Profil",
+      "slug": "profile",
+      "description": "Profil ve mutfak ayarlarınız",
+      "icon": "👤",
+      "isCore": true,
+      "isActive": true,
+      "createdAt": "2025-11-10T07:59:28.427Z"
+    },
+    {
+      "id": 3,
+      "name": "Market",
+      "slug": "market",
+      "description": "Alışveriş listenizi yönetin",
+      "icon": "🛒",
+      "isCore": true,
+      "isActive": true,
+      "createdAt": "2025-11-10T07:59:28.427Z"
+    },
+    {
+      "id": 4,
+      "name": "Tarifler",
+      "slug": "recipes",
+      "description": "Tarif ekleyin, düzenleyin ve paylaşın",
+      "icon": "📖",
+      "isCore": true,
+      "isActive": true,
+      "createdAt": "2025-11-10T10:26:38.533Z"
+    },
+    {
+      "id": 5,
+      "name": "Tarif Ara",
+      "slug": "recipe-search",
+      "description": "Tarifler arasında arama yapın ve filtreleyin",
+      "icon": "🔍",
+      "isCore": true,
+      "isActive": true,
+      "createdAt": "2025-11-10T10:26:38.550Z"
+    },
+    {
+      "id": 6,
+      "name": "Tarif Detay",
+      "slug": "recipe-detail",
+      "description": "Tarif detaylarını görüntüleyin",
+      "icon": "📋",
+      "isCore": true,
+      "isActive": true,
+      "createdAt": "2025-11-10T10:26:38.558Z"
+    },
+    {
+      "id": 7,
+      "name": "Tarif Ekle",
+      "slug": "recipe-add",
+      "description": "Yeni tarifler oluşturun",
+      "icon": "➕",
+      "isCore": true,
+      "isActive": true,
+      "createdAt": "2025-11-10T10:26:38.562Z"
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "name": "Test User",
+      "email": "test@example.com",
+      "password": "$2b$10$yTxZrUgiQ37ET1q1kuunK.OQusbp7Hb22J0PDFdXtmh3dwM6NvCO6",
+      "plainPassword": "dgrr1213",
+      "googleId": null,
+      "profileImage": null,
+      "phone": null,
+      "phoneVerified": false,
+      "isAdmin": false,
+      "kitchenId": 1,
+      "createdAt": "2025-11-10T08:06:58.754Z",
+      "updatedAt": "2025-11-14T20:21:39.331Z"
+    },
+    {
+      "id": 2,
+      "name": "Serdar",
+      "email": "serdardogruer@gmail.com",
+      "password": "$2b$10$yTxZrUgiQ37ET1q1kuunK.OQusbp7Hb22J0PDFdXtmh3dwM6NvCO6",
+      "plainPassword": "dgrr1213",
+      "googleId": null,
+      "profileImage": "/uploads/profiles/profile-1762910764040-832051358.jpeg",
+      "phone": null,
+      "phoneVerified": false,
+      "isAdmin": true,
+      "kitchenId": 2,
+      "createdAt": "2025-11-10T08:16:08.000Z",
+      "updatedAt": "2025-11-14T20:21:39.336Z"
+    },
+    {
+      "id": 3,
+      "name": "elif demır",
+      "email": "eliffdemirr96@gmail.com",
+      "password": "$2b$10$yTxZrUgiQ37ET1q1kuunK.OQusbp7Hb22J0PDFdXtmh3dwM6NvCO6",
+      "plainPassword": "dgrr1213",
+      "googleId": null,
+      "profileImage": "/uploads/profiles/profile-1762910815638-638499435.jpeg",
+      "phone": null,
+      "phoneVerified": false,
+      "isAdmin": false,
+      "kitchenId": 3,
+      "createdAt": "2025-11-10T09:14:09.240Z",
+      "updatedAt": "2025-11-14T20:21:39.339Z"
+    },
+    {
+      "id": 4,
+      "name": "Test User 2",
+      "email": "test2@example.com",
+      "password": "$2b$10$yTxZrUgiQ37ET1q1kuunK.OQusbp7Hb22J0PDFdXtmh3dwM6NvCO6",
+      "plainPassword": "dgrr1213",
+      "googleId": null,
+      "profileImage": null,
+      "phone": null,
+      "phoneVerified": false,
+      "isAdmin": false,
+      "kitchenId": 4,
+      "createdAt": "2025-11-10T11:27:00.576Z",
+      "updatedAt": "2025-11-14T20:21:39.342Z"
+    },
+    {
+      "id": 5,
+      "name": "ezel guner",
+      "email": "ezelgunerr1@gmail.com",
+      "password": "$2b$10$yTxZrUgiQ37ET1q1kuunK.OQusbp7Hb22J0PDFdXtmh3dwM6NvCO6",
+      "plainPassword": "dgrr1213",
+      "googleId": null,
+      "profileImage": "/uploads/profiles/profile-1763062465076-115669214.jpeg",
+      "phone": null,
+      "phoneVerified": false,
+      "isAdmin": false,
+      "kitchenId": 7,
+      "createdAt": "2025-11-11T00:29:37.055Z",
+      "updatedAt": "2025-11-14T20:21:39.345Z"
+    },
+    {
+      "id": 6,
+      "name": "ertan doğruer",
+      "email": "ertandogruer1@gmail.com",
+      "password": "$2b$10$yTxZrUgiQ37ET1q1kuunK.OQusbp7Hb22J0PDFdXtmh3dwM6NvCO6",
+      "plainPassword": "dgrr1213",
+      "googleId": null,
+      "profileImage": "/uploads/profiles/profile-1762834112370-685022826.jpeg",
+      "phone": null,
+      "phoneVerified": false,
+      "isAdmin": false,
+      "kitchenId": 6,
+      "createdAt": "2025-11-11T04:01:22.707Z",
+      "updatedAt": "2025-11-14T20:21:39.348Z"
+    },
+    {
+      "id": 7,
+      "name": "merve demir",
+      "email": "mervedemirrr223@gmail.com",
+      "password": "$2b$10$yTxZrUgiQ37ET1q1kuunK.OQusbp7Hb22J0PDFdXtmh3dwM6NvCO6",
+      "plainPassword": "dgrr1213",
+      "googleId": null,
+      "profileImage": "/uploads/profiles/profile-1763048778157-573802503.jpeg",
+      "phone": null,
+      "phoneVerified": false,
+      "isAdmin": false,
+      "kitchenId": 7,
+      "createdAt": "2025-11-13T15:42:03.941Z",
+      "updatedAt": "2025-11-14T20:21:39.352Z"
+    }
+  ],
+  "kitchens": [
+    {
+      "id": 1,
+      "name": "Test User Mutfağı",
+      "inviteCode": "JBDSS9",
+      "status": "ACTIVE",
+      "ownerId": 1,
+      "createdAt": "2025-11-10T08:06:58.780Z",
+      "updatedAt": "2025-11-10T08:06:58.780Z"
+    },
+    {
+      "id": 2,
+      "name": "Serdar Mutfağı",
+      "inviteCode": "CIRDUU",
+      "status": "ACTIVE",
+      "ownerId": 2,
+      "createdAt": "2025-11-10T08:16:08.037Z",
+      "updatedAt": "2025-11-14T17:43:47.220Z"
+    },
+    {
+      "id": 3,
+      "name": "elif demır Mutfağı",
+      "inviteCode": "RNQHVD",
+      "status": "ACTIVE",
+      "ownerId": 3,
+      "createdAt": "2025-11-10T09:14:09.250Z",
+      "updatedAt": "2025-11-14T17:44:39.701Z"
+    },
+    {
+      "id": 4,
+      "name": "Test User 2 Mutfağı",
+      "inviteCode": "9ZXWMM",
+      "status": "ACTIVE",
+      "ownerId": 4,
+      "createdAt": "2025-11-10T11:27:00.589Z",
+      "updatedAt": "2025-11-10T11:27:00.589Z"
+    },
+    {
+      "id": 5,
+      "name": "ezel guner Mutfağı",
+      "inviteCode": "6PJE9W",
+      "status": "PASSIVE",
+      "ownerId": 5,
+      "createdAt": "2025-11-11T00:29:37.096Z",
+      "updatedAt": "2025-11-13T19:39:23.889Z"
+    },
+    {
+      "id": 6,
+      "name": "ertan doğruer Mutfağı",
+      "inviteCode": "7HWIKC",
+      "status": "ACTIVE",
+      "ownerId": 6,
+      "createdAt": "2025-11-11T04:01:22.720Z",
+      "updatedAt": "2025-11-11T04:01:22.720Z"
+    },
+    {
+      "id": 7,
+      "name": "merve demir Mutfağı",
+      "inviteCode": "2PUCNT",
+      "status": "ACTIVE",
+      "ownerId": 7,
+      "createdAt": "2025-11-13T15:42:04.003Z",
+      "updatedAt": "2025-11-13T19:44:20.551Z"
+    }
+  ],
+  "kitchenMembers": [
+    {
+      "id": 1,
+      "kitchenId": 1,
+      "userId": 1,
+      "role": "OWNER",
+      "joinedAt": "2025-11-10T08:06:58.790Z"
+    },
+    {
+      "id": 2,
+      "kitchenId": 2,
+      "userId": 2,
+      "role": "OWNER",
+      "joinedAt": "2025-11-10T08:16:08.040Z"
+    },
+    {
+      "id": 3,
+      "kitchenId": 3,
+      "userId": 3,
+      "role": "OWNER",
+      "joinedAt": "2025-11-10T09:14:09.253Z"
+    },
+    {
+      "id": 4,
+      "kitchenId": 4,
+      "userId": 4,
+      "role": "OWNER",
+      "joinedAt": "2025-11-10T11:27:00.593Z"
+    },
+    {
+      "id": 6,
+      "kitchenId": 5,
+      "userId": 5,
+      "role": "OWNER",
+      "joinedAt": "2025-11-11T00:29:37.100Z"
+    },
+    {
+      "id": 7,
+      "kitchenId": 6,
+      "userId": 6,
+      "role": "OWNER",
+      "joinedAt": "2025-11-11T04:01:22.723Z"
+    },
+    {
+      "id": 8,
+      "kitchenId": 7,
+      "userId": 7,
+      "role": "OWNER",
+      "joinedAt": "2025-11-13T15:42:04.010Z"
+    },
+    {
+      "id": 9,
+      "kitchenId": 7,
+      "userId": 5,
+      "role": "MEMBER",
+      "joinedAt": "2025-11-13T19:39:23.922Z"
+    }
+  ],
+  "recipes": [
+    {
+      "id": 22,
+      "title": "Menemen",
+      "description": "Geleneksel Türk kahvaltısının vazgeçilmezi",
+      "image": "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=800",
+      "video": null,
+      "prepTime": 10,
+      "cookTime": 15,
+      "servings": 2,
+      "difficulty": "EASY",
+      "category": "Kahvaltı",
+      "cuisine": "Türk",
+      "userId": 1,
+      "createdAt": "2025-11-13T18:55:54.460Z",
+      "updatedAt": "2025-11-13T18:55:54.460Z",
+      "ingredients": [
+        {
+          "id": 152,
+          "recipeId": 22,
+          "name": "Domates",
+          "quantity": 3,
+          "unit": "adet",
+          "order": 1
+        },
+        {
+          "id": 153,
+          "recipeId": 22,
+          "name": "Yeşil Biber",
+          "quantity": 2,
+          "unit": "adet",
+          "order": 2
+        },
+        {
+          "id": 154,
+          "recipeId": 22,
+          "name": "Yumurta",
+          "quantity": 4,
+          "unit": "adet",
+          "order": 3
+        },
+        {
+          "id": 155,
+          "recipeId": 22,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet",
+          "order": 4
+        },
+        {
+          "id": 156,
+          "recipeId": 22,
+          "name": "Tereyağı",
+          "quantity": 2,
+          "unit": "yemek kaşığı",
+          "order": 5
+        },
+        {
+          "id": 157,
+          "recipeId": 22,
+          "name": "Tuz",
+          "quantity": 1,
+          "unit": "çay kaşığı",
+          "order": 6
+        },
+        {
+          "id": 158,
+          "recipeId": 22,
+          "name": "Karabiber",
+          "quantity": 0.5,
+          "unit": "çay kaşığı",
+          "order": 7
+        }
+      ],
+      "instructions": [
+        {
+          "id": 140,
+          "recipeId": 22,
+          "stepNumber": 1,
+          "instruction": "Domatesleri ve biberleri küp şeklinde doğrayın.",
+          "image": null
+        },
+        {
+          "id": 141,
+          "recipeId": 22,
+          "stepNumber": 2,
+          "instruction": "Tavada tereyağını eritin, soğanları kavurun.",
+          "image": null
+        },
+        {
+          "id": 142,
+          "recipeId": 22,
+          "stepNumber": 3,
+          "instruction": "Biberleri ekleyin, 2-3 dakika kavurun.",
+          "image": null
+        },
+        {
+          "id": 143,
+          "recipeId": 22,
+          "stepNumber": 4,
+          "instruction": "Domatesleri ekleyin, suyunu çekene kadar pişirin.",
+          "image": null
+        },
+        {
+          "id": 144,
+          "recipeId": 22,
+          "stepNumber": 5,
+          "instruction": "Yumurtaları kırın, karıştırın.",
+          "image": null
+        },
+        {
+          "id": 145,
+          "recipeId": 22,
+          "stepNumber": 6,
+          "instruction": "Tuz ve karabiber ekleyin, 3-4 dakika pişirin.",
+          "image": null
+        }
+      ],
+      "tags": [
+        {
+          "id": 67,
+          "recipeId": 22,
+          "tag": "kahvaltı"
+        },
+        {
+          "id": 68,
+          "recipeId": 22,
+          "tag": "pratik"
+        },
+        {
+          "id": 69,
+          "recipeId": 22,
+          "tag": "türk mutfağı"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "title": "Mercimek Çorbası",
+      "description": "Sıcacık, doyurucu ve besleyici",
+      "image": "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800",
+      "video": null,
+      "prepTime": 10,
+      "cookTime": 30,
+      "servings": 4,
+      "difficulty": "EASY",
+      "category": "Çorba",
+      "cuisine": "Türk",
+      "userId": 1,
+      "createdAt": "2025-11-13T18:55:54.467Z",
+      "updatedAt": "2025-11-13T18:55:54.467Z",
+      "ingredients": [
+        {
+          "id": 159,
+          "recipeId": 23,
+          "name": "Kırmızı Mercimek",
+          "quantity": 1,
+          "unit": "su bardağı",
+          "order": 1
+        },
+        {
+          "id": 160,
+          "recipeId": 23,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet",
+          "order": 2
+        },
+        {
+          "id": 161,
+          "recipeId": 23,
+          "name": "Havuç",
+          "quantity": 1,
+          "unit": "adet",
+          "order": 3
+        },
+        {
+          "id": 162,
+          "recipeId": 23,
+          "name": "Domates Salçası",
+          "quantity": 1,
+          "unit": "yemek kaşığı",
+          "order": 4
+        },
+        {
+          "id": 163,
+          "recipeId": 23,
+          "name": "Tereyağı",
+          "quantity": 2,
+          "unit": "yemek kaşığı",
+          "order": 5
+        },
+        {
+          "id": 164,
+          "recipeId": 23,
+          "name": "Su",
+          "quantity": 6,
+          "unit": "su bardağı",
+          "order": 6
+        },
+        {
+          "id": 165,
+          "recipeId": 23,
+          "name": "Tuz",
+          "quantity": 1,
+          "unit": "çay kaşığı",
+          "order": 7
+        }
+      ],
+      "instructions": [
+        {
+          "id": 146,
+          "recipeId": 23,
+          "stepNumber": 1,
+          "instruction": "Mercimeği yıkayın, suyunu süzün.",
+          "image": null
+        },
+        {
+          "id": 147,
+          "recipeId": 23,
+          "stepNumber": 2,
+          "instruction": "Soğan ve havucu küp şeklinde doğrayın.",
+          "image": null
+        },
+        {
+          "id": 148,
+          "recipeId": 23,
+          "stepNumber": 3,
+          "instruction": "Tencerede tereyağını eritin, soğanları kavurun.",
+          "image": null
+        },
+        {
+          "id": 149,
+          "recipeId": 23,
+          "stepNumber": 4,
+          "instruction": "Salçayı ekleyin, kokusu çıkana kadar kavurun.",
+          "image": null
+        },
+        {
+          "id": 150,
+          "recipeId": 23,
+          "stepNumber": 5,
+          "instruction": "Mercimek, havuç ve suyu ekleyin.",
+          "image": null
+        },
+        {
+          "id": 151,
+          "recipeId": 23,
+          "stepNumber": 6,
+          "instruction": "25-30 dakika pişirin.",
+          "image": null
+        },
+        {
+          "id": 152,
+          "recipeId": 23,
+          "stepNumber": 7,
+          "instruction": "Blender ile püre haline getirin, tuz ekleyin.",
+          "image": null
+        }
+      ],
+      "tags": [
+        {
+          "id": 70,
+          "recipeId": 23,
+          "tag": "çorba"
+        },
+        {
+          "id": 71,
+          "recipeId": 23,
+          "tag": "sağlıklı"
+        },
+        {
+          "id": 72,
+          "recipeId": 23,
+          "tag": "vegan"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "title": "Makarna",
+      "description": "Basit ve lezzetli makarna tarifi",
+      "image": "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800",
+      "video": null,
+      "prepTime": 5,
+      "cookTime": 15,
+      "servings": 3,
+      "difficulty": "EASY",
+      "category": "Ana Yemek",
+      "cuisine": "İtalyan",
+      "userId": 1,
+      "createdAt": "2025-11-13T18:55:54.473Z",
+      "updatedAt": "2025-11-13T18:55:54.473Z",
+      "ingredients": [
+        {
+          "id": 166,
+          "recipeId": 24,
+          "name": "Makarna",
+          "quantity": 300,
+          "unit": "gr",
+          "order": 1
+        },
+        {
+          "id": 167,
+          "recipeId": 24,
+          "name": "Domates Salçası",
+          "quantity": 2,
+          "unit": "yemek kaşığı",
+          "order": 2
+        },
+        {
+          "id": 168,
+          "recipeId": 24,
+          "name": "Zeytinyağı",
+          "quantity": 3,
+          "unit": "yemek kaşığı",
+          "order": 3
+        },
+        {
+          "id": 169,
+          "recipeId": 24,
+          "name": "Sarımsak",
+          "quantity": 2,
+          "unit": "diş",
+          "order": 4
+        },
+        {
+          "id": 170,
+          "recipeId": 24,
+          "name": "Tuz",
+          "quantity": 1,
+          "unit": "çay kaşığı",
+          "order": 5
+        },
+        {
+          "id": 171,
+          "recipeId": 24,
+          "name": "Karabiber",
+          "quantity": 0.5,
+          "unit": "çay kaşığı",
+          "order": 6
+        }
+      ],
+      "instructions": [
+        {
+          "id": 153,
+          "recipeId": 24,
+          "stepNumber": 1,
+          "instruction": "Tuzlu suda makarnayı haşlayın.",
+          "image": null
+        },
+        {
+          "id": 154,
+          "recipeId": 24,
+          "stepNumber": 2,
+          "instruction": "Tavada zeytinyağını ısıtın, sarımsağı kavurun.",
+          "image": null
+        },
+        {
+          "id": 155,
+          "recipeId": 24,
+          "stepNumber": 3,
+          "instruction": "Salçayı ekleyin, 2 dakika kavurun.",
+          "image": null
+        },
+        {
+          "id": 156,
+          "recipeId": 24,
+          "stepNumber": 4,
+          "instruction": "Haşlanmış makarnayı ekleyin, karıştırın.",
+          "image": null
+        },
+        {
+          "id": 157,
+          "recipeId": 24,
+          "stepNumber": 5,
+          "instruction": "Tuz ve karabiber ekleyin, servis yapın.",
+          "image": null
+        }
+      ],
+      "tags": [
+        {
+          "id": 73,
+          "recipeId": 24,
+          "tag": "makarna"
+        },
+        {
+          "id": 74,
+          "recipeId": 24,
+          "tag": "pratik"
+        },
+        {
+          "id": 75,
+          "recipeId": 24,
+          "tag": "hızlı"
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "title": "Tavuk Sote",
+      "description": "Sebzeli tavuk sote",
+      "image": "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=800",
+      "video": null,
+      "prepTime": 15,
+      "cookTime": 25,
+      "servings": 4,
+      "difficulty": "MEDIUM",
+      "category": "Ana Yemek",
+      "cuisine": "Türk",
+      "userId": 1,
+      "createdAt": "2025-11-13T18:55:54.484Z",
+      "updatedAt": "2025-11-13T18:55:54.484Z",
+      "ingredients": [
+        {
+          "id": 172,
+          "recipeId": 25,
+          "name": "Tavuk Göğsü",
+          "quantity": 500,
+          "unit": "gr",
+          "order": 1
+        },
+        {
+          "id": 173,
+          "recipeId": 25,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet",
+          "order": 2
+        },
+        {
+          "id": 174,
+          "recipeId": 25,
+          "name": "Biber",
+          "quantity": 2,
+          "unit": "adet",
+          "order": 3
+        },
+        {
+          "id": 175,
+          "recipeId": 25,
+          "name": "Domates",
+          "quantity": 2,
+          "unit": "adet",
+          "order": 4
+        },
+        {
+          "id": 176,
+          "recipeId": 25,
+          "name": "Zeytinyağı",
+          "quantity": 3,
+          "unit": "yemek kaşığı",
+          "order": 5
+        },
+        {
+          "id": 177,
+          "recipeId": 25,
+          "name": "Tuz",
+          "quantity": 1,
+          "unit": "çay kaşığı",
+          "order": 6
+        },
+        {
+          "id": 178,
+          "recipeId": 25,
+          "name": "Karabiber",
+          "quantity": 0.5,
+          "unit": "çay kaşığı",
+          "order": 7
+        }
+      ],
+      "instructions": [
+        {
+          "id": 158,
+          "recipeId": 25,
+          "stepNumber": 1,
+          "instruction": "Tavukları küp şeklinde doğrayın.",
+          "image": null
+        },
+        {
+          "id": 159,
+          "recipeId": 25,
+          "stepNumber": 2,
+          "instruction": "Sebzeleri doğrayın.",
+          "image": null
+        },
+        {
+          "id": 160,
+          "recipeId": 25,
+          "stepNumber": 3,
+          "instruction": "Tavada yağı ısıtın, tavukları kavurun.",
+          "image": null
+        },
+        {
+          "id": 161,
+          "recipeId": 25,
+          "stepNumber": 4,
+          "instruction": "Soğanları ekleyin, pembeleşene kadar kavurun.",
+          "image": null
+        },
+        {
+          "id": 162,
+          "recipeId": 25,
+          "stepNumber": 5,
+          "instruction": "Biberleri ekleyin, 5 dakika pişirin.",
+          "image": null
+        },
+        {
+          "id": 163,
+          "recipeId": 25,
+          "stepNumber": 6,
+          "instruction": "Domatesleri ekleyin, 10 dakika pişirin.",
+          "image": null
+        },
+        {
+          "id": 164,
+          "recipeId": 25,
+          "stepNumber": 7,
+          "instruction": "Tuz ve karabiber ekleyin, servis yapın.",
+          "image": null
+        }
+      ],
+      "tags": [
+        {
+          "id": 76,
+          "recipeId": 25,
+          "tag": "tavuk"
+        },
+        {
+          "id": 77,
+          "recipeId": 25,
+          "tag": "sağlıklı"
+        },
+        {
+          "id": 78,
+          "recipeId": 25,
+          "tag": "protein"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "title": "Kısır",
+      "description": "Hafif ve lezzetli bulgur salatası",
+      "image": "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=800",
+      "video": null,
+      "prepTime": 20,
+      "cookTime": 0,
+      "servings": 6,
+      "difficulty": "EASY",
+      "category": "Salata",
+      "cuisine": "Türk",
+      "userId": 1,
+      "createdAt": "2025-11-13T18:55:54.493Z",
+      "updatedAt": "2025-11-13T18:55:54.493Z",
+      "ingredients": [
+        {
+          "id": 179,
+          "recipeId": 26,
+          "name": "İnce Bulgur",
+          "quantity": 2,
+          "unit": "su bardağı",
+          "order": 1
+        },
+        {
+          "id": 180,
+          "recipeId": 26,
+          "name": "Domates Salçası",
+          "quantity": 2,
+          "unit": "yemek kaşığı",
+          "order": 2
+        },
+        {
+          "id": 181,
+          "recipeId": 26,
+          "name": "Nar Ekşisi",
+          "quantity": 3,
+          "unit": "yemek kaşığı",
+          "order": 3
+        },
+        {
+          "id": 182,
+          "recipeId": 26,
+          "name": "Zeytinyağı",
+          "quantity": 4,
+          "unit": "yemek kaşığı",
+          "order": 4
+        },
+        {
+          "id": 183,
+          "recipeId": 26,
+          "name": "Domates",
+          "quantity": 3,
+          "unit": "adet",
+          "order": 5
+        },
+        {
+          "id": 184,
+          "recipeId": 26,
+          "name": "Salatalık",
+          "quantity": 1,
+          "unit": "adet",
+          "order": 6
+        },
+        {
+          "id": 185,
+          "recipeId": 26,
+          "name": "Maydanoz",
+          "quantity": 1,
+          "unit": "demet",
+          "order": 7
+        },
+        {
+          "id": 186,
+          "recipeId": 26,
+          "name": "Tuz",
+          "quantity": 1,
+          "unit": "çay kaşığı",
+          "order": 8
+        }
+      ],
+      "instructions": [
+        {
+          "id": 165,
+          "recipeId": 26,
+          "stepNumber": 1,
+          "instruction": "Bulguru geniş bir kaseye alın.",
+          "image": null
+        },
+        {
+          "id": 166,
+          "recipeId": 26,
+          "stepNumber": 2,
+          "instruction": "Salça, nar ekşisi ve zeytinyağını ekleyin.",
+          "image": null
+        },
+        {
+          "id": 167,
+          "recipeId": 26,
+          "stepNumber": 3,
+          "instruction": "1 su bardağı sıcak su ekleyin, karıştırın.",
+          "image": null
+        },
+        {
+          "id": 168,
+          "recipeId": 26,
+          "stepNumber": 4,
+          "instruction": "15 dakika bekletin.",
+          "image": null
+        },
+        {
+          "id": 169,
+          "recipeId": 26,
+          "stepNumber": 5,
+          "instruction": "Sebzeleri ince doğrayın.",
+          "image": null
+        },
+        {
+          "id": 170,
+          "recipeId": 26,
+          "stepNumber": 6,
+          "instruction": "Tüm malzemeleri karıştırın.",
+          "image": null
+        },
+        {
+          "id": 171,
+          "recipeId": 26,
+          "stepNumber": 7,
+          "instruction": "Marul yaprakları ile servis yapın.",
+          "image": null
+        }
+      ],
+      "tags": [
+        {
+          "id": 79,
+          "recipeId": 26,
+          "tag": "salata"
+        },
+        {
+          "id": 80,
+          "recipeId": 26,
+          "tag": "vegan"
+        },
+        {
+          "id": 81,
+          "recipeId": 26,
+          "tag": "sağlıklı"
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "title": "Omlet",
+      "description": "Klasik peynirli omlet",
+      "image": "https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=800",
+      "video": null,
+      "prepTime": 5,
+      "cookTime": 10,
+      "servings": 1,
+      "difficulty": "EASY",
+      "category": "Kahvaltı",
+      "cuisine": "Dünya",
+      "userId": 1,
+      "createdAt": "2025-11-13T18:55:54.499Z",
+      "updatedAt": "2025-11-13T18:55:54.499Z",
+      "ingredients": [
+        {
+          "id": 187,
+          "recipeId": 27,
+          "name": "Yumurta",
+          "quantity": 3,
+          "unit": "adet",
+          "order": 1
+        },
+        {
+          "id": 188,
+          "recipeId": 27,
+          "name": "Beyaz Peynir",
+          "quantity": 50,
+          "unit": "gr",
+          "order": 2
+        },
+        {
+          "id": 189,
+          "recipeId": 27,
+          "name": "Süt",
+          "quantity": 2,
+          "unit": "yemek kaşığı",
+          "order": 3
+        },
+        {
+          "id": 190,
+          "recipeId": 27,
+          "name": "Tereyağı",
+          "quantity": 1,
+          "unit": "yemek kaşığı",
+          "order": 4
+        },
+        {
+          "id": 191,
+          "recipeId": 27,
+          "name": "Tuz",
+          "quantity": 0.5,
+          "unit": "çay kaşığı",
+          "order": 5
+        },
+        {
+          "id": 192,
+          "recipeId": 27,
+          "name": "Karabiber",
+          "quantity": 0.5,
+          "unit": "çay kaşığı",
+          "order": 6
+        }
+      ],
+      "instructions": [
+        {
+          "id": 172,
+          "recipeId": 27,
+          "stepNumber": 1,
+          "instruction": "Yumurtaları çırpın, süt ekleyin.",
+          "image": null
+        },
+        {
+          "id": 173,
+          "recipeId": 27,
+          "stepNumber": 2,
+          "instruction": "Tuz ve karabiber ekleyin.",
+          "image": null
+        },
+        {
+          "id": 174,
+          "recipeId": 27,
+          "stepNumber": 3,
+          "instruction": "Tavada tereyağını eritin.",
+          "image": null
+        },
+        {
+          "id": 175,
+          "recipeId": 27,
+          "stepNumber": 4,
+          "instruction": "Yumurta karışımını dökün.",
+          "image": null
+        },
+        {
+          "id": 176,
+          "recipeId": 27,
+          "stepNumber": 5,
+          "instruction": "Peyniri üzerine serpin.",
+          "image": null
+        },
+        {
+          "id": 177,
+          "recipeId": 27,
+          "stepNumber": 6,
+          "instruction": "Altı kızarınca ikiye katlayın.",
+          "image": null
+        },
+        {
+          "id": 178,
+          "recipeId": 27,
+          "stepNumber": 7,
+          "instruction": "Sıcak servis yapın.",
+          "image": null
+        }
+      ],
+      "tags": [
+        {
+          "id": 82,
+          "recipeId": 27,
+          "tag": "kahvaltı"
+        },
+        {
+          "id": 83,
+          "recipeId": 27,
+          "tag": "pratik"
+        },
+        {
+          "id": 84,
+          "recipeId": 27,
+          "tag": "protein"
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "title": "Pilav",
+      "description": "Tereyağlı pirinç pilavı",
+      "image": "https://images.unsplash.com/photo-1516684732162-798a0062be99?w=800",
+      "video": null,
+      "prepTime": 10,
+      "cookTime": 20,
+      "servings": 4,
+      "difficulty": "EASY",
+      "category": "Ana Yemek",
+      "cuisine": "Türk",
+      "userId": 1,
+      "createdAt": "2025-11-13T18:55:54.503Z",
+      "updatedAt": "2025-11-13T18:55:54.503Z",
+      "ingredients": [
+        {
+          "id": 193,
+          "recipeId": 28,
+          "name": "Pirinç",
+          "quantity": 2,
+          "unit": "su bardağı",
+          "order": 1
+        },
+        {
+          "id": 194,
+          "recipeId": 28,
+          "name": "Su",
+          "quantity": 3,
+          "unit": "su bardağı",
+          "order": 2
+        },
+        {
+          "id": 195,
+          "recipeId": 28,
+          "name": "Tereyağı",
+          "quantity": 3,
+          "unit": "yemek kaşığı",
+          "order": 3
+        },
+        {
+          "id": 196,
+          "recipeId": 28,
+          "name": "Tuz",
+          "quantity": 1,
+          "unit": "çay kaşığı",
+          "order": 4
+        }
+      ],
+      "instructions": [
+        {
+          "id": 179,
+          "recipeId": 28,
+          "stepNumber": 1,
+          "instruction": "Pirinci yıkayın, suyunu süzün.",
+          "image": null
+        },
+        {
+          "id": 180,
+          "recipeId": 28,
+          "stepNumber": 2,
+          "instruction": "Tencerede tereyağını eritin.",
+          "image": null
+        },
+        {
+          "id": 181,
+          "recipeId": 28,
+          "stepNumber": 3,
+          "instruction": "Pirinci ekleyin, 2 dakika kavurun.",
+          "image": null
+        },
+        {
+          "id": 182,
+          "recipeId": 28,
+          "stepNumber": 4,
+          "instruction": "Sıcak su ve tuzu ekleyin.",
+          "image": null
+        },
+        {
+          "id": 183,
+          "recipeId": 28,
+          "stepNumber": 5,
+          "instruction": "Kaynayınca kısık ateşte 15 dakika pişirin.",
+          "image": null
+        },
+        {
+          "id": 184,
+          "recipeId": 28,
+          "stepNumber": 6,
+          "instruction": "Altını kapatın, 10 dakika dinlendirin.",
+          "image": null
+        }
+      ],
+      "tags": [
+        {
+          "id": 85,
+          "recipeId": 28,
+          "tag": "pilav"
+        },
+        {
+          "id": 86,
+          "recipeId": 28,
+          "tag": "yan yemek"
+        },
+        {
+          "id": 87,
+          "recipeId": 28,
+          "tag": "temel"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "title": "Çoban Salata",
+      "description": "Taze sebzelerle hazırlanan klasik salata",
+      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800",
+      "video": null,
+      "prepTime": 15,
+      "cookTime": 0,
+      "servings": 4,
+      "difficulty": "EASY",
+      "category": "Salata",
+      "cuisine": "Türk",
+      "userId": 1,
+      "createdAt": "2025-11-13T18:55:54.509Z",
+      "updatedAt": "2025-11-13T18:55:54.509Z",
+      "ingredients": [
+        {
+          "id": 197,
+          "recipeId": 29,
+          "name": "Domates",
+          "quantity": 3,
+          "unit": "adet",
+          "order": 1
+        },
+        {
+          "id": 198,
+          "recipeId": 29,
+          "name": "Salatalık",
+          "quantity": 2,
+          "unit": "adet",
+          "order": 2
+        },
+        {
+          "id": 199,
+          "recipeId": 29,
+          "name": "Yeşil Biber",
+          "quantity": 2,
+          "unit": "adet",
+          "order": 3
+        },
+        {
+          "id": 200,
+          "recipeId": 29,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet",
+          "order": 4
+        },
+        {
+          "id": 201,
+          "recipeId": 29,
+          "name": "Maydanoz",
+          "quantity": 0.5,
+          "unit": "demet",
+          "order": 5
+        },
+        {
+          "id": 202,
+          "recipeId": 29,
+          "name": "Zeytinyağı",
+          "quantity": 3,
+          "unit": "yemek kaşığı",
+          "order": 6
+        },
+        {
+          "id": 203,
+          "recipeId": 29,
+          "name": "Limon",
+          "quantity": 1,
+          "unit": "adet",
+          "order": 7
+        },
+        {
+          "id": 204,
+          "recipeId": 29,
+          "name": "Tuz",
+          "quantity": 1,
+          "unit": "çay kaşığı",
+          "order": 8
+        }
+      ],
+      "instructions": [
+        {
+          "id": 185,
+          "recipeId": 29,
+          "stepNumber": 1,
+          "instruction": "Tüm sebzeleri küp şeklinde doğrayın.",
+          "image": null
+        },
+        {
+          "id": 186,
+          "recipeId": 29,
+          "stepNumber": 2,
+          "instruction": "Maydanozu ince kıyın.",
+          "image": null
+        },
+        {
+          "id": 187,
+          "recipeId": 29,
+          "stepNumber": 3,
+          "instruction": "Geniş bir kaseye alın.",
+          "image": null
+        },
+        {
+          "id": 188,
+          "recipeId": 29,
+          "stepNumber": 4,
+          "instruction": "Zeytinyağı, limon suyu ve tuz ekleyin.",
+          "image": null
+        },
+        {
+          "id": 189,
+          "recipeId": 29,
+          "stepNumber": 5,
+          "instruction": "Karıştırın ve servis yapın.",
+          "image": null
+        }
+      ],
+      "tags": [
+        {
+          "id": 88,
+          "recipeId": 29,
+          "tag": "salata"
+        },
+        {
+          "id": 89,
+          "recipeId": 29,
+          "tag": "vegan"
+        },
+        {
+          "id": 90,
+          "recipeId": 29,
+          "tag": "taze"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "title": "Yoğurtlu Makarna",
+      "description": "Yoğurt soslu nefis makarna",
+      "image": "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800",
+      "video": null,
+      "prepTime": 10,
+      "cookTime": 20,
+      "servings": 4,
+      "difficulty": "MEDIUM",
+      "category": "Ana Yemek",
+      "cuisine": "Türk",
+      "userId": 1,
+      "createdAt": "2025-11-13T18:55:54.514Z",
+      "updatedAt": "2025-11-13T18:55:54.514Z",
+      "ingredients": [
+        {
+          "id": 205,
+          "recipeId": 30,
+          "name": "Makarna",
+          "quantity": 400,
+          "unit": "gr",
+          "order": 1
+        },
+        {
+          "id": 206,
+          "recipeId": 30,
+          "name": "Yoğurt",
+          "quantity": 2,
+          "unit": "su bardağı",
+          "order": 2
+        },
+        {
+          "id": 207,
+          "recipeId": 30,
+          "name": "Sarımsak",
+          "quantity": 2,
+          "unit": "diş",
+          "order": 3
+        },
+        {
+          "id": 208,
+          "recipeId": 30,
+          "name": "Tereyağı",
+          "quantity": 3,
+          "unit": "yemek kaşığı",
+          "order": 4
+        },
+        {
+          "id": 209,
+          "recipeId": 30,
+          "name": "Pul Biber",
+          "quantity": 1,
+          "unit": "çay kaşığı",
+          "order": 5
+        },
+        {
+          "id": 210,
+          "recipeId": 30,
+          "name": "Tuz",
+          "quantity": 1,
+          "unit": "çay kaşığı",
+          "order": 6
+        }
+      ],
+      "instructions": [
+        {
+          "id": 190,
+          "recipeId": 30,
+          "stepNumber": 1,
+          "instruction": "Makarnayı haşlayın, suyunu süzün.",
+          "image": null
+        },
+        {
+          "id": 191,
+          "recipeId": 30,
+          "stepNumber": 2,
+          "instruction": "Yoğurdu ezilmiş sarımsakla karıştırın.",
+          "image": null
+        },
+        {
+          "id": 192,
+          "recipeId": 30,
+          "stepNumber": 3,
+          "instruction": "Makarnayı tabaklara alın.",
+          "image": null
+        },
+        {
+          "id": 193,
+          "recipeId": 30,
+          "stepNumber": 4,
+          "instruction": "Yoğurt sosunu üzerine dökün.",
+          "image": null
+        },
+        {
+          "id": 194,
+          "recipeId": 30,
+          "stepNumber": 5,
+          "instruction": "Tereyağını eritin, pul biber ekleyin.",
+          "image": null
+        },
+        {
+          "id": 195,
+          "recipeId": 30,
+          "stepNumber": 6,
+          "instruction": "Sıcak yağı üzerine gezdirin.",
+          "image": null
+        }
+      ],
+      "tags": [
+        {
+          "id": 91,
+          "recipeId": 30,
+          "tag": "makarna"
+        },
+        {
+          "id": 92,
+          "recipeId": 30,
+          "tag": "yoğurtlu"
+        },
+        {
+          "id": 93,
+          "recipeId": 30,
+          "tag": "türk mutfağı"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "title": "Patates Kızartması",
+      "description": "Çıtır çıtır patates kızartması",
+      "image": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=800",
+      "video": null,
+      "prepTime": 10,
+      "cookTime": 15,
+      "servings": 3,
+      "difficulty": "EASY",
+      "category": "Atıştırmalık",
+      "cuisine": "Dünya",
+      "userId": 1,
+      "createdAt": "2025-11-13T18:55:54.518Z",
+      "updatedAt": "2025-11-13T18:55:54.518Z",
+      "ingredients": [
+        {
+          "id": 211,
+          "recipeId": 31,
+          "name": "Patates",
+          "quantity": 4,
+          "unit": "adet",
+          "order": 1
+        },
+        {
+          "id": 212,
+          "recipeId": 31,
+          "name": "Sıvı Yağ",
+          "quantity": 1,
+          "unit": "litre",
+          "order": 2
+        },
+        {
+          "id": 213,
+          "recipeId": 31,
+          "name": "Tuz",
+          "quantity": 1,
+          "unit": "çay kaşığı",
+          "order": 3
+        }
+      ],
+      "instructions": [
+        {
+          "id": 196,
+          "recipeId": 31,
+          "stepNumber": 1,
+          "instruction": "Patatesleri soyun ve çubuk şeklinde kesin.",
+          "image": null
+        },
+        {
+          "id": 197,
+          "recipeId": 31,
+          "stepNumber": 2,
+          "instruction": "Soğuk suda bekletin, nişastasını atın.",
+          "image": null
+        },
+        {
+          "id": 198,
+          "recipeId": 31,
+          "stepNumber": 3,
+          "instruction": "Kurulayın.",
+          "image": null
+        },
+        {
+          "id": 199,
+          "recipeId": 31,
+          "stepNumber": 4,
+          "instruction": "Yağı ısıtın.",
+          "image": null
+        },
+        {
+          "id": 200,
+          "recipeId": 31,
+          "stepNumber": 5,
+          "instruction": "Patatesleri kızartın.",
+          "image": null
+        },
+        {
+          "id": 201,
+          "recipeId": 31,
+          "stepNumber": 6,
+          "instruction": "Kağıt havluya alın, tuzlayın.",
+          "image": null
+        }
+      ],
+      "tags": [
+        {
+          "id": 94,
+          "recipeId": 31,
+          "tag": "atıştırmalık"
+        },
+        {
+          "id": 95,
+          "recipeId": 31,
+          "tag": "patates"
+        },
+        {
+          "id": 96,
+          "recipeId": 31,
+          "tag": "kızartma"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "title": "Tavuk Çorbası",
+      "description": "Şifa kaynağı tavuk çorbası",
+      "image": "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800",
+      "video": null,
+      "prepTime": 15,
+      "cookTime": 45,
+      "servings": 6,
+      "difficulty": "MEDIUM",
+      "category": "Çorba",
+      "cuisine": "Türk",
+      "userId": 1,
+      "createdAt": "2025-11-13T18:55:54.523Z",
+      "updatedAt": "2025-11-13T18:55:54.523Z",
+      "ingredients": [
+        {
+          "id": 214,
+          "recipeId": 32,
+          "name": "Tavuk But",
+          "quantity": 2,
+          "unit": "adet",
+          "order": 1
+        },
+        {
+          "id": 215,
+          "recipeId": 32,
+          "name": "Havuç",
+          "quantity": 1,
+          "unit": "adet",
+          "order": 2
+        },
+        {
+          "id": 216,
+          "recipeId": 32,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet",
+          "order": 3
+        },
+        {
+          "id": 217,
+          "recipeId": 32,
+          "name": "Pirinç",
+          "quantity": 0.5,
+          "unit": "su bardağı",
+          "order": 4
+        },
+        {
+          "id": 218,
+          "recipeId": 32,
+          "name": "Su",
+          "quantity": 8,
+          "unit": "su bardağı",
+          "order": 5
+        },
+        {
+          "id": 219,
+          "recipeId": 32,
+          "name": "Tuz",
+          "quantity": 1,
+          "unit": "çay kaşığı",
+          "order": 6
+        },
+        {
+          "id": 220,
+          "recipeId": 32,
+          "name": "Karabiber",
+          "quantity": 0.5,
+          "unit": "çay kaşığı",
+          "order": 7
+        }
+      ],
+      "instructions": [
+        {
+          "id": 202,
+          "recipeId": 32,
+          "stepNumber": 1,
+          "instruction": "Tavukları yıkayın.",
+          "image": null
+        },
+        {
+          "id": 203,
+          "recipeId": 32,
+          "stepNumber": 2,
+          "instruction": "Tencereye tavuk, soğan, havuç ve suyu koyun.",
+          "image": null
+        },
+        {
+          "id": 204,
+          "recipeId": 32,
+          "stepNumber": 3,
+          "instruction": "30 dakika kaynatın.",
+          "image": null
+        },
+        {
+          "id": 205,
+          "recipeId": 32,
+          "stepNumber": 4,
+          "instruction": "Tavukları çıkarın, didikleyin.",
+          "image": null
+        },
+        {
+          "id": 206,
+          "recipeId": 32,
+          "stepNumber": 5,
+          "instruction": "Pirinci ekleyin, 15 dakika pişirin.",
+          "image": null
+        },
+        {
+          "id": 207,
+          "recipeId": 32,
+          "stepNumber": 6,
+          "instruction": "Tavuk etlerini geri ekleyin.",
+          "image": null
+        },
+        {
+          "id": 208,
+          "recipeId": 32,
+          "stepNumber": 7,
+          "instruction": "Tuz ve karabiber ekleyin, servis yapın.",
+          "image": null
+        }
+      ],
+      "tags": [
+        {
+          "id": 97,
+          "recipeId": 32,
+          "tag": "çorba"
+        },
+        {
+          "id": 98,
+          "recipeId": 32,
+          "tag": "tavuk"
+        },
+        {
+          "id": 99,
+          "recipeId": 32,
+          "tag": "sağlıklı"
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "title": "Sütlaç",
+      "description": "Fırında sütlaç",
+      "image": "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800",
+      "video": null,
+      "prepTime": 10,
+      "cookTime": 60,
+      "servings": 6,
+      "difficulty": "MEDIUM",
+      "category": "Tatlı",
+      "cuisine": "Türk",
+      "userId": 1,
+      "createdAt": "2025-11-13T18:55:54.528Z",
+      "updatedAt": "2025-11-13T18:55:54.528Z",
+      "ingredients": [
+        {
+          "id": 221,
+          "recipeId": 33,
+          "name": "Pirinç",
+          "quantity": 0.5,
+          "unit": "su bardağı",
+          "order": 1
+        },
+        {
+          "id": 222,
+          "recipeId": 33,
+          "name": "Süt",
+          "quantity": 1,
+          "unit": "litre",
+          "order": 2
+        },
+        {
+          "id": 223,
+          "recipeId": 33,
+          "name": "Şeker",
+          "quantity": 1,
+          "unit": "su bardağı",
+          "order": 3
+        },
+        {
+          "id": 224,
+          "recipeId": 33,
+          "name": "Vanilya",
+          "quantity": 1,
+          "unit": "paket",
+          "order": 4
+        },
+        {
+          "id": 225,
+          "recipeId": 33,
+          "name": "Nişasta",
+          "quantity": 1,
+          "unit": "yemek kaşığı",
+          "order": 5
+        }
+      ],
+      "instructions": [
+        {
+          "id": 209,
+          "recipeId": 33,
+          "stepNumber": 1,
+          "instruction": "Pirinci haşlayın.",
+          "image": null
+        },
+        {
+          "id": 210,
+          "recipeId": 33,
+          "stepNumber": 2,
+          "instruction": "Sütü ekleyin, kaynatın.",
+          "image": null
+        },
+        {
+          "id": 211,
+          "recipeId": 33,
+          "stepNumber": 3,
+          "instruction": "Şeker ve vanilyayı ekleyin.",
+          "image": null
+        },
+        {
+          "id": 212,
+          "recipeId": 33,
+          "stepNumber": 4,
+          "instruction": "Nişastayı soğuk sütle karıştırıp ekleyin.",
+          "image": null
+        },
+        {
+          "id": 213,
+          "recipeId": 33,
+          "stepNumber": 5,
+          "instruction": "Koyulaşana kadar pişirin.",
+          "image": null
+        },
+        {
+          "id": 214,
+          "recipeId": 33,
+          "stepNumber": 6,
+          "instruction": "Kaselere paylaştırın.",
+          "image": null
+        },
+        {
+          "id": 215,
+          "recipeId": 33,
+          "stepNumber": 7,
+          "instruction": "Fırında üstünü kızartın.",
+          "image": null
+        }
+      ],
+      "tags": [
+        {
+          "id": 100,
+          "recipeId": 33,
+          "tag": "tatlı"
+        },
+        {
+          "id": 101,
+          "recipeId": 33,
+          "tag": "sütlü"
+        },
+        {
+          "id": 102,
+          "recipeId": 33,
+          "tag": "fırın"
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "title": "Köfte",
+      "description": "Yumuşacık ev köftesi",
+      "image": "https://images.unsplash.com/photo-1529042410759-befb1204b468?w=800",
+      "video": null,
+      "prepTime": 20,
+      "cookTime": 20,
+      "servings": 4,
+      "difficulty": "MEDIUM",
+      "category": "Ana Yemek",
+      "cuisine": "Türk",
+      "userId": 1,
+      "createdAt": "2025-11-13T18:55:54.531Z",
+      "updatedAt": "2025-11-13T18:55:54.531Z",
+      "ingredients": [
+        {
+          "id": 226,
+          "recipeId": 34,
+          "name": "Kıyma",
+          "quantity": 500,
+          "unit": "gr",
+          "order": 1
+        },
+        {
+          "id": 227,
+          "recipeId": 34,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet",
+          "order": 2
+        },
+        {
+          "id": 228,
+          "recipeId": 34,
+          "name": "Ekmek",
+          "quantity": 2,
+          "unit": "dilim",
+          "order": 3
+        },
+        {
+          "id": 229,
+          "recipeId": 34,
+          "name": "Yumurta",
+          "quantity": 1,
+          "unit": "adet",
+          "order": 4
+        },
+        {
+          "id": 230,
+          "recipeId": 34,
+          "name": "Tuz",
+          "quantity": 1,
+          "unit": "çay kaşığı",
+          "order": 5
+        },
+        {
+          "id": 231,
+          "recipeId": 34,
+          "name": "Karabiber",
+          "quantity": 0.5,
+          "unit": "çay kaşığı",
+          "order": 6
+        },
+        {
+          "id": 232,
+          "recipeId": 34,
+          "name": "Kimyon",
+          "quantity": 0.5,
+          "unit": "çay kaşığı",
+          "order": 7
+        }
+      ],
+      "instructions": [
+        {
+          "id": 216,
+          "recipeId": 34,
+          "stepNumber": 1,
+          "instruction": "Ekmeği suda ıslatın, sıkın.",
+          "image": null
+        },
+        {
+          "id": 217,
+          "recipeId": 34,
+          "stepNumber": 2,
+          "instruction": "Soğanı rendeleyin.",
+          "image": null
+        },
+        {
+          "id": 218,
+          "recipeId": 34,
+          "stepNumber": 3,
+          "instruction": "Tüm malzemeleri yoğurun.",
+          "image": null
+        },
+        {
+          "id": 219,
+          "recipeId": 34,
+          "stepNumber": 4,
+          "instruction": "15 dakika dinlendirin.",
+          "image": null
+        },
+        {
+          "id": 220,
+          "recipeId": 34,
+          "stepNumber": 5,
+          "instruction": "Köfte şekli verin.",
+          "image": null
+        },
+        {
+          "id": 221,
+          "recipeId": 34,
+          "stepNumber": 6,
+          "instruction": "Tavada veya fırında pişirin.",
+          "image": null
+        }
+      ],
+      "tags": [
+        {
+          "id": 103,
+          "recipeId": 34,
+          "tag": "köfte"
+        },
+        {
+          "id": 104,
+          "recipeId": 34,
+          "tag": "et"
+        },
+        {
+          "id": 105,
+          "recipeId": 34,
+          "tag": "ana yemek"
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "title": "Pancake",
+      "description": "Amerikan usulü pankek",
+      "image": "https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=800",
+      "video": null,
+      "prepTime": 10,
+      "cookTime": 15,
+      "servings": 4,
+      "difficulty": "EASY",
+      "category": "Kahvaltı",
+      "cuisine": "Amerikan",
+      "userId": 1,
+      "createdAt": "2025-11-13T18:55:54.534Z",
+      "updatedAt": "2025-11-13T18:55:54.534Z",
+      "ingredients": [
+        {
+          "id": 233,
+          "recipeId": 35,
+          "name": "Un",
+          "quantity": 2,
+          "unit": "su bardağı",
+          "order": 1
+        },
+        {
+          "id": 234,
+          "recipeId": 35,
+          "name": "Süt",
+          "quantity": 1.5,
+          "unit": "su bardağı",
+          "order": 2
+        },
+        {
+          "id": 235,
+          "recipeId": 35,
+          "name": "Yumurta",
+          "quantity": 2,
+          "unit": "adet",
+          "order": 3
+        },
+        {
+          "id": 236,
+          "recipeId": 35,
+          "name": "Şeker",
+          "quantity": 2,
+          "unit": "yemek kaşığı",
+          "order": 4
+        },
+        {
+          "id": 237,
+          "recipeId": 35,
+          "name": "Kabartma Tozu",
+          "quantity": 1,
+          "unit": "paket",
+          "order": 5
+        },
+        {
+          "id": 238,
+          "recipeId": 35,
+          "name": "Tereyağı",
+          "quantity": 2,
+          "unit": "yemek kaşığı",
+          "order": 6
+        },
+        {
+          "id": 239,
+          "recipeId": 35,
+          "name": "Vanilya",
+          "quantity": 1,
+          "unit": "çay kaşığı",
+          "order": 7
+        }
+      ],
+      "instructions": [
+        {
+          "id": 222,
+          "recipeId": 35,
+          "stepNumber": 1,
+          "instruction": "Kuru malzemeleri karıştırın.",
+          "image": null
+        },
+        {
+          "id": 223,
+          "recipeId": 35,
+          "stepNumber": 2,
+          "instruction": "Islak malzemeleri ayrı karıştırın.",
+          "image": null
+        },
+        {
+          "id": 224,
+          "recipeId": 35,
+          "stepNumber": 3,
+          "instruction": "İkisini birleştirin, pürüzsüz hale getirin.",
+          "image": null
+        },
+        {
+          "id": 225,
+          "recipeId": 35,
+          "stepNumber": 4,
+          "instruction": "Tavayı yağlayın, ısıtın.",
+          "image": null
+        },
+        {
+          "id": 226,
+          "recipeId": 35,
+          "stepNumber": 5,
+          "instruction": "Kepçe ile hamuru dökün.",
+          "image": null
+        },
+        {
+          "id": 227,
+          "recipeId": 35,
+          "stepNumber": 6,
+          "instruction": "Kabarcıklar çıkınca çevirin.",
+          "image": null
+        },
+        {
+          "id": 228,
+          "recipeId": 35,
+          "stepNumber": 7,
+          "instruction": "Bal veya reçelle servis yapın.",
+          "image": null
+        }
+      ],
+      "tags": [
+        {
+          "id": 106,
+          "recipeId": 35,
+          "tag": "kahvaltı"
+        },
+        {
+          "id": 107,
+          "recipeId": 35,
+          "tag": "tatlı"
+        },
+        {
+          "id": 108,
+          "recipeId": 35,
+          "tag": "amerikan"
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "title": "Kremalı Tavuklu Makarna Tarifi",
+      "description": "Lezzetli ve doyurucu bir öğün arıyorsanız, kremalı tavuklu makarna tarifi tam size göre. Bu tarif, yumuşacık tavuk parçaları ve kremamsı sosun makarnayla buluşması sayesinde hem göze hem damağa hitap eden harika bir seçenek sunuyor. Kremalı tavuklu makarna tarifi ile dilerseniz üzerine taze otlar, rendelenmiş peynir veya kırmızı pul biber ekleyerek sofralarınızı hem şık hem de lezzetli hâle getirebilirsiniz. Tarifin püf noktalarını uygulayarak her zaman mükemmel kıvamda ve aromada makarna hazırlayabilirsiniz.  Peki; kremalı tavuklu makarna nasıl yapılır? İşte tarifi ve malzemeleri...",
+      "image": "/uploads/recipes/recipe-1763081084456-411042450.png",
+      "video": "https://www.youtube.com/watch?v=qOLfzdhdYzg",
+      "prepTime": 10,
+      "cookTime": 29,
+      "servings": 2,
+      "difficulty": "EASY",
+      "category": "Ana Yemek",
+      "cuisine": null,
+      "userId": 2,
+      "createdAt": "2025-11-14T00:44:44.485Z",
+      "updatedAt": "2025-11-14T01:25:10.978Z",
+      "ingredients": [
+        {
+          "id": 334,
+          "recipeId": 50,
+          "name": "makarna",
+          "quantity": 300,
+          "unit": "Gram",
+          "order": 1
+        },
+        {
+          "id": 335,
+          "recipeId": 50,
+          "name": "zeytin yagı",
+          "quantity": 2,
+          "unit": "Yemek Kaşığı",
+          "order": 2
+        },
+        {
+          "id": 336,
+          "recipeId": 50,
+          "name": "tavuk göğsü",
+          "quantity": 2,
+          "unit": "Adet",
+          "order": 3
+        },
+        {
+          "id": 337,
+          "recipeId": 50,
+          "name": "sogan",
+          "quantity": 1,
+          "unit": "Adet",
+          "order": 4
+        },
+        {
+          "id": 338,
+          "recipeId": 50,
+          "name": "sarımsak",
+          "quantity": 2,
+          "unit": "Adet",
+          "order": 5
+        },
+        {
+          "id": 339,
+          "recipeId": 50,
+          "name": "krema",
+          "quantity": 1,
+          "unit": "Su Bardağı",
+          "order": 6
+        }
+      ],
+      "instructions": [
+        {
+          "id": 323,
+          "recipeId": 50,
+          "stepNumber": 1,
+          "instruction": "Makarnayı paketin üzerindeki talimata göre tuzlu suda al dente kıvamında haşlayın, süzün ve kenara alın.",
+          "image": null
+        },
+        {
+          "id": 324,
+          "recipeId": 50,
+          "stepNumber": 2,
+          "instruction": "Zeytinyağını bir tavada ısıtın. Tavuk parçalarını tuz ve karabiberle tatlandırıp orta ateşte altın rengi olana kadar soteleyin.",
+          "image": null
+        },
+        {
+          "id": 325,
+          "recipeId": 50,
+          "stepNumber": 3,
+          "instruction": "Tavuklar piştikten sonra soğan ve sarımsağı ekleyin, yumuşayana kadar kavurun.\nKremayı ve tavuk suyunu tavaya ekleyin, 2–3 dakika hafifçe kaynatın.",
+          "image": null
+        },
+        {
+          "id": 326,
+          "recipeId": 50,
+          "stepNumber": 4,
+          "instruction": "İsteğe bağlı olarak parmesan peynirini ekleyip karıştırın.\nHaşlanmış makarnayı tavaya ekleyin ve sosla iyice karıştırın.",
+          "image": null
+        },
+        {
+          "id": 327,
+          "recipeId": 50,
+          "stepNumber": 5,
+          "instruction": "Tuz, karabiber ve kırmızı pul biberle tatlandırın.\nSıcak servis edin, üzerine taze maydanoz serpiştirerek sunum yapın. Afiyet olsun.",
+          "image": null
+        }
+      ],
+      "tags": []
+    }
+  ],
+  "pantryItems": [
+    {
+      "id": 25,
+      "kitchenId": 3,
+      "name": "Domates Salçası",
+      "category": "DİĞER",
+      "quantity": 0.015,
+      "initialQuantity": 0,
+      "minQuantity": 0,
+      "unit": "kg",
+      "expiryDate": null,
+      "createdAt": "2025-11-10T11:37:08.988Z",
+      "updatedAt": "2025-11-14T14:43:31.899Z"
+    },
+    {
+      "id": 26,
+      "kitchenId": 3,
+      "name": "Havuç",
+      "category": "DİĞER",
+      "quantity": 1,
+      "initialQuantity": 0,
+      "minQuantity": 0,
+      "unit": "adet",
+      "expiryDate": null,
+      "createdAt": "2025-11-10T11:37:10.428Z",
+      "updatedAt": "2025-11-10T11:37:10.428Z"
+    },
+    {
+      "id": 27,
+      "kitchenId": 3,
+      "name": "Karabiber",
+      "category": "DİĞER",
+      "quantity": 2.5,
+      "initialQuantity": 0,
+      "minQuantity": 0,
+      "unit": "gr",
+      "expiryDate": null,
+      "createdAt": "2025-11-10T11:37:10.613Z",
+      "updatedAt": "2025-11-14T14:43:31.914Z"
+    },
+    {
+      "id": 28,
+      "kitchenId": 3,
+      "name": "Kırmızı Mercimek",
+      "category": "DİĞER",
+      "quantity": 0.13,
+      "initialQuantity": 0,
+      "minQuantity": 0,
+      "unit": "kg",
+      "expiryDate": null,
+      "createdAt": "2025-11-10T11:37:10.827Z",
+      "updatedAt": "2025-11-14T14:43:31.926Z"
+    },
+    {
+      "id": 29,
+      "kitchenId": 3,
+      "name": "Patates",
+      "category": "DİĞER",
+      "quantity": 1,
+      "initialQuantity": 0,
+      "minQuantity": 0,
+      "unit": "adet",
+      "expiryDate": null,
+      "createdAt": "2025-11-10T11:37:11.206Z",
+      "updatedAt": "2025-11-10T11:37:11.206Z"
+    },
+    {
+      "id": 30,
+      "kitchenId": 3,
+      "name": "Soğan",
+      "category": "DİĞER",
+      "quantity": 1,
+      "initialQuantity": 0,
+      "minQuantity": 0,
+      "unit": "adet",
+      "expiryDate": null,
+      "createdAt": "2025-11-10T11:37:11.583Z",
+      "updatedAt": "2025-11-10T11:37:11.583Z"
+    },
+    {
+      "id": 31,
+      "kitchenId": 3,
+      "name": "Tereyağı",
+      "category": "DİĞER",
+      "quantity": 0.03,
+      "initialQuantity": 0,
+      "minQuantity": 0,
+      "unit": "litre",
+      "expiryDate": null,
+      "createdAt": "2025-11-10T11:37:11.778Z",
+      "updatedAt": "2025-11-14T14:43:31.940Z"
+    },
+    {
+      "id": 32,
+      "kitchenId": 3,
+      "name": "Tuz",
+      "category": "DİĞER",
+      "quantity": 0.005,
+      "initialQuantity": 0,
+      "minQuantity": 0,
+      "unit": "kg",
+      "expiryDate": null,
+      "createdAt": "2025-11-10T11:37:12.043Z",
+      "updatedAt": "2025-11-14T14:37:37.275Z"
+    },
+    {
+      "id": 40,
+      "kitchenId": 6,
+      "name": "Domates",
+      "category": "SEBZELER",
+      "quantity": 4,
+      "initialQuantity": 4,
+      "minQuantity": 0,
+      "unit": "kg",
+      "expiryDate": "2025-11-18T00:00:00.000Z",
+      "createdAt": "2025-11-11T04:52:19.810Z",
+      "updatedAt": "2025-11-11T04:52:19.810Z"
+    },
+    {
+      "id": 134,
+      "kitchenId": 7,
+      "name": "Tuz",
+      "category": "DİĞER",
+      "quantity": 0.005,
+      "initialQuantity": 1,
+      "minQuantity": 0,
+      "unit": "kg",
+      "expiryDate": "2053-03-30T19:17:26.425Z",
+      "createdAt": "2025-11-13T19:17:26.428Z",
+      "updatedAt": "2025-11-14T14:37:37.285Z"
+    },
+    {
+      "id": 135,
+      "kitchenId": 7,
+      "name": "Kıyma",
+      "category": "ET ÜRÜNLERİ",
+      "quantity": 0.5,
+      "initialQuantity": 500,
+      "minQuantity": 0,
+      "unit": "kg",
+      "expiryDate": "2025-11-14T19:17:26.587Z",
+      "createdAt": "2025-11-13T19:17:26.590Z",
+      "updatedAt": "2025-11-14T14:37:37.313Z"
+    },
+    {
+      "id": 136,
+      "kitchenId": 7,
+      "name": "Ekmek",
+      "category": "TAHILLAR",
+      "quantity": 2,
+      "initialQuantity": 2,
+      "minQuantity": 0,
+      "unit": "dilim",
+      "expiryDate": "2025-11-16T19:17:26.756Z",
+      "createdAt": "2025-11-13T19:17:26.759Z",
+      "updatedAt": "2025-11-13T19:17:26.759Z"
+    },
+    {
+      "id": 137,
+      "kitchenId": 7,
+      "name": "Yumurta",
+      "category": "TEMEL MALZEMELER",
+      "quantity": 1,
+      "initialQuantity": 1,
+      "minQuantity": 0,
+      "unit": "adet",
+      "expiryDate": "2025-12-11T19:17:28.508Z",
+      "createdAt": "2025-11-13T19:17:28.511Z",
+      "updatedAt": "2025-11-13T19:17:28.511Z"
+    },
+    {
+      "id": 139,
+      "kitchenId": 7,
+      "name": "Şeker",
+      "category": "DİĞER",
+      "quantity": 0.13,
+      "initialQuantity": 1,
+      "minQuantity": 0,
+      "unit": "kg",
+      "expiryDate": "2026-11-08T19:17:39.826Z",
+      "createdAt": "2025-11-13T19:17:39.830Z",
+      "updatedAt": "2025-11-14T14:37:37.299Z"
+    },
+    {
+      "id": 140,
+      "kitchenId": 7,
+      "name": "Süt",
+      "category": "SÜT ÜRÜNLERİ",
+      "quantity": 1,
+      "initialQuantity": 1,
+      "minQuantity": 0,
+      "unit": "litre",
+      "expiryDate": "2025-11-20T19:17:39.987Z",
+      "createdAt": "2025-11-13T19:17:39.992Z",
+      "updatedAt": "2025-11-13T19:17:39.992Z"
+    },
+    {
+      "id": 141,
+      "kitchenId": 7,
+      "name": "Nişasta",
+      "category": "TAHILLAR",
+      "quantity": 0.015,
+      "initialQuantity": 1,
+      "minQuantity": 0,
+      "unit": "kg",
+      "expiryDate": null,
+      "createdAt": "2025-11-13T19:17:40.156Z",
+      "updatedAt": "2025-11-14T14:43:31.989Z"
+    },
+    {
+      "id": 142,
+      "kitchenId": 7,
+      "name": "Pirinç",
+      "category": "TAHILLAR",
+      "quantity": 0.065,
+      "initialQuantity": 0.5,
+      "minQuantity": 0,
+      "unit": "kg",
+      "expiryDate": "2026-11-08T19:17:40.287Z",
+      "createdAt": "2025-11-13T19:17:40.291Z",
+      "updatedAt": "2025-11-14T14:37:37.335Z"
+    },
+    {
+      "id": 224,
+      "kitchenId": 2,
+      "name": "Karabiber",
+      "category": "BAHARATLAR",
+      "quantity": 1,
+      "initialQuantity": 2,
+      "minQuantity": 0,
+      "unit": "paket",
+      "expiryDate": "2026-05-13T15:54:35.597Z",
+      "createdAt": "2025-11-14T15:54:35.604Z",
+      "updatedAt": "2025-11-14T16:55:31.249Z"
+    },
+    {
+      "id": 227,
+      "kitchenId": 2,
+      "name": "Şeker",
+      "category": "DİĞER",
+      "quantity": 1,
+      "initialQuantity": 1,
+      "minQuantity": 0,
+      "unit": "kg",
+      "expiryDate": "2026-11-09T16:54:50.496Z",
+      "createdAt": "2025-11-14T16:54:50.502Z",
+      "updatedAt": "2025-11-14T16:54:50.502Z"
+    },
+    {
+      "id": 228,
+      "kitchenId": 2,
+      "name": "Kimyon",
+      "category": "BAHARATLAR",
+      "quantity": 1,
+      "initialQuantity": 1,
+      "minQuantity": 0,
+      "unit": "paket",
+      "expiryDate": "2026-05-13T16:55:31.603Z",
+      "createdAt": "2025-11-14T16:55:31.610Z",
+      "updatedAt": "2025-11-14T16:55:31.610Z"
+    },
+    {
+      "id": 229,
+      "kitchenId": 2,
+      "name": "Vanilya",
+      "category": "BAHARATLAR",
+      "quantity": 1,
+      "initialQuantity": 1,
+      "minQuantity": 0,
+      "unit": "paket",
+      "expiryDate": null,
+      "createdAt": "2025-11-14T16:55:31.922Z",
+      "updatedAt": "2025-11-14T16:55:31.922Z"
+    },
+    {
+      "id": 230,
+      "kitchenId": 2,
+      "name": "Tuz",
+      "category": "DİĞER",
+      "quantity": 0.5,
+      "initialQuantity": 0.5,
+      "minQuantity": 0,
+      "unit": "kg",
+      "expiryDate": "2053-03-31T16:55:32.129Z",
+      "createdAt": "2025-11-14T16:55:32.134Z",
+      "updatedAt": "2025-11-14T16:55:32.134Z"
+    },
+    {
+      "id": 231,
+      "kitchenId": 2,
+      "name": "Kıyma",
+      "category": "ET ÜRÜNLERİ",
+      "quantity": 1,
+      "initialQuantity": 1,
+      "minQuantity": 0,
+      "unit": "kg",
+      "expiryDate": "2025-11-15T16:55:32.599Z",
+      "createdAt": "2025-11-14T16:55:32.605Z",
+      "updatedAt": "2025-11-14T16:55:32.605Z"
+    },
+    {
+      "id": 232,
+      "kitchenId": 2,
+      "name": "Kabartma Tozu",
+      "category": "HAMUR ÜRÜNLERİ",
+      "quantity": 1,
+      "initialQuantity": 1,
+      "minQuantity": 0,
+      "unit": "paket",
+      "expiryDate": "2026-11-09T16:55:32.794Z",
+      "createdAt": "2025-11-14T16:55:32.799Z",
+      "updatedAt": "2025-11-14T16:55:32.799Z"
+    },
+    {
+      "id": 233,
+      "kitchenId": 2,
+      "name": "Soğan",
+      "category": "SEBZELER",
+      "quantity": 0.5,
+      "initialQuantity": 0.5,
+      "minQuantity": 0,
+      "unit": "kg",
+      "expiryDate": "2025-12-14T16:55:32.948Z",
+      "createdAt": "2025-11-14T16:55:32.953Z",
+      "updatedAt": "2025-11-14T16:55:32.953Z"
+    },
+    {
+      "id": 234,
+      "kitchenId": 2,
+      "name": "Süt",
+      "category": "SÜT ÜRÜNLERİ",
+      "quantity": 0.5,
+      "initialQuantity": 0.5,
+      "minQuantity": 0,
+      "unit": "litre",
+      "expiryDate": "2025-11-21T16:55:34.924Z",
+      "createdAt": "2025-11-14T16:55:34.929Z",
+      "updatedAt": "2025-11-14T16:55:34.929Z"
+    },
+    {
+      "id": 235,
+      "kitchenId": 2,
+      "name": "Tereyağı",
+      "category": "SÜT ÜRÜNLERİ",
+      "quantity": 0.5,
+      "initialQuantity": 0.5,
+      "minQuantity": 0,
+      "unit": "litre",
+      "expiryDate": "2025-12-14T16:55:35.244Z",
+      "createdAt": "2025-11-14T16:55:35.249Z",
+      "updatedAt": "2025-11-14T16:55:35.249Z"
+    },
+    {
+      "id": 236,
+      "kitchenId": 2,
+      "name": "Ekmek",
+      "category": "TAHILLAR",
+      "quantity": 2,
+      "initialQuantity": 2,
+      "minQuantity": 0,
+      "unit": "dilim",
+      "expiryDate": "2025-11-17T16:55:35.516Z",
+      "createdAt": "2025-11-14T16:55:35.523Z",
+      "updatedAt": "2025-11-14T16:55:35.523Z"
+    },
+    {
+      "id": 237,
+      "kitchenId": 2,
+      "name": "Un",
+      "category": "TAHILLAR",
+      "quantity": 0.5,
+      "initialQuantity": 0.5,
+      "minQuantity": 0,
+      "unit": "kg",
+      "expiryDate": "2026-05-13T16:55:35.778Z",
+      "createdAt": "2025-11-14T16:55:35.783Z",
+      "updatedAt": "2025-11-14T16:55:35.783Z"
+    },
+    {
+      "id": 238,
+      "kitchenId": 2,
+      "name": "Yumurta",
+      "category": "TEMEL MALZEMELER",
+      "quantity": 1,
+      "initialQuantity": 1,
+      "minQuantity": 0,
+      "unit": "adet",
+      "expiryDate": "2025-12-12T16:55:36.097Z",
+      "createdAt": "2025-11-14T16:55:36.103Z",
+      "updatedAt": "2025-11-14T16:55:36.103Z"
+    }
+  ],
+  "marketItems": [
+    {
+      "id": 35,
+      "kitchenId": 6,
+      "name": "Domates",
+      "category": "SEBZELER",
+      "quantity": 4,
+      "unit": "kg",
+      "marketQuantity": 4,
+      "marketUnit": "kg",
+      "status": "PENDING",
+      "createdAt": "2025-11-11T11:16:04.448Z",
+      "updatedAt": "2025-11-14T15:19:32.306Z"
+    },
+    {
+      "id": 244,
+      "kitchenId": 7,
+      "name": "Makarna",
+      "category": "TAHILLAR",
+      "quantity": 0.4,
+      "unit": "kg",
+      "marketQuantity": 0.5,
+      "marketUnit": "kg",
+      "status": "PENDING",
+      "createdAt": "2025-11-13T19:41:01.629Z",
+      "updatedAt": "2025-11-14T15:19:32.340Z"
+    },
+    {
+      "id": 245,
+      "kitchenId": 7,
+      "name": "Yoğurt",
+      "category": "SÜT ÜRÜNLERİ",
+      "quantity": 0.26,
+      "unit": "kg",
+      "marketQuantity": 0.5,
+      "marketUnit": "kg",
+      "status": "PENDING",
+      "createdAt": "2025-11-13T19:41:01.650Z",
+      "updatedAt": "2025-11-14T15:19:32.348Z"
+    },
+    {
+      "id": 246,
+      "kitchenId": 7,
+      "name": "Sarımsak",
+      "category": "BAHARATLAR",
+      "quantity": 8,
+      "unit": "gr",
+      "marketQuantity": 1,
+      "marketUnit": "paket",
+      "status": "PENDING",
+      "createdAt": "2025-11-13T19:41:01.668Z",
+      "updatedAt": "2025-11-14T15:19:32.356Z"
+    },
+    {
+      "id": 247,
+      "kitchenId": 7,
+      "name": "Tereyağı",
+      "category": "SÜT ÜRÜNLERİ",
+      "quantity": 0.045,
+      "unit": "litre",
+      "marketQuantity": 0.5,
+      "marketUnit": "litre",
+      "status": "PENDING",
+      "createdAt": "2025-11-13T19:41:01.684Z",
+      "updatedAt": "2025-11-14T15:19:32.365Z"
+    },
+    {
+      "id": 248,
+      "kitchenId": 7,
+      "name": "Pul Biber",
+      "category": "BAHARATLAR",
+      "quantity": 5,
+      "unit": "gr",
+      "marketQuantity": 1,
+      "marketUnit": "paket",
+      "status": "PENDING",
+      "createdAt": "2025-11-13T19:41:01.700Z",
+      "updatedAt": "2025-11-14T15:19:32.370Z"
+    }
+  ],
+  "customMeals": [
+    {
+      "id": 1,
+      "userId": 1,
+      "name": "Kuru Fasulye",
+      "createdAt": "2025-11-13T23:44:34.728Z",
+      "updatedAt": "2025-11-13T23:44:34.728Z",
+      "ingredients": [
+        {
+          "id": 1,
+          "customMealId": 1,
+          "name": "Kuru Fasulye",
+          "quantity": 200,
+          "unit": "gram"
+        },
+        {
+          "id": 2,
+          "customMealId": 1,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 3,
+          "customMealId": 1,
+          "name": "Domates",
+          "quantity": 2,
+          "unit": "adet"
+        },
+        {
+          "id": 4,
+          "customMealId": 1,
+          "name": "Salça",
+          "quantity": 1,
+          "unit": "yemek kaşığı"
+        },
+        {
+          "id": 5,
+          "customMealId": 1,
+          "name": "Yağ",
+          "quantity": 50,
+          "unit": "ml"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "name": "Mercimek Çorbası",
+      "createdAt": "2025-11-13T23:44:34.742Z",
+      "updatedAt": "2025-11-13T23:44:34.742Z",
+      "ingredients": [
+        {
+          "id": 6,
+          "customMealId": 2,
+          "name": "Mercimek",
+          "quantity": 150,
+          "unit": "gram"
+        },
+        {
+          "id": 7,
+          "customMealId": 2,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 8,
+          "customMealId": 2,
+          "name": "Havuç",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 9,
+          "customMealId": 2,
+          "name": "Patates",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 10,
+          "customMealId": 2,
+          "name": "Tereyağı",
+          "quantity": 30,
+          "unit": "gram"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "userId": 1,
+      "name": "Tavuk Sote",
+      "createdAt": "2025-11-13T23:44:34.748Z",
+      "updatedAt": "2025-11-13T23:44:34.748Z",
+      "ingredients": [
+        {
+          "id": 11,
+          "customMealId": 3,
+          "name": "Tavuk",
+          "quantity": 500,
+          "unit": "gram"
+        },
+        {
+          "id": 12,
+          "customMealId": 3,
+          "name": "Soğan",
+          "quantity": 2,
+          "unit": "adet"
+        },
+        {
+          "id": 13,
+          "customMealId": 3,
+          "name": "Biber",
+          "quantity": 2,
+          "unit": "adet"
+        },
+        {
+          "id": 14,
+          "customMealId": 3,
+          "name": "Domates",
+          "quantity": 3,
+          "unit": "adet"
+        },
+        {
+          "id": 15,
+          "customMealId": 3,
+          "name": "Yağ",
+          "quantity": 50,
+          "unit": "ml"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "userId": 1,
+      "name": "Makarna",
+      "createdAt": "2025-11-13T23:44:34.761Z",
+      "updatedAt": "2025-11-13T23:44:34.761Z",
+      "ingredients": [
+        {
+          "id": 16,
+          "customMealId": 4,
+          "name": "Makarna",
+          "quantity": 400,
+          "unit": "gram"
+        },
+        {
+          "id": 17,
+          "customMealId": 4,
+          "name": "Domates",
+          "quantity": 3,
+          "unit": "adet"
+        },
+        {
+          "id": 18,
+          "customMealId": 4,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 19,
+          "customMealId": 4,
+          "name": "Salça",
+          "quantity": 1,
+          "unit": "yemek kaşığı"
+        },
+        {
+          "id": 20,
+          "customMealId": 4,
+          "name": "Yağ",
+          "quantity": 30,
+          "unit": "ml"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "userId": 1,
+      "name": "Menemen",
+      "createdAt": "2025-11-13T23:44:34.766Z",
+      "updatedAt": "2025-11-13T23:44:34.766Z",
+      "ingredients": [
+        {
+          "id": 21,
+          "customMealId": 5,
+          "name": "Yumurta",
+          "quantity": 4,
+          "unit": "adet"
+        },
+        {
+          "id": 22,
+          "customMealId": 5,
+          "name": "Domates",
+          "quantity": 3,
+          "unit": "adet"
+        },
+        {
+          "id": 23,
+          "customMealId": 5,
+          "name": "Biber",
+          "quantity": 2,
+          "unit": "adet"
+        },
+        {
+          "id": 24,
+          "customMealId": 5,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 25,
+          "customMealId": 5,
+          "name": "Tereyağı",
+          "quantity": 30,
+          "unit": "gram"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "userId": 2,
+      "name": "Kuru Fasulye",
+      "createdAt": "2025-11-13T23:47:35.492Z",
+      "updatedAt": "2025-11-13T23:47:35.492Z",
+      "ingredients": [
+        {
+          "id": 26,
+          "customMealId": 6,
+          "name": "Kuru Fasulye",
+          "quantity": 200,
+          "unit": "gram"
+        },
+        {
+          "id": 27,
+          "customMealId": 6,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 28,
+          "customMealId": 6,
+          "name": "Domates",
+          "quantity": 2,
+          "unit": "adet"
+        },
+        {
+          "id": 29,
+          "customMealId": 6,
+          "name": "Salça",
+          "quantity": 1,
+          "unit": "yemek kaşığı"
+        },
+        {
+          "id": 30,
+          "customMealId": 6,
+          "name": "Yağ",
+          "quantity": 50,
+          "unit": "ml"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "userId": 2,
+      "name": "Mercimek Çorbası",
+      "createdAt": "2025-11-13T23:47:35.499Z",
+      "updatedAt": "2025-11-13T23:47:35.499Z",
+      "ingredients": [
+        {
+          "id": 31,
+          "customMealId": 7,
+          "name": "Mercimek",
+          "quantity": 150,
+          "unit": "gram"
+        },
+        {
+          "id": 32,
+          "customMealId": 7,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 33,
+          "customMealId": 7,
+          "name": "Havuç",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 34,
+          "customMealId": 7,
+          "name": "Patates",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 35,
+          "customMealId": 7,
+          "name": "Tereyağı",
+          "quantity": 30,
+          "unit": "gram"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "userId": 2,
+      "name": "Tavuk Sote",
+      "createdAt": "2025-11-13T23:47:35.506Z",
+      "updatedAt": "2025-11-13T23:47:35.506Z",
+      "ingredients": [
+        {
+          "id": 36,
+          "customMealId": 8,
+          "name": "Tavuk",
+          "quantity": 500,
+          "unit": "gram"
+        },
+        {
+          "id": 37,
+          "customMealId": 8,
+          "name": "Soğan",
+          "quantity": 2,
+          "unit": "adet"
+        },
+        {
+          "id": 38,
+          "customMealId": 8,
+          "name": "Biber",
+          "quantity": 2,
+          "unit": "adet"
+        },
+        {
+          "id": 39,
+          "customMealId": 8,
+          "name": "Domates",
+          "quantity": 3,
+          "unit": "adet"
+        },
+        {
+          "id": 40,
+          "customMealId": 8,
+          "name": "Yağ",
+          "quantity": 50,
+          "unit": "ml"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "userId": 2,
+      "name": "Makarna",
+      "createdAt": "2025-11-13T23:47:35.512Z",
+      "updatedAt": "2025-11-13T23:47:35.512Z",
+      "ingredients": [
+        {
+          "id": 41,
+          "customMealId": 9,
+          "name": "Makarna",
+          "quantity": 400,
+          "unit": "gram"
+        },
+        {
+          "id": 42,
+          "customMealId": 9,
+          "name": "Domates",
+          "quantity": 3,
+          "unit": "adet"
+        },
+        {
+          "id": 43,
+          "customMealId": 9,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 44,
+          "customMealId": 9,
+          "name": "Salça",
+          "quantity": 1,
+          "unit": "yemek kaşığı"
+        },
+        {
+          "id": 45,
+          "customMealId": 9,
+          "name": "Yağ",
+          "quantity": 30,
+          "unit": "ml"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "userId": 2,
+      "name": "Menemen",
+      "createdAt": "2025-11-13T23:47:35.531Z",
+      "updatedAt": "2025-11-13T23:47:35.531Z",
+      "ingredients": [
+        {
+          "id": 46,
+          "customMealId": 10,
+          "name": "Yumurta",
+          "quantity": 4,
+          "unit": "adet"
+        },
+        {
+          "id": 47,
+          "customMealId": 10,
+          "name": "Domates",
+          "quantity": 3,
+          "unit": "adet"
+        },
+        {
+          "id": 48,
+          "customMealId": 10,
+          "name": "Biber",
+          "quantity": 2,
+          "unit": "adet"
+        },
+        {
+          "id": 49,
+          "customMealId": 10,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 50,
+          "customMealId": 10,
+          "name": "Tereyağı",
+          "quantity": 30,
+          "unit": "gram"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "userId": 2,
+      "name": "Kuru Fasulye",
+      "createdAt": "2025-11-14T00:24:33.276Z",
+      "updatedAt": "2025-11-14T00:24:33.276Z",
+      "ingredients": [
+        {
+          "id": 51,
+          "customMealId": 11,
+          "name": "Kuru Fasulye",
+          "quantity": 200,
+          "unit": "gram"
+        },
+        {
+          "id": 52,
+          "customMealId": 11,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 53,
+          "customMealId": 11,
+          "name": "Domates",
+          "quantity": 2,
+          "unit": "adet"
+        },
+        {
+          "id": 54,
+          "customMealId": 11,
+          "name": "Salça",
+          "quantity": 1,
+          "unit": "yemek kaşığı"
+        },
+        {
+          "id": 55,
+          "customMealId": 11,
+          "name": "Yağ",
+          "quantity": 50,
+          "unit": "ml"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "userId": 2,
+      "name": "Mercimek Çorbası",
+      "createdAt": "2025-11-14T00:24:33.310Z",
+      "updatedAt": "2025-11-14T00:24:33.310Z",
+      "ingredients": [
+        {
+          "id": 56,
+          "customMealId": 12,
+          "name": "Mercimek",
+          "quantity": 150,
+          "unit": "gram"
+        },
+        {
+          "id": 57,
+          "customMealId": 12,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 58,
+          "customMealId": 12,
+          "name": "Havuç",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 59,
+          "customMealId": 12,
+          "name": "Patates",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 60,
+          "customMealId": 12,
+          "name": "Tereyağı",
+          "quantity": 30,
+          "unit": "gram"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "userId": 2,
+      "name": "Tavuk Sote",
+      "createdAt": "2025-11-14T00:24:33.316Z",
+      "updatedAt": "2025-11-14T00:24:33.316Z",
+      "ingredients": [
+        {
+          "id": 61,
+          "customMealId": 13,
+          "name": "Tavuk",
+          "quantity": 500,
+          "unit": "gram"
+        },
+        {
+          "id": 62,
+          "customMealId": 13,
+          "name": "Soğan",
+          "quantity": 2,
+          "unit": "adet"
+        },
+        {
+          "id": 63,
+          "customMealId": 13,
+          "name": "Biber",
+          "quantity": 2,
+          "unit": "adet"
+        },
+        {
+          "id": 64,
+          "customMealId": 13,
+          "name": "Domates",
+          "quantity": 3,
+          "unit": "adet"
+        },
+        {
+          "id": 65,
+          "customMealId": 13,
+          "name": "Yağ",
+          "quantity": 50,
+          "unit": "ml"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "userId": 2,
+      "name": "Makarna",
+      "createdAt": "2025-11-14T00:24:33.320Z",
+      "updatedAt": "2025-11-14T00:24:33.320Z",
+      "ingredients": [
+        {
+          "id": 66,
+          "customMealId": 14,
+          "name": "Makarna",
+          "quantity": 400,
+          "unit": "gram"
+        },
+        {
+          "id": 67,
+          "customMealId": 14,
+          "name": "Domates",
+          "quantity": 3,
+          "unit": "adet"
+        },
+        {
+          "id": 68,
+          "customMealId": 14,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 69,
+          "customMealId": 14,
+          "name": "Salça",
+          "quantity": 1,
+          "unit": "yemek kaşığı"
+        },
+        {
+          "id": 70,
+          "customMealId": 14,
+          "name": "Yağ",
+          "quantity": 30,
+          "unit": "ml"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "userId": 2,
+      "name": "Menemen",
+      "createdAt": "2025-11-14T00:24:33.328Z",
+      "updatedAt": "2025-11-14T00:24:33.328Z",
+      "ingredients": [
+        {
+          "id": 71,
+          "customMealId": 15,
+          "name": "Yumurta",
+          "quantity": 4,
+          "unit": "adet"
+        },
+        {
+          "id": 72,
+          "customMealId": 15,
+          "name": "Domates",
+          "quantity": 3,
+          "unit": "adet"
+        },
+        {
+          "id": 73,
+          "customMealId": 15,
+          "name": "Biber",
+          "quantity": 2,
+          "unit": "adet"
+        },
+        {
+          "id": 74,
+          "customMealId": 15,
+          "name": "Soğan",
+          "quantity": 1,
+          "unit": "adet"
+        },
+        {
+          "id": 75,
+          "customMealId": 15,
+          "name": "Tereyağı",
+          "quantity": 30,
+          "unit": "gram"
+        }
+      ]
+    }
+  ],
+  "unitConversions": [
+    {
+      "id": 13,
+      "unitFrom": "çay kaşığı",
+      "unitTo": "gr",
+      "multiplier": 5
+    },
+    {
+      "id": 14,
+      "unitFrom": "tatlı kaşığı",
+      "unitTo": "gr",
+      "multiplier": 10
+    },
+    {
+      "id": 15,
+      "unitFrom": "yemek kaşığı",
+      "unitTo": "gr",
+      "multiplier": 15
+    },
+    {
+      "id": 16,
+      "unitFrom": "kahve fincanı",
+      "unitTo": "gr",
+      "multiplier": 60
+    },
+    {
+      "id": 17,
+      "unitFrom": "çay bardağı",
+      "unitTo": "gr",
+      "multiplier": 90
+    },
+    {
+      "id": 18,
+      "unitFrom": "su bardağı",
+      "unitTo": "gr",
+      "multiplier": 130
+    },
+    {
+      "id": 19,
+      "unitFrom": "kupa",
+      "unitTo": "gr",
+      "multiplier": 220
+    },
+    {
+      "id": 20,
+      "unitFrom": "çay kaşığı",
+      "unitTo": "ml",
+      "multiplier": 5
+    },
+    {
+      "id": 21,
+      "unitFrom": "tatlı kaşığı",
+      "unitTo": "ml",
+      "multiplier": 10
+    },
+    {
+      "id": 22,
+      "unitFrom": "yemek kaşığı",
+      "unitTo": "ml",
+      "multiplier": 15
+    },
+    {
+      "id": 23,
+      "unitFrom": "kahve fincanı",
+      "unitTo": "ml",
+      "multiplier": 70
+    },
+    {
+      "id": 24,
+      "unitFrom": "çay bardağı",
+      "unitTo": "ml",
+      "multiplier": 100
+    },
+    {
+      "id": 25,
+      "unitFrom": "su bardağı",
+      "unitTo": "ml",
+      "multiplier": 200
+    },
+    {
+      "id": 26,
+      "unitFrom": "kupa",
+      "unitTo": "ml",
+      "multiplier": 250
+    },
+    {
+      "id": 27,
+      "unitFrom": "litre",
+      "unitTo": "ml",
+      "multiplier": 1000
+    },
+    {
+      "id": 28,
+      "unitFrom": "kg",
+      "unitTo": "gr",
+      "multiplier": 1000
+    },
+    {
+      "id": 29,
+      "unitFrom": "gr",
+      "unitTo": "kg",
+      "multiplier": 0.001
+    },
+    {
+      "id": 30,
+      "unitFrom": "litre",
+      "unitTo": "ml",
+      "multiplier": 1000
+    },
+    {
+      "id": 31,
+      "unitFrom": "ml",
+      "unitTo": "litre",
+      "multiplier": 0.001
+    },
+    {
+      "id": 32,
+      "unitFrom": "tutam",
+      "unitTo": "gr",
+      "multiplier": 2
+    },
+    {
+      "id": 33,
+      "unitFrom": "avuç",
+      "unitTo": "gr",
+      "multiplier": 30
+    },
+    {
+      "id": 34,
+      "unitFrom": "dilim",
+      "unitTo": "gr",
+      "multiplier": 20
+    },
+    {
+      "id": 35,
+      "unitFrom": "diş",
+      "unitTo": "gr",
+      "multiplier": 4
+    },
+    {
+      "id": 36,
+      "unitFrom": "yaprak",
+      "unitTo": "gr",
+      "multiplier": 0.5
+    }
+  ],
+  "kitchenModules": []
+}
