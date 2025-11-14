@@ -550,7 +550,7 @@ export default function PantryPage() {
                               <div className="h-1.5 w-full rounded-full bg-black/20">
                                 <div
                                   className={`h-full rounded-full ${
-                                    item.quantity <= item.minQuantity
+                                    item.minQuantity && item.quantity <= item.minQuantity
                                       ? 'bg-red-500'
                                       : percentage > 50
                                       ? 'bg-[#30D158]'
