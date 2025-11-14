@@ -533,5 +533,3 @@ export default function MarketPage() {
     </ProtectedRoute>
   );
 }
-   
- 
