@@ -64,8 +64,14 @@ export default function AddCustomMealModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-      <div className="w-full max-w-md rounded-xl bg-[#1E1E1E] p-6 max-h-[80vh] overflow-y-auto">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+      onClick={onClose}
+    >
+      <div 
+        className="w-full max-w-md rounded-xl bg-[#1E1E1E] p-6 max-h-[80vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h3 className="mb-4 text-xl font-bold text-white">Yeni Yemek Ekle</h3>
 
         {/* Yemek Adı */}

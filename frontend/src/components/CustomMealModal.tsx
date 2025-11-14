@@ -31,8 +31,14 @@ export default function CustomMealModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-      <div className="w-full max-w-sm rounded-xl bg-[#1E1E1E] p-4">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+      onClick={onClose}
+    >
+      <div 
+        className="w-full max-w-sm rounded-xl bg-[#1E1E1E] p-4"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h3 className="mb-3 text-lg font-bold text-white">Hangi yemeği yaptınız?</h3>
 
         {meals.length === 0 ? (

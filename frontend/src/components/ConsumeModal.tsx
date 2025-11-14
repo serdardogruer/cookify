@@ -74,8 +74,14 @@ export default function ConsumeModal({
   const quickAmounts = getQuickAmounts();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-      <div className="w-full max-w-md rounded-xl bg-[#1E1E1E] p-6">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+      onClick={onClose}
+    >
+      <div 
+        className="w-full max-w-md rounded-xl bg-[#1E1E1E] p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h3 className="mb-4 text-xl font-bold text-white">Stok Düş</h3>
         <p className="mb-4 text-sm text-[#A0A0A0]">
           {item.name} - Mevcut: {item.quantity} {item.unit}

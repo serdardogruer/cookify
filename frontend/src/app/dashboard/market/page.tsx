@@ -362,8 +362,17 @@ export default function MarketPage() {
 
         {/* Edit Market Package Modal */}
         {showEditModal && editingItem && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="flex w-full max-w-sm flex-col overflow-hidden bg-[#121212] rounded-xl">
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            onClick={() => {
+              setShowEditModal(false);
+              setEditingItem(null);
+            }}
+          >
+            <div 
+              className="flex w-full max-w-sm flex-col overflow-hidden bg-[#121212] rounded-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex shrink-0 items-center border-b border-[#3A3A3C] px-4 py-3">
                 <div className="w-8"></div>
                 <h2 className="flex-1 text-center text-base font-bold tracking-tight text-white">
@@ -444,8 +453,14 @@ export default function MarketPage() {
 
         {/* Add Item Modal */}
         {showAddModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="flex w-full max-w-sm flex-col overflow-hidden bg-[#121212] rounded-xl max-h-[85vh]">
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            onClick={() => setShowAddModal(false)}
+          >
+            <div 
+              className="flex w-full max-w-sm flex-col overflow-hidden bg-[#121212] rounded-xl max-h-[85vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex shrink-0 items-center border-b border-[#3A3A3C] px-4 py-3">
                 <div className="w-8"></div>
                 <h2 className="flex-1 text-center text-base font-bold tracking-tight text-white">

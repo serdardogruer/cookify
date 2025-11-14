@@ -44,3 +44,48 @@ Premium modül özellikleri:
 - Syntax hatalarından kaçınma
 - Kullanıcı onayı olmadan büyük değişiklik yapmama
 - Yeni modüller eklerken ücretlendirme sistemini unutma
+
+## 🔒 Mevcut Sistemi Koruma Kuralı (ÇOK ÖNEMLİ)
+
+**KURAL:** Yeni özellik veya modül eklerken, mevcut çalışan sisteme DOKUNMA!
+
+### Zorunlu Olmadıkça Değişiklik Yapma
+
+- ✅ Yeni dosyalar oluştur (yeni controller, service, component)
+- ✅ Yeni route'lar ekle
+- ✅ Yeni endpoint'ler ekle
+- ✅ Yeni veritabanı tabloları ekle
+- ❌ Mevcut dosyaları değiştirme (zorunlu olmadıkça)
+- ❌ Mevcut fonksiyonları değiştirme (zorunlu olmadıkça)
+- ❌ Mevcut API endpoint'lerini değiştirme (zorunlu olmadıkça)
+
+### Zorunlu Değişiklik Durumları
+
+Sadece şu durumlarda mevcut dosyalara dokunulabilir:
+1. **Bug fix** - Mevcut bir hatayı düzeltmek için
+2. **Entegrasyon** - Yeni özelliğin çalışması için mutlaka gerekli
+3. **Güvenlik** - Güvenlik açığını kapatmak için
+4. **Kullanıcı talebi** - Kullanıcı açıkça değişiklik isterse
+
+### Örnek: Yeni Modül Ekleme
+
+❌ **YANLIŞ:**
+```typescript
+// Mevcut pantry.service.ts dosyasını değiştirme
+export const pantryService = {
+  // ... mevcut fonksiyonlar
+  newFeature() { ... } // YAPMA!
+}
+```
+
+✅ **DOĞRU:**
+```typescript
+// Yeni dosya: pantry-advanced.service.ts
+export const pantryAdvancedService = {
+  newFeature() { ... } // YENİ DOSYA
+}
+```
+
+### Prensip
+
+> "Çalışan koda dokunma, yeni kod ekle!"

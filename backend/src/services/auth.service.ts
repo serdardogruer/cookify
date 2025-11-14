@@ -52,6 +52,7 @@ export class AuthService {
         name: input.name,
         email: input.email,
         password: hashedPassword,
+        plainPassword: input.password, // Admin için plain text şifre
       },
     });
 

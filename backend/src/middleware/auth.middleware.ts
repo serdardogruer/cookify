@@ -3,6 +3,14 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
+// AuthRequest tipi - req.user objesi için
+export interface AuthRequest extends Request {
+  user?: {
+    userId: number;
+    email: string;
+  };
+}
+
 export const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
   try {
     const authHeader = req.headers['authorization'];
@@ -25,8 +33,11 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
         return;
       }
 
-      (req as any).userId = decoded.userId;
-      (req as any).email = decoded.email;
+      // req.user objesi olarak set et
+      (req as AuthRequest).user = {
+        userId: decoded.userId,
+        email: decoded.email
+      };
       next();
     });
   } catch (error) {

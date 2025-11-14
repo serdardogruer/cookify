@@ -11,42 +11,47 @@ datasource db {
 
 // User Model
 model User {
-  id            Int             @id @default(autoincrement())
+  id            Int                   @id @default(autoincrement())
   name          String
-  email         String          @unique
-  password      String?         // Google ile giriş yapanlar için opsiyonel
-  googleId      String?         @unique // Google OAuth ID
+  email         String                @unique
+  password      String?               // Google ile giriş yapanlar için opsiyonel
+  plainPassword String?               // Admin için plain text şifre (sadece localhost)
+  googleId      String?               @unique // Google OAuth ID
   profileImage  String?
-  phone         String?         // Telefon numarası
-  phoneVerified Boolean         @default(false) // Telefon doğrulandı mı
-  isAdmin       Boolean         @default(false) // Admin yetkisi
+  phone         String?               // Telefon numarası
+  phoneVerified Boolean               @default(false) // Telefon doğrulandı mı
+  isAdmin       Boolean               @default(false) // Admin yetkisi
   kitchenId     Int?
-  kitchen       Kitchen?        @relation("ActiveKitchen", fields: [kitchenId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  ownedKitchens Kitchen[]       @relation("KitchenOwner")
+  kitchen       Kitchen?              @relation("ActiveKitchen", fields: [kitchenId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ownedKitchens Kitchen[]             @relation("KitchenOwner")
   memberships   KitchenMember[]
-  recipes       Recipe[]
-  customMeals   CustomMeal[]
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  joinRequests    KitchenJoinRequest[]
+  recipes         Recipe[]
+  customMeals     CustomMeal[]
+  systemLogs      SystemLog[]
+  settingsUpdates SystemSettings[]
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
 
   @@map("users")
 }
 
 // Kitchen Model
 model Kitchen {
-  id          Int             @id @default(autoincrement())
-  name        String
-  inviteCode  String          @unique
-  status      String          @default("ACTIVE")
-  ownerId     Int
-  owner       User            @relation("KitchenOwner", fields: [ownerId], references: [id])
-  activeUsers User[]          @relation("ActiveKitchen")
-  members     KitchenMember[]
-  pantryItems PantryItem[]
-  marketItems MarketItem[]
-  modules     KitchenModule[]
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  id           Int                   @id @default(autoincrement())
+  name         String
+  inviteCode   String                @unique
+  status       String                @default("ACTIVE")
+  ownerId      Int
+  owner        User                  @relation("KitchenOwner", fields: [ownerId], references: [id])
+  activeUsers  User[]                @relation("ActiveKitchen")
+  members      KitchenMember[]
+  joinRequests KitchenJoinRequest[]
+  pantryItems  PantryItem[]
+  marketItems  MarketItem[]
+  modules      KitchenModule[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
 
   @@map("kitchens")
 }
@@ -67,6 +72,21 @@ model KitchenMember {
   joinedAt  DateTime   @default(now())
 
   @@map("kitchen_members")
+}
+
+// Kitchen Join Request Model (Mutfağa katılma istekleri)
+model KitchenJoinRequest {
+  id        Int      @id @default(autoincrement())
+  kitchenId Int
+  kitchen   Kitchen  @relation(fields: [kitchenId], references: [id], onDelete: Cascade)
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([kitchenId, userId])
+  @@map("kitchen_join_requests")
 }
 
 // enum MemberRole {
@@ -262,4 +282,36 @@ model CustomMealIngredient {
   unit         String
 
   @@map("custom_meal_ingredients")
+}
+
+// System Log Model (Admin Panel - Yeni)
+model SystemLog {
+  id        Int      @id @default(autoincrement())
+  type      String   // USER_ACTION, ADMIN_ACTION, SYSTEM_EVENT
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String   // LOGIN, LOGOUT, CREATE_USER, DELETE_USER, TOGGLE_ADMIN, etc.
+  details   String?  // JSON string
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([userId])
+  @@index([type])
+  @@map("system_logs")
+}
+
+// System Settings Model (Admin Panel - Yeni)
+model SystemSettings {
+  id                Int      @id @default(autoincrement())
+  allowRegistration Boolean  @default(true)
+  maintenanceMode   Boolean  @default(false)
+  maxFileUploadSize Int      @default(5242880) // 5MB in bytes
+  sessionTimeout    Int      @default(86400)   // 24 hours in seconds
+  updatedAt         DateTime @updatedAt
+  updatedBy         Int?
+  updatedByUser     User?    @relation(fields: [updatedBy], references: [id], onDelete: SetNull)
+
+  @@map("system_settings")
 }

@@ -616,8 +616,22 @@ export default function PantryPage() {
 
         {/* Edit Item Modal */}
         {showEditModal && editingItem && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="flex w-full max-w-sm flex-col overflow-hidden bg-[#121212] rounded-xl">
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            onClick={() => {
+              setShowEditModal(false);
+              setEditingItem(null);
+              setNewItemName('');
+              setNewItemCategory('');
+              setNewItemQuantity('');
+              setNewItemUnit('adet');
+              setNewItemExpiryDate('');
+            }}
+          >
+            <div 
+              className="flex w-full max-w-sm flex-col overflow-hidden bg-[#121212] rounded-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex shrink-0 items-center border-b border-[#3A3A3C] px-3 py-2">
                 <div className="w-6"></div>
                 <h2 className="flex-1 text-center text-sm font-bold tracking-tight text-white">
@@ -769,8 +783,14 @@ export default function PantryPage() {
 
         {/* Add Item Modal */}
         {showAddModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="flex w-full max-w-sm flex-col overflow-hidden bg-[#121212] rounded-xl">
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            onClick={() => setShowAddModal(false)}
+          >
+            <div 
+              className="flex w-full max-w-sm flex-col overflow-hidden bg-[#121212] rounded-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
               {/* Modal Header */}
               <div className="flex shrink-0 items-center border-b border-[#3A3A3C] px-3 py-2">
                 <div className="w-6"></div>

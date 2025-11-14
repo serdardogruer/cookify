@@ -61,7 +61,7 @@ export const kitchenController = {
     }
   },
 
-  async joinKitchen(req: AuthRequest, res: Response) {
+  async requestJoinKitchen(req: AuthRequest, res: Response) {
     try {
       const userId = req.user?.userId;
       const { inviteCode } = req.body;
@@ -92,19 +92,7 @@ export const kitchenController = {
         });
       }
 
-      // Kullanıcının mevcut mutfağını pasif yap
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-      });
-
-      if (user?.kitchenId) {
-        await prisma.kitchen.update({
-          where: { id: user.kitchenId },
-          data: { status: 'PASSIVE' },
-        });
-      }
-
-      // Yeni mutfağa üye ekle
+      // Zaten üye mi kontrol et
       const existingMember = await prisma.kitchenMember.findFirst({
         where: {
           kitchenId: kitchen.id,
@@ -112,38 +100,268 @@ export const kitchenController = {
         },
       });
 
-      if (!existingMember) {
-        await prisma.kitchenMember.create({
+      if (existingMember) {
+        return res.status(400).json({
+          success: false,
+          error: { code: 4006, message: 'Already a member of this kitchen' },
+        });
+      }
+
+      // Bekleyen istek var mı kontrol et
+      const existingRequest = await prisma.kitchenJoinRequest.findUnique({
+        where: {
+          kitchenId_userId: {
+            kitchenId: kitchen.id,
+            userId,
+          },
+        },
+      });
+
+      if (existingRequest) {
+        if (existingRequest.status === 'PENDING') {
+          return res.status(400).json({
+            success: false,
+            error: { code: 4007, message: 'Join request already pending' },
+          });
+        }
+        // Eski isteği güncelle
+        await prisma.kitchenJoinRequest.update({
+          where: { id: existingRequest.id },
+          data: { status: 'PENDING', updatedAt: new Date() },
+        });
+      } else {
+        // Yeni istek oluştur
+        await prisma.kitchenJoinRequest.create({
           data: {
             kitchenId: kitchen.id,
             userId,
-            role: 'MEMBER',
+            status: 'PENDING',
           },
         });
       }
 
-      // Kullanıcının aktif mutfağını güncelle
-      await prisma.user.update({
-        where: { id: userId },
-        data: { kitchenId: kitchen.id },
-      });
-
-      // Yeni mutfağı aktif yap
-      await prisma.kitchen.update({
-        where: { id: kitchen.id },
-        data: { status: 'ACTIVE' },
-      });
-
       return res.status(200).json({
         success: true,
-        data: { kitchen },
+        data: { 
+          message: 'Join request sent successfully',
+          kitchenName: kitchen.name 
+        },
       });
     } catch (error: any) {
       return res.status(400).json({
         success: false,
         error: {
           code: 5000,
-          message: error.message || 'Failed to join kitchen',
+          message: error.message || 'Failed to send join request',
+        },
+      });
+    }
+  },
+
+  async getPendingRequests(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user?.userId;
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: { code: 1004, message: 'Unauthorized' },
+        });
+      }
+
+      // Kullanıcının sahip olduğu mutfakları bul
+      const ownedKitchens = await prisma.kitchen.findMany({
+        where: { ownerId: userId },
+        include: {
+          joinRequests: {
+            where: { status: 'PENDING' },
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  profileImage: true,
+                },
+              },
+            },
+            orderBy: { createdAt: 'desc' },
+          },
+        },
+      });
+
+      // Tüm bekleyen istekleri topla
+      const allRequests = ownedKitchens.flatMap((kitchen) =>
+        kitchen.joinRequests.map((request) => ({
+          ...request,
+          kitchenName: kitchen.name,
+        }))
+      );
+
+      return res.status(200).json({
+        success: true,
+        data: allRequests,
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 5000,
+          message: error.message || 'Failed to get pending requests',
+        },
+      });
+    }
+  },
+
+  async approveJoinRequest(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user?.userId;
+      const { requestId } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: { code: 1004, message: 'Unauthorized' },
+        });
+      }
+
+      if (!requestId) {
+        return res.status(400).json({
+          success: false,
+          error: { code: 2001, message: 'Request ID is required' },
+        });
+      }
+
+      // İsteği bul
+      const request = await prisma.kitchenJoinRequest.findUnique({
+        where: { id: requestId },
+        include: { kitchen: true, user: true },
+      });
+
+      if (!request) {
+        return res.status(404).json({
+          success: false,
+          error: { code: 3004, message: 'Join request not found' },
+        });
+      }
+
+      // Sadece mutfak sahibi onaylayabilir
+      if (request.kitchen.ownerId !== userId) {
+        return res.status(403).json({
+          success: false,
+          error: { code: 4008, message: 'Only kitchen owner can approve requests' },
+        });
+      }
+
+      // Transaction ile işlemleri yap
+      await prisma.$transaction(async (tx) => {
+        // İsteği onayla
+        await tx.kitchenJoinRequest.update({
+          where: { id: requestId },
+          data: { status: 'APPROVED' },
+        });
+
+        // Kullanıcının mevcut mutfağını pasif yap
+        if (request.user.kitchenId) {
+          await tx.kitchen.update({
+            where: { id: request.user.kitchenId },
+            data: { status: 'PASSIVE' },
+          });
+        }
+
+        // Mutfağa üye ekle
+        await tx.kitchenMember.create({
+          data: {
+            kitchenId: request.kitchenId,
+            userId: request.userId,
+            role: 'MEMBER',
+          },
+        });
+
+        // Kullanıcının aktif mutfağını güncelle
+        await tx.user.update({
+          where: { id: request.userId },
+          data: { kitchenId: request.kitchenId },
+        });
+
+        // Mutfağı aktif yap
+        await tx.kitchen.update({
+          where: { id: request.kitchenId },
+          data: { status: 'ACTIVE' },
+        });
+      });
+
+      return res.status(200).json({
+        success: true,
+        data: { message: 'Join request approved successfully' },
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 5000,
+          message: error.message || 'Failed to approve join request',
+        },
+      });
+    }
+  },
+
+  async rejectJoinRequest(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user?.userId;
+      const { requestId } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: { code: 1004, message: 'Unauthorized' },
+        });
+      }
+
+      if (!requestId) {
+        return res.status(400).json({
+          success: false,
+          error: { code: 2001, message: 'Request ID is required' },
+        });
+      }
+
+      // İsteği bul
+      const request = await prisma.kitchenJoinRequest.findUnique({
+        where: { id: requestId },
+        include: { kitchen: true },
+      });
+
+      if (!request) {
+        return res.status(404).json({
+          success: false,
+          error: { code: 3004, message: 'Join request not found' },
+        });
+      }
+
+      // Sadece mutfak sahibi reddedebilir
+      if (request.kitchen.ownerId !== userId) {
+        return res.status(403).json({
+          success: false,
+          error: { code: 4009, message: 'Only kitchen owner can reject requests' },
+        });
+      }
+
+      // İsteği reddet
+      await prisma.kitchenJoinRequest.update({
+        where: { id: requestId },
+        data: { status: 'REJECTED' },
+      });
+
+      return res.status(200).json({
+        success: true,
+        data: { message: 'Join request rejected successfully' },
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 5000,
+          message: error.message || 'Failed to reject join request',
         },
       });
     }
@@ -329,6 +547,116 @@ export const kitchenController = {
         error: {
           code: 5000,
           message: error.message || 'Failed to remove member',
+        },
+      });
+    }
+  },
+
+  async getMyJoinRequests(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user?.userId;
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: { code: 1004, message: 'Unauthorized' },
+        });
+      }
+
+      // Kullanıcının gönderdiği bekleyen istekleri bul
+      const myRequests = await prisma.kitchenJoinRequest.findMany({
+        where: { 
+          userId,
+          status: 'PENDING'
+        },
+        include: {
+          kitchen: {
+            select: {
+              id: true,
+              name: true,
+              owner: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  profileImage: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      return res.status(200).json({
+        success: true,
+        data: myRequests,
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 5000,
+          message: error.message || 'Failed to get join requests',
+        },
+      });
+    }
+  },
+
+  async cancelJoinRequest(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user?.userId;
+      const { requestId } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: { code: 1004, message: 'Unauthorized' },
+        });
+      }
+
+      if (!requestId) {
+        return res.status(400).json({
+          success: false,
+          error: { code: 2001, message: 'Request ID is required' },
+        });
+      }
+
+      // İsteği bul
+      const request = await prisma.kitchenJoinRequest.findUnique({
+        where: { id: requestId },
+      });
+
+      if (!request) {
+        return res.status(404).json({
+          success: false,
+          error: { code: 3004, message: 'Join request not found' },
+        });
+      }
+
+      // Sadece kendi isteğini iptal edebilir
+      if (request.userId !== userId) {
+        return res.status(403).json({
+          success: false,
+          error: { code: 4010, message: 'You can only cancel your own requests' },
+        });
+      }
+
+      // İsteği sil
+      await prisma.kitchenJoinRequest.delete({
+        where: { id: requestId },
+      });
+
+      return res.status(200).json({
+        success: true,
+        data: { message: 'Join request cancelled successfully' },
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 5000,
+          message: error.message || 'Failed to cancel join request',
         },
       });
     }

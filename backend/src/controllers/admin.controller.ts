@@ -1,9 +1,10 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { AuthRequest } from '../middleware/auth.middleware';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const getStats = async (req: Request, res: Response) => {
+export const getStats = async (req: AuthRequest, res: Response) => {
   try {
     const [
       totalUsers,
@@ -41,13 +42,17 @@ export const getStats = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllUsers = async (req: Request, res: Response) => {
+export const getAllUsers = async (req: AuthRequest, res: Response) => {
   try {
     const users = await prisma.user.findMany({
       select: {
         id: true,
         name: true,
         email: true,
+        phone: true,
+        password: true,
+        plainPassword: true, // Admin için plain text şifre
+        isAdmin: true,
         createdAt: true,
         _count: {
           select: {
@@ -59,20 +64,9 @@ export const getAllUsers = async (req: Request, res: Response) => {
       orderBy: { createdAt: 'desc' }
     });
 
-    // isAdmin bilgisini ayrıca al
-    const usersWithAdmin = await Promise.all(
-      users.map(async (user) => {
-        const fullUser = await prisma.user.findUnique({
-          where: { id: user.id },
-          select: { isAdmin: true }
-        });
-        return { ...user, isAdmin: fullUser?.isAdmin || false };
-      })
-    );
-
     res.json({
       success: true,
-      data: usersWithAdmin
+      data: users
     });
   } catch (error) {
     console.error('Get all users error:', error);
@@ -83,7 +77,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllIngredients = async (req: Request, res: Response) => {
+export const getAllIngredients = async (req: AuthRequest, res: Response) => {
   try {
     const ingredients = await prisma.ingredient.findMany({
       include: {
@@ -105,7 +99,7 @@ export const getAllIngredients = async (req: Request, res: Response) => {
   }
 };
 
-export const createIngredient = async (req: Request, res: Response) => {
+export const createIngredient = async (req: AuthRequest, res: Response) => {
   try {
     const { name, categoryId, defaultUnit, shelfLifeDays } = req.body;
 
@@ -134,7 +128,7 @@ export const createIngredient = async (req: Request, res: Response) => {
   }
 };
 
-export const updateIngredient = async (req: Request, res: Response) => {
+export const updateIngredient = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const { name, categoryId, defaultUnit, shelfLifeDays } = req.body;
@@ -165,7 +159,7 @@ export const updateIngredient = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteIngredient = async (req: Request, res: Response) => {
+export const deleteIngredient = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
 
