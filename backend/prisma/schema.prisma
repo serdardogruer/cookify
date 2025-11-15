@@ -22,7 +22,7 @@ model User {
   phoneVerified Boolean               @default(false) // Telefon doğrulandı mı
   isAdmin       Boolean               @default(false) // Admin yetkisi
   kitchenId     Int?
-  kitchen       Kitchen?              @relation("ActiveKitchen", fields: [kitchenId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  kitchen       Kitchen?              @relation("ActiveKitchen", fields: [kitchenId], references: [id], onDelete: SetNull, onUpdate: NoAction)
   ownedKitchens Kitchen[]             @relation("KitchenOwner")
   memberships   KitchenMember[]
   joinRequests    KitchenJoinRequest[]

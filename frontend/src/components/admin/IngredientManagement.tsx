@@ -106,7 +106,6 @@ export default function IngredientManagement({ ingredients, categories, token, o
   };
 
   const handleDelete = async (id: number, name: string) => {
-    if (!confirm(`"${name}" malzemesini silmek istediğinize emin misiniz?`)) return;
 
     const response = await api.delete(`/api/admin/ingredients/${id}`, token);
 

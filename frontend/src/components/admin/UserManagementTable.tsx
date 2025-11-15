@@ -45,10 +45,6 @@ export default function UserManagementTable({ users, token, onUpdate }: Props) {
   };
 
   const handleToggleAdmin = async (userId: number, currentStatus: boolean) => {
-    if (!confirm(`Bu kullanıcıya admin yetkisi ${currentStatus ? 'kaldırmak' : 'vermek'} istediğinize emin misiniz?`)) {
-      return;
-    }
-
     setLoading(userId);
     const response = await api.post(
       `/api/admin/users/${userId}/toggle-admin`,
@@ -66,10 +62,6 @@ export default function UserManagementTable({ users, token, onUpdate }: Props) {
   };
 
   const handleDeleteUser = async (userId: number, userName: string) => {
-    if (!confirm(`${userName} kullanıcısını silmek istediğinize emin misiniz? Bu işlem geri alınamaz!`)) {
-      return;
-    }
-
     setLoading(userId);
     const response = await api.delete(`/api/admin/users/${userId}`, token);
 

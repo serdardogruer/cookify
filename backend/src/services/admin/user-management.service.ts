@@ -163,6 +163,11 @@ const userManagementService = {
             where: { kitchenId: kitchen.id },
           });
 
+          // Mutfağın katılma isteklerini sil
+          await tx.kitchenJoinRequest.deleteMany({
+            where: { kitchenId: kitchen.id },
+          });
+
           // Mutfağın pantry item'larını sil
           await tx.pantryItem.deleteMany({
             where: { kitchenId: kitchen.id },

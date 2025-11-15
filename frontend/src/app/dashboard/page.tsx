@@ -19,11 +19,51 @@ export default function DashboardPage() {
   const [marketCount, setMarketCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showMealModal, setShowMealModal] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     loadData();
     checkMealPopup();
   }, [token]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (loadingMore || !hasMore) return;
+
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight;
+      const clientHeight = document.documentElement.clientHeight;
+
+      console.log('Scroll:', { scrollTop, scrollHeight, clientHeight, diff: scrollHeight - (scrollTop + clientHeight) });
+
+      if (scrollTop + clientHeight >= scrollHeight - 500) {
+        console.log('Loading more recipes...');
+        loadMoreRecipes();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [loadingMore, hasMore, page, token]);
+
+  const loadMoreRecipes = async () => {
+    if (!token || loadingMore || !hasMore) return;
+
+    setLoadingMore(true);
+    const nextPage = page + 1;
+
+    const response = await api.get<Recipe[]>(`/api/recipes?limit=20&page=${nextPage}`, token);
+    
+    if (response.success && response.data) {
+      setRecipes(prev => [...prev, ...response.data]);
+      setPage(nextPage);
+      setHasMore(response.data.length === 20);
+    }
+
+    setLoadingMore(false);
+  };
 
   const checkMealPopup = () => {
     const lastShown = localStorage.getItem('lastMealPopup');
@@ -45,9 +85,10 @@ export default function DashboardPage() {
     }
 
     // Load recipes
-    const recipesResponse = await api.get<Recipe[]>('/api/recipes?limit=24', token);
+    const recipesResponse = await api.get<Recipe[]>('/api/recipes?limit=20&page=1', token);
     if (recipesResponse.success && recipesResponse.data) {
       setRecipes(recipesResponse.data);
+      setHasMore(recipesResponse.data.length === 20);
     }
 
     // Load pantry count
@@ -185,7 +226,7 @@ export default function DashboardPage() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-4 p-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4">
             {recipes.map((recipe) => (
               <div
                 key={recipe.id}
@@ -258,6 +299,41 @@ export default function DashboardPage() {
               </div>
             ))}
           </div>
+        )}
+
+        {/* Loading More Indicator */}
+        {loadingMore && (
+          <div className="flex justify-center py-8">
+            <div className="text-[#A0A0A0]">Daha fazla tarif yükleniyor...</div>
+          </div>
+        )}
+
+        {!hasMore && recipes.length > 0 && (
+          <div className="flex justify-center py-8">
+            <div className="text-[#A0A0A0]">Tüm tarifler yüklendi</div>
+          </div>
+        )}
+
+        {/* Scroll Trigger */}
+        {hasMore && !loadingMore && recipes.length > 0 && (
+          <div 
+            ref={(el) => {
+              if (el && hasMore && !loadingMore) {
+                const observer = new IntersectionObserver(
+                  (entries) => {
+                    if (entries[0].isIntersecting) {
+                      console.log('Intersection triggered!');
+                      loadMoreRecipes();
+                    }
+                  },
+                  { threshold: 0.1 }
+                );
+                observer.observe(el);
+                return () => observer.disconnect();
+              }
+            }}
+            className="h-20"
+          />
         )}
 
         </div>

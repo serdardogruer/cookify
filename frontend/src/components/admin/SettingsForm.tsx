@@ -51,10 +51,6 @@ export default function SettingsForm({ token }: Props) {
     if (!settings) return;
 
     const newValue = !settings.maintenanceMode;
-    
-    if (!confirm(`Bakım modunu ${newValue ? 'açmak' : 'kapatmak'} istediğinize emin misiniz?`)) {
-      return;
-    }
 
     const response = await api.post(
       '/api/admin/settings/maintenance',

@@ -76,10 +76,6 @@ export default function CategoryForm({ categories, token, onUpdate }: Props) {
       return;
     }
 
-    if (!confirm(`${name} kategorisini silmek istediğinize emin misiniz?`)) {
-      return;
-    }
-
     const response = await api.delete(`/api/admin/categories/${id}`, token);
 
     if (response.success) {

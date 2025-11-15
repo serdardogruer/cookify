@@ -5,12 +5,14 @@ import recipeService from '../services/recipe.service';
 export const recipeController = {
   async getAllRecipes(req: AuthRequest, res: Response) {
     try {
-      const { limit, search } = req.query;
+      const { limit, search, page } = req.query;
       const limitNum = limit ? parseInt(limit as string) : undefined;
+      const pageNum = page ? parseInt(page as string) : 1;
 
       const recipes = await recipeService.getAllRecipes(
         limitNum,
-        search as string | undefined
+        search as string | undefined,
+        pageNum
       );
 
       return res.status(200).json({

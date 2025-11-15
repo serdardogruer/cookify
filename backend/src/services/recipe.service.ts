@@ -31,7 +31,7 @@ export class RecipeService {
   /**
    * Tüm tarifleri listeler (son eklenenler önce)
    */
-  async getAllRecipes(limit?: number, search?: string) {
+  async getAllRecipes(limit?: number, search?: string, page: number = 1) {
     const where: any = {};
 
     if (search) {
@@ -42,6 +42,8 @@ export class RecipeService {
         { cuisine: { contains: search } },
       ];
     }
+
+    const skip = limit ? (page - 1) * limit : 0;
 
     return await prisma.recipe.findMany({
       where,
@@ -63,6 +65,7 @@ export class RecipeService {
       },
       orderBy: { createdAt: 'desc' },
       take: limit,
+      skip,
     });
   }
 

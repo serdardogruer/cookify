@@ -32,10 +32,6 @@ export default function KitchenDetailsModal({ kitchens, token, onUpdate }: Props
   const handleToggleStatus = async (kitchenId: number, currentStatus: string) => {
     const newStatus = currentStatus === 'ACTIVE' ? 'PASSIVE' : 'ACTIVE';
     
-    if (!confirm(`Mutfak durumunu ${newStatus} yapmak istediğinize emin misiniz?`)) {
-      return;
-    }
-
     setLoading(kitchenId);
     const response = await api.put(
       `/api/admin/kitchens/${kitchenId}/status`,
