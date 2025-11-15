@@ -22,7 +22,8 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://cookify-ecru-alpha.vercel.app',
+  'https://cookify.tr',
+  'https://www.cookify.tr',
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
