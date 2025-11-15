@@ -94,4 +94,32 @@ export const categoryController = {
       });
     }
   },
+
+  async getIngredientsByCategoryName(req: Request, res: Response) {
+    try {
+      const { category } = req.query;
+
+      if (!category || typeof category !== 'string') {
+        return res.status(400).json({
+          success: false,
+          error: { code: 2001, message: 'Category parameter is required' },
+        });
+      }
+
+      const ingredients = await categoryService.getIngredientsByCategoryName(category);
+
+      return res.status(200).json({
+        success: true,
+        data: ingredients,
+      });
+    } catch (error: any) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 5000,
+          message: error.message || 'Failed to get ingredients',
+        },
+      });
+    }
+  },
 };

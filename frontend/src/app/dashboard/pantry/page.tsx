@@ -11,6 +11,7 @@ import { PantryItem } from '@/types/pantry';
 import ConsumeModal from '@/components/ConsumeModal';
 import CustomMealModal from '@/components/CustomMealModal';
 import AddCustomMealModal from '@/components/AddCustomMealModal';
+import BulkAddModal from '@/components/BulkAddModal';
 
 export default function PantryPage() {
   const { token } = useAuth();
@@ -30,6 +31,9 @@ export default function PantryPage() {
   const [showMealModal, setShowMealModal] = useState(false);
   const [customMeals, setCustomMeals] = useState<any[]>([]);
   const [showAddMealModal, setShowAddMealModal] = useState(false);
+  
+  // Bulk add
+  const [showBulkAddModal, setShowBulkAddModal] = useState(false);
   
   // Form states
   const [newItemName, setNewItemName] = useState('');
@@ -399,13 +403,22 @@ export default function PantryPage() {
           {/* Page Header */}
           <div className="px-4 py-4 flex items-center justify-between">
             <h1 className="text-white text-2xl font-bold">Dolabım</h1>
-            <button
-              onClick={() => setShowMealModal(true)}
-              className="flex items-center gap-2 rounded-lg bg-[#30D158] px-4 py-2 text-sm font-medium text-white hover:bg-[#30D158]/90 transition"
-            >
-              <span className="material-symbols-outlined text-base">restaurant</span>
-              Yemek Yaptım
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowBulkAddModal(true)}
+                className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-xs sm:text-sm font-medium text-white hover:bg-blue-700 transition"
+              >
+                <span className="material-symbols-outlined text-base">playlist_add</span>
+                <span className="hidden sm:inline">Toplu Giriş</span>
+              </button>
+              <button
+                onClick={() => setShowMealModal(true)}
+                className="flex items-center gap-1.5 rounded-lg bg-[#30D158] px-3 py-2 text-xs sm:text-sm font-medium text-white hover:bg-[#30D158]/90 transition"
+              >
+                <span className="material-symbols-outlined text-base">restaurant</span>
+                <span className="hidden sm:inline">Yemek Yaptım</span>
+              </button>
+            </div>
           </div>
 
           {/* Search Bar */}
@@ -612,6 +625,16 @@ export default function PantryPage() {
           isOpen={showAddMealModal}
           onClose={() => setShowAddMealModal(false)}
           onSubmit={handleSaveMeal}
+        />
+
+        {/* Bulk Add Modal */}
+        <BulkAddModal
+          isOpen={showBulkAddModal}
+          onClose={() => setShowBulkAddModal(false)}
+          onSuccess={() => {
+            toast.success('Malzemeler eklendi!');
+            loadPantryItems();
+          }}
         />
 
         {/* Edit Item Modal */}

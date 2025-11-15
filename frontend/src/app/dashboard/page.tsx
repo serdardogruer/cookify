@@ -56,10 +56,11 @@ export default function DashboardPage() {
 
     const response = await api.get<Recipe[]>(`/api/recipes?limit=20&page=${nextPage}`, token);
     
-    if (response.success && response.data) {
-      setRecipes(prev => [...prev, ...response.data]);
+    if (response.success && response.data && Array.isArray(response.data)) {
+      const newRecipes = response.data as Recipe[];
+      setRecipes(prev => [...prev, ...newRecipes]);
       setPage(nextPage);
-      setHasMore(response.data.length === 20);
+      setHasMore(newRecipes.length === 20);
     }
 
     setLoadingMore(false);

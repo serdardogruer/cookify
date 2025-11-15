@@ -92,6 +92,29 @@ export class CategoryService {
       orderBy: { name: 'asc' },
     });
   }
+
+  /**
+   * Kategori adına göre malzemeleri getir
+   */
+  async getIngredientsByCategoryName(categoryName: string) {
+    // Önce kategoriyi bul
+    const category = await prisma.category.findFirst({
+      where: { name: categoryName },
+    });
+
+    if (!category) {
+      return [];
+    }
+
+    // Kategoriye ait malzemeleri getir
+    return await prisma.ingredient.findMany({
+      where: { categoryId: category.id },
+      include: {
+        category: true,
+      },
+      orderBy: { name: 'asc' },
+    });
+  }
 }
 
 export const categoryService = new CategoryService();
