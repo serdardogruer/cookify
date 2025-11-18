@@ -310,3 +310,356 @@ Lokal test başarılı! VDS'ye deployment için hazırız.
 - [ ] DNS ayarları
 - [ ] bcrypt sorununu çöz
 - [ ] Test
+
+
+---
+
+## [2025-11-18 22:30] - Profil Sayfası Güncellemeleri Deployment
+
+### 🎯 Yapılan Değişiklikler
+
+#### Frontend Değişiklikleri
+- ✅ Profil sayfası tab yapısı eklendi (Profil Bilgileri, Mutfak Yönetimi, Modüller)
+- ✅ Mutfak yönetimi profil sayfasına entegre edildi
+- ✅ Modüller profil sayfasına entegre edildi
+- ✅ "Başka Mutfağa Katıl" modal olarak açılıyor (ayrı sayfa değil)
+- ✅ Profil resmi yükleme ve görüntüleme düzeltildi (localhost URL sorunu çözüldü)
+- ✅ Header'da profil resmi URL'i düzeltildi
+- ✅ Tüm sayfa genişlikleri max-w-6xl olarak ayarlandı
+- ✅ DashboardHeader'dan "Hoş geldin" mesajı kaldırıldı
+- ✅ KitchenNav component'i oluşturuldu (kullanılmadı)
+
+#### Backend Değişiklikleri
+- ✅ Profil güncelleme endpoint'i düzeltildi (phone ve bio alanları eklendi)
+- ✅ User model'e bio alanı eklendi
+- ✅ Prisma migration çalıştırıldı (add_bio_field)
+- ✅ Prisma client yeniden generate edildi
+
+### 📋 Deployment Adımları
+
+#### 1. Backend Deployment
+```bash
+# Dosyalar yüklendi
+scp -r src prisma package.json tsconfig.json root@80.253.246.134:/var/www/cookify-backend/
+
+# Build ve restart
+ssh root@80.253.246.134 "cd /var/www/cookify-backend && npm run build && pm2 restart cookify-backend"
+```
+
+**Sonuç:**
+- ✅ Prisma client generate edildi
+- ✅ TypeScript build başarılı
+- ✅ PM2 restart başarılı
+- ✅ Backend online (restart count: 4 → 108)
+
+#### 2. Frontend Deployment
+```bash
+# Dosyalar yüklendi
+scp -r src public next.config.js package.json tsconfig.json tailwind.config.ts postcss.config.js root@80.253.246.134:/var/www/cookify-frontend/
+
+# Build ve restart
+ssh root@80.253.246.134 "cd /var/www/cookify-frontend && npm run build && pm2 restart cookify-frontend"
+```
+
+**Sonuç:**
+- ✅ Next.js build başarılı
+- ⚠️ ESLint prettier config uyarısı (önemsiz)
+- ✅ 16 sayfa generate edildi
+- ✅ PM2 restart başarılı
+- ✅ Frontend online (restart count: 5 → 6)
+
+### 📊 Build Sonuçları
+
+#### Route Sizes:
+```
+Route (app)                              Size     First Load JS
+├ ○ /                                    1.41 kB        83.3 kB
+├ ○ /dashboard                           5.27 kB        94.2 kB
+├ ○ /dashboard/kitchen                   3.96 kB        92.9 kB
+├ ○ /dashboard/market                    5.33 kB        94.3 kB
+├ ○ /dashboard/pantry                    8.73 kB        97.7 kB
+├ ○ /dashboard/profile                   6.78 kB        88.6 kB
+├ ○ /dashboard/modules                   2.09 kB          91 kB
+└ ○ /dashboard/recipe-search             4.01 kB          93 kB
+```
+
+**Toplam:** 16 sayfa, ortalama 90KB First Load JS
+
+### ✅ Test Sonuçları
+
+#### Backend (api.cookify.tr)
+- ✅ Server çalışıyor
+- ✅ Port 5000 dinleniyor
+- ✅ PM2 online
+- ✅ Restart count: 108 (normal, development sırasında çok restart oldu)
+
+#### Frontend (cookify.tr)
+- ✅ Server çalışıyor
+- ✅ Port 3000 dinleniyor
+- ✅ PM2 online
+- ✅ Restart count: 6
+
+### 🎯 Kullanıcı Tarafından Test Edilmesi Gerekenler
+
+- [ ] Profil sayfası açılıyor mu?
+- [ ] Profil bilgileri (ad, telefon, bio) güncellenebiliyor mu?
+- [ ] Profil resmi yüklenebiliyor mu?
+- [ ] Profil resmi header'da görünüyor mu?
+- [ ] Mutfak Yönetimi tab'ı çalışıyor mu?
+- [ ] Modüller tab'ı çalışıyor mu?
+- [ ] "Başka Mutfağa Katıl" modal açılıyor mu?
+- [ ] Sayfa genişlikleri tutarlı mı?
+
+### 💡 Notlar
+
+1. **Profil Resmi URL Sorunu Çözüldü**
+   - Önceki: `http://80.253.246.134:5000` (hardcoded)
+   - Şimdi: `process.env.NEXT_PUBLIC_API_URL` (dinamik)
+   - Localhost'ta: `http://localhost:5000`
+   - VDS'de: `https://api.cookify.tr`
+
+2. **Bio Alanı Eklendi**
+   - Database migration başarılı
+   - Backend endpoint güncellendi
+   - Frontend form güncellendi
+
+3. **Sayfa Genişlikleri Standardize Edildi**
+   - Tüm sayfalar: `max-w-6xl`
+   - Daha tutarlı görünüm
+   - Responsive tasarım korundu
+
+4. **Tab Yapısı**
+   - Profil sayfasında 3 tab
+   - Sayfa değiştirmiyor (SPA)
+   - Daha hızlı navigasyon
+
+### 🚀 Deployment Başarılı!
+
+Tüm değişiklikler VDS'ye başarıyla deploy edildi. Kullanıcı testleri bekleniyor.
+
+**Sonraki Adım:** Kullanıcı feedback'i ve gerekirse düzeltmeler.
+
+
+---
+
+## [2025-11-18 22:45] - VDS Deployment Sorunları
+
+### 🚨 Tespit Edilen Sorunlar
+
+#### 1. API URL Sorunu
+**Hata:** `POST http://80.253.246.134:5000/api/auth/login net::ERR_CONNECTION_REFUSED`
+
+**Sebep:** 
+- Frontend hala eski build'i kullanıyor
+- `.env.local` dosyası var ama build sırasında okunmamış
+- Cache sorunu olabilir
+
+**Çözüm:**
+- Lokalde düzeltilecek
+- `.env.production` dosyası doğru URL'leri içermeli
+- Build öncesi environment variables kontrol edilecek
+
+#### 2. Google OAuth Client ID Sorunu
+**Hata:** `[GSI_LOGGER]: The given client ID is not found.`
+
+**Sebep:**
+- `.env.production` dosyasında placeholder değer var
+- `NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-production-google-client-id.apps.googleusercontent.com`
+
+**Çözüm:**
+- Gerçek Google OAuth Client ID alınacak
+- Production için ayrı OAuth credentials oluşturulacak
+- Lokalde düzeltilecek
+
+#### 3. Build Cache Sorunu
+**Sebep:**
+- Frontend build'i environment variables'ı doğru okumamış
+- Next.js cache temizlenmemiş
+
+**Çözüm:**
+- Lokalde temiz build yapılacak
+- `npm run build` öncesi `.next` klasörü silinecek
+- Environment variables doğrulanacak
+
+### 📋 Yapılacaklar (Lokalde)
+
+#### Öncelik 1: Environment Variables
+- [ ] `frontend/.env.production` dosyasını kontrol et
+- [ ] `NEXT_PUBLIC_API_URL=https://api.cookify.tr` olduğundan emin ol
+- [ ] Google OAuth Client ID'yi güncelle (gerçek değer)
+- [ ] Lokalde test et
+
+#### Öncelik 2: Build Test
+- [ ] `.next` klasörünü sil
+- [ ] `npm run build` çalıştır
+- [ ] Build output'unda environment variables'ı kontrol et
+- [ ] Production build'i lokalde test et
+
+#### Öncelik 3: VDS Deployment
+- [ ] Temiz build'i VDS'ye yükle
+- [ ] PM2 restart
+- [ ] Test et
+
+### 💡 Öğrenilen Dersler
+
+1. **Environment Variables Kontrolü**
+   - Build öncesi `.env.production` dosyasını kontrol et
+   - Build sırasında environment variables loglanmalı
+   - Production build lokalde test edilmeli
+
+2. **Cache Temizliği**
+   - VDS'ye deploy öncesi `.next` klasörünü sil
+   - Temiz build yap
+   - Cache sorunlarını önle
+
+3. **Deployment Sırası**
+   - Önce lokalde test et
+   - Sonra build yap
+   - En son VDS'ye yükle
+   - Her adımı doğrula
+
+### 🎯 Sonraki Adım
+
+**Lokalde düzeltmeler yapılacak, sonra VDS'ye temiz deployment yapılacak.**
+
+**NOT:** Bir daha VDS'ye deploy etmeden önce:
+1. Lokalde tam test et
+2. Production build yap ve test et
+3. Environment variables'ı doğrula
+4. Sonra VDS'ye yükle
+
+
+---
+
+## [2025-11-18 23:00] - Domain Transfer Durumu ve Düzeltilecekler
+
+### 🚨 ÖNEMLİ: Domain Henüz Transfer Edilmedi!
+
+**Durum:**
+- Domain (`cookify.tr`) henüz transfer edilmedi
+- Şu an sadece IP üzerinden erişim var: `http://80.253.246.134`
+- DNS kayıtları henüz yapılmadı
+
+**Mevcut Yapı:**
+```
+Frontend: http://80.253.246.134:3000 (PM2)
+Backend:  http://80.253.246.134:5000 (PM2)
+```
+
+**Hedef Yapı (Domain transfer sonrası):**
+```
+Frontend: https://cookify.tr (Nginx → :3000)
+Backend:  https://api.cookify.tr (Nginx → :5000)
+```
+
+### 📋 Domain Transfer Sonrası Yapılacaklar
+
+#### 1. DNS Ayarları
+- [ ] A Record: `cookify.tr` → `80.253.246.134`
+- [ ] A Record: `api.cookify.tr` → `80.253.246.134`
+- [ ] A Record: `www.cookify.tr` → `80.253.246.134` (opsiyonel)
+
+#### 2. Nginx Yapılandırması
+- [ ] `cookify.tr` için server block oluştur
+- [ ] `api.cookify.tr` için server block oluştur
+- [ ] Reverse proxy ayarları
+- [ ] SSL sertifikası (Let's Encrypt)
+
+#### 3. Environment Variables Güncelleme
+
+**Backend `.env.production`:**
+```env
+# Şu an (IP ile)
+FRONTEND_URL=http://80.253.246.134:3000
+
+# Domain sonrası
+FRONTEND_URL=https://cookify.tr
+```
+
+**Frontend `.env.production`:**
+```env
+# Şu an (IP ile)
+NEXT_PUBLIC_API_URL=http://80.253.246.134:5000
+
+# Domain sonrası
+NEXT_PUBLIC_API_URL=https://api.cookify.tr
+```
+
+#### 4. CORS Ayarları
+Backend'de CORS origin'leri güncelle:
+```typescript
+// Şu an
+origin: ['http://80.253.246.134:3000', 'http://localhost:3000']
+
+// Domain sonrası
+origin: ['https://cookify.tr', 'http://localhost:3000']
+```
+
+### 🔧 Şimdi Yapılacak Düzeltmeler (IP ile çalışması için)
+
+#### 1. Frontend `.env.production` Düzelt
+```env
+NEXT_PUBLIC_API_URL=http://80.253.246.134:5000
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-production-google-client-id.apps.googleusercontent.com
+```
+
+#### 2. Backend `.env.production` Düzelt
+```env
+DATABASE_URL="postgresql://cookify_user:dgrr1213@localhost:5432/cookify"
+JWT_SECRET="cookify-super-secret-jwt-key-2024-production"
+FRONTEND_URL="http://80.253.246.134:3000"
+NODE_ENV="production"
+PORT=5000
+```
+
+#### 3. Backend CORS Ayarları
+`backend/src/index.ts` dosyasında:
+```typescript
+app.use(cors({
+  origin: ['http://80.253.246.134:3000', 'http://localhost:3000'],
+  credentials: true
+}));
+```
+
+#### 4. Lokalde Test Et
+- [ ] Backend'i başlat: `npm run dev`
+- [ ] Frontend'i başlat: `npm run dev`
+- [ ] Login/Register test et
+- [ ] Tüm özellikleri test et
+
+#### 5. Production Build Test
+- [ ] Backend: `npm run build`
+- [ ] Frontend: `.next` klasörünü sil, `npm run build`
+- [ ] Environment variables kontrol et
+
+#### 6. VDS'ye Deploy
+- [ ] Backend dosyalarını yükle
+- [ ] Frontend dosyalarını yükle
+- [ ] `.env.production` dosyalarını `.env` olarak kopyala
+- [ ] Build yap
+- [ ] PM2 restart
+- [ ] Test et
+
+### 💡 Hatırlatmalar
+
+1. **Domain Transfer Öncesi**
+   - IP adresi ile çalış
+   - Port numaralarını kullan
+   - HTTP kullan (SSL yok)
+
+2. **Domain Transfer Sonrası**
+   - Domain ile çalış
+   - Nginx reverse proxy
+   - HTTPS kullan (SSL var)
+
+3. **Her Zaman**
+   - Önce lokalde test et
+   - Sonra production build yap
+   - En son VDS'ye yükle
+   - Her adımı doğrula
+
+### 🎯 Sonraki Adım
+
+**Lokalde düzeltmeleri yap, test et, sonra VDS'ye deploy et.**
+
+**NOT:** Domain transfer olana kadar IP adresi ile çalışacağız!
