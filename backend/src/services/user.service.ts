@@ -40,21 +40,7 @@ export class UserService {
   /**
    * Kullanıcı profil bilgilerini günceller
    */
-  async updateProfile(userId: number, data: { name?: string; email?: string }) {
-    // Email değişiyorsa, başka kullanıcıda kullanılmadığını kontrol et
-    if (data.email) {
-      const existingUser = await prisma.user.findFirst({
-        where: {
-          email: data.email,
-          NOT: { id: userId },
-        },
-      });
-
-      if (existingUser) {
-        throw new Error('Bu e-posta adresi zaten kullanılıyor');
-      }
-    }
-
+  async updateProfile(userId: number, data: { name?: string; phone?: string; bio?: string }) {
     const user = await prisma.user.update({
       where: { id: userId },
       data,

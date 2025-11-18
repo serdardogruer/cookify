@@ -5,8 +5,9 @@ const config: CapacitorConfig = {
   appName: 'Cookify',
   webDir: 'dist',
   server: {
-    androidScheme: 'https',
+    androidScheme: 'http',
     cleartext: true,
+    allowNavigation: ['*'],
   },
   plugins: {
     SplashScreen: {

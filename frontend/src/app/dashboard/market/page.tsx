@@ -203,7 +203,7 @@ export default function MarketPage() {
         <DashboardHeader />
 
         {/* Content Container */}
-        <div className="max-w-7xl mx-auto w-full">
+        <div className="max-w-6xl mx-auto w-full">
           {/* Page Header */}
           <div className="px-4 py-4">
             <div className="flex justify-between items-center mb-4">

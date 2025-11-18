@@ -226,7 +226,7 @@ export default function RecipeAddPage() {
     <div className="relative min-h-screen w-full flex flex-col">
       {/* Top App Bar */}
       <header className="sticky top-0 z-10 bg-[#121212]/80 backdrop-blur-sm border-b border-[#3A3A3C]">
-        <div className="w-full max-w-4xl mx-auto p-4">
+        <div className="w-full max-w-6xl mx-auto p-4">
           <h1 className="text-white text-lg font-bold leading-tight tracking-[-0.015em] text-center">
             Yeni Tarif Ekle
           </h1>
@@ -234,7 +234,7 @@ export default function RecipeAddPage() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-grow pb-8 w-full max-w-4xl mx-auto">
+      <main className="flex-grow pb-8 w-full max-w-6xl mx-auto">
         {/* Header Image/Video Uploader */}
         <div className="p-4">
           <label className="flex flex-col gap-2 cursor-pointer">
@@ -646,3 +646,4 @@ export default function RecipeAddPage() {
     </div>
   );
 }
+

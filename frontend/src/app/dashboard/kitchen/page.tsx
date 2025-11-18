@@ -6,6 +6,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import Link from 'next/link';
+import DashboardHeader from '@/components/DashboardHeader';
+import BottomNav from '@/components/BottomNav';
 
 interface JoinRequest {
   id: number;
@@ -159,19 +161,18 @@ export default function KitchenManagementPage() {
   }
 
   return (
-    <div className="relative mx-auto flex min-h-screen w-full max-w-4xl flex-col bg-[#121212]">
+    <div className="relative flex h-auto min-h-screen w-full flex-col text-[#E0E0E0] pb-24 bg-[#121212]">
       {/* Header */}
-      <div className="flex items-center bg-[#121212] p-4 pb-2 justify-between sticky top-0 z-10 border-b border-[#3A3A3C]">
-        <Link href="/dashboard/profile" className="flex size-12 shrink-0 items-center justify-center">
-          <span className="material-symbols-outlined text-white">arrow_back</span>
-        </Link>
-        <h2 className="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">
-          Mutfak Yönetimi
-        </h2>
-        <div className="flex size-12 shrink-0 items-center"></div>
-      </div>
+      <DashboardHeader />
 
-      <div className="flex flex-col p-4 gap-6">
+      {/* Content Container */}
+      <div className="max-w-6xl mx-auto w-full">
+        {/* Page Title */}
+        <div className="px-4 py-4 border-b border-[#2A2A2A]">
+          <h1 className="text-white text-2xl font-bold">Mutfak Yönetimi</h1>
+        </div>
+
+        <div className="flex flex-col p-4 gap-6">
         {/* Mutfağa Katıl Butonu */}
         <Link
           href="/dashboard/kitchen/join"
@@ -406,7 +407,12 @@ export default function KitchenManagementPage() {
             </p>
           </div>
         )}
+        </div>
       </div>
+
+      {/* Bottom Navigation */}
+      <BottomNav />
     </div>
   );
 }
+

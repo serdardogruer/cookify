@@ -20,6 +20,7 @@ model User {
   profileImage  String?
   phone         String?               // Telefon numarası
   phoneVerified Boolean               @default(false) // Telefon doğrulandı mı
+  bio           String?               // Biyografi
   isAdmin       Boolean               @default(false) // Admin yetkisi
   kitchenId     Int?
   kitchen       Kitchen?              @relation("ActiveKitchen", fields: [kitchenId], references: [id], onDelete: SetNull, onUpdate: NoAction)

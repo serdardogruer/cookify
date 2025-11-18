@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { StatusBar, Style } from '@capacitor/status-bar';
 
-// Vercel URL'ini buraya yapıştır
-const FRONTEND_URL = 'https://cookify-ecru-alpha.vercel.app';
+// VDS URL
+const FRONTEND_URL = 'http://80.253.246.134';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);

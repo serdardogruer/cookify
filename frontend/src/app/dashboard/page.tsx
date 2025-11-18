@@ -159,7 +159,7 @@ export default function DashboardPage() {
         <DashboardHeader />
 
         {/* Content Container */}
-        <div className="max-w-7xl mx-auto w-full">
+        <div className="max-w-6xl mx-auto w-full">
           {/* Stats Cards */}
           <div className="flex gap-3 px-4 py-4 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none]">
           <div className="flex min-w-[170px] flex-1 flex-col gap-2 rounded-lg p-4 bg-[#1E1E1E]">
@@ -361,4 +361,5 @@ export default function DashboardPage() {
     </ProtectedRoute>
   );
 }
+
 

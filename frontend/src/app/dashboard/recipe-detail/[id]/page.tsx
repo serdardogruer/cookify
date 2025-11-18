@@ -266,13 +266,13 @@ export default function RecipeDetailPage() {
     <div className="relative w-full min-h-screen flex flex-col bg-[#121212]">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-[#121212]/80 backdrop-blur-sm border-b border-[#3A3A3C]">
-        <div className="max-w-4xl mx-auto p-4">
+        <div className="max-w-7xl mx-auto p-4">
           <h1 className="text-xl font-bold text-white text-center">{recipe.title}</h1>
         </div>
       </div>
 
       {/* Content */}
-      <div className="px-4 py-4 space-y-6 max-w-4xl mx-auto w-full">
+      <div className="px-4 py-4 space-y-6 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Left Column */}
           <div className="flex flex-col gap-4">

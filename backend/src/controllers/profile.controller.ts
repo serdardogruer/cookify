@@ -34,7 +34,7 @@ export const profileController = {
   async updateProfile(req: AuthRequest, res: Response) {
     try {
       const userId = req.user?.userId;
-      const { name, email } = req.body;
+      const { name, phone, bio } = req.body;
 
       if (!userId) {
         return res.status(401).json({
@@ -43,7 +43,7 @@ export const profileController = {
         });
       }
 
-      const profile = await userService.updateProfile(userId, { name, email });
+      const profile = await userService.updateProfile(userId, { name, phone, bio });
 
       return res.status(200).json({
         success: true,

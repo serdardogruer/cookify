@@ -76,7 +76,7 @@ export default function Header() {
           <Link href="/dashboard/profile" className="flex items-center gap-2 hover:opacity-80 transition">
             {profile?.profileImage ? (
               <img
-                src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${profile.profileImage}`}
+                src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${profile.profileImage}?t=${Date.now()}`}
                 alt="Profil"
                 className="w-10 h-10 rounded-full object-cover"
               />

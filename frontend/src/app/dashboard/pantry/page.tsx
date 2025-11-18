@@ -399,7 +399,7 @@ export default function PantryPage() {
         <DashboardHeader />
 
         {/* Content Container */}
-        <div className="max-w-7xl mx-auto w-full">
+        <div className="max-w-6xl mx-auto w-full">
           {/* Page Header */}
           <div className="px-4 py-4 flex items-center justify-between">
             <h1 className="text-white text-2xl font-bold">Dolabım</h1>

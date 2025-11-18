@@ -41,7 +41,7 @@ export default function JoinKitchenPage() {
   };
 
   return (
-    <div className="relative mx-auto flex min-h-screen w-full max-w-4xl flex-col bg-[#121212]">
+    <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col bg-[#121212]">
       {/* Header */}
       <div className="flex items-center bg-[#121212] p-4 pb-2 justify-between sticky top-0 z-10 border-b border-[#3A3A3C]">
         <Link href="/dashboard/kitchen" className="flex size-12 shrink-0 items-center justify-center">
@@ -108,3 +108,4 @@ export default function JoinKitchenPage() {
     </div>
   );
 }
+
