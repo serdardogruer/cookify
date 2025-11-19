@@ -16,6 +16,16 @@ export default function Header() {
     loadProfile();
   }, [token]);
 
+  // Profil güncellemelerini dinle
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      loadProfile();
+    };
+
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+    return () => window.removeEventListener('profileUpdated', handleProfileUpdate);
+  }, [token]);
+
   const loadProfile = async () => {
     if (!token) return;
     const response = await api.get<any>('/api/profile', token);

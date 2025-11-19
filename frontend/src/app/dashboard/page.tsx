@@ -6,6 +6,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import DashboardHeader from '@/components/DashboardHeader';
 import BottomNav from '@/components/BottomNav';
 import { useAuth } from '@/hooks/useAuth';
+import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { api } from '@/lib/api';
 import { Recipe } from '@/types/recipe';
 import { toast } from '@/lib/toast';
@@ -14,6 +15,7 @@ import MealConsumptionModal from '@/components/MealConsumptionModal';
 export default function DashboardPage() {
   const router = useRouter();
   const { token } = useAuth();
+  useSwipeNavigation();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [pantryCount, setPantryCount] = useState(0);
   const [marketCount, setMarketCount] = useState(0);

@@ -22,6 +22,8 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://80.253.246.134',
+  'http://80.253.246.134:3000',
   'https://cookify.tr',
   'https://www.cookify.tr',
   process.env.FRONTEND_URL

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 
 interface Ingredient {
   id: string;
@@ -25,6 +26,7 @@ interface Sauce {
 
 export default function RecipeAddPage() {
   const router = useRouter();
+  useSwipeNavigation();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState('');

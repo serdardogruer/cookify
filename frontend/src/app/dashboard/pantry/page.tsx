@@ -5,6 +5,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import DashboardHeader from '@/components/DashboardHeader';
 import BottomNav from '@/components/BottomNav';
 import { useAuth } from '@/hooks/useAuth';
+import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import { PantryItem } from '@/types/pantry';
@@ -15,6 +16,7 @@ import BulkAddModal from '@/components/BulkAddModal';
 
 export default function PantryPage() {
   const { token } = useAuth();
+  useSwipeNavigation();
   const [items, setItems] = useState<PantryItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tümü');

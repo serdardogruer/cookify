@@ -5,6 +5,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import DashboardHeader from '@/components/DashboardHeader';
 import BottomNav from '@/components/BottomNav';
 import { useAuth } from '@/hooks/useAuth';
+import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 
@@ -21,6 +22,7 @@ interface MarketItem {
 
 export default function MarketPage() {
   const { token } = useAuth();
+  useSwipeNavigation();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingItem, setEditingItem] = useState<MarketItem | null>(null);

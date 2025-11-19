@@ -73,7 +73,9 @@ export default function ProfilePage() {
 
     if (response.success) {
       toast.success('Profil güncellendi');
-      loadProfile();
+      await loadProfile();
+      // Header'ı güncelle
+      window.dispatchEvent(new Event('profileUpdated'));
     } else {
       toast.error('Güncelleme başarısız');
     }
@@ -105,7 +107,9 @@ export default function ProfilePage() {
 
       if (data.success) {
         toast.success('Profil resmi güncellendi');
-        loadProfile();
+        await loadProfile();
+        // Header'ı güncelle
+        window.dispatchEvent(new Event('profileUpdated'));
       } else {
         toast.error('Resim yüklenemedi');
       }

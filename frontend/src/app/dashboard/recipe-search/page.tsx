@@ -6,12 +6,14 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import DashboardHeader from '@/components/DashboardHeader';
 import BottomNav from '@/components/BottomNav';
 import { useAuth } from '@/hooks/useAuth';
+import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import { api } from '@/lib/api';
 import { Recipe } from '@/types/recipe';
 
 export default function RecipeSearchPage() {
   const router = useRouter();
   const { token } = useAuth();
+  useSwipeNavigation();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [allRecipes, setAllRecipes] = useState<Recipe[]>([]); // Tüm tarifler
   const [pantryIngredients, setPantryIngredients] = useState<string[]>([]); // Dolaptaki malzemeler
