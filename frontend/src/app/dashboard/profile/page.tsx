@@ -31,23 +31,120 @@ export default function ProfilePage() {
   const [inviteCode, setInviteCode] = useState('');
   
   // Modules states
-  const [modules, setModules] = useState([
-    { id: 'recipes', name: 'Tarif Kitabı', description: 'Lezzetli tarifleri keşfedin ve kaydedin', icon: 'menu_book', enabled: true, isCore: true },
-    { id: 'shopping', name: 'Alışveriş Listesi', description: 'Malzemelerinizi kolayca takip edin', icon: 'shopping_cart', enabled: true, isCore: true },
-    { id: 'pantry', name: 'Kiler Yönetimi', description: 'Evinizdeki malzemeleri yönetin', icon: 'kitchen', enabled: true, isCore: true },
-    { id: 'meal-planner', name: 'Haftalık Yemek Planlayıcı', description: 'Öğünlerinizi hafta için planlayın', icon: 'date_range', enabled: true, isCore: false },
-    { id: 'nutrition', name: 'Besin Değeri Takibi', description: 'Kalori ve makro besinleri izleyin', icon: 'analytics', enabled: false, isCore: false },
-    { id: 'timer', name: 'Mutfak Zamanlayıcı', description: 'Çoklu zamanlayıcılarla yemek yapın', icon: 'timer', enabled: true, isCore: false },
-    { id: 'smart-oven', name: 'Akıllı Fırın Entegrasyonu', description: 'Fırınınızı doğrudan uygulamadan kontrol edin', icon: 'oven_gen', enabled: false, isCore: false, badge: 'new', locked: true },
-    { id: 'guest-mode', name: 'Misafir Modu', description: 'Misafirleriniz için tarifleri paylaşın', icon: 'group', enabled: false, isCore: false, badge: 'premium', locked: true },
-  ]);
+  const [modules, setModules] = useState<any[]>([]);
+  
+  // AI Settings states
+  const [aiProvider, setAiProvider] = useState<'openai' | 'gemini' | 'claude'>('gemini');
+  const [apiKey, setApiKey] = useState('');
+  const [model, setModel] = useState('');
+  const [savingApiKey, setSavingApiKey] = useState(false);
+  const [userIntegration, setUserIntegration] = useState<any>(null);
+  const [loadingIntegration, setLoadingIntegration] = useState(true);
 
   useEffect(() => {
     loadProfile();
     if (activeTab === 'kitchen') {
       loadKitchenData();
     }
+    if (activeTab === 'modules') {
+      loadModules();
+    }
+    if (activeTab === 'ai-settings') {
+      loadUserIntegration();
+    }
   }, [token, activeTab]);
+
+  const loadModules = async () => {
+    if (!token) return;
+    const response = await api.get<any[]>('/api/modules/user', token);
+    if (response.success && response.data) {
+      setModules(response.data);
+    }
+  };
+
+  const handleActivateModule = async (moduleId: number) => {
+    if (!token) return;
+    const response = await api.post(`/api/modules/${moduleId}/activate`, {}, token);
+    if (response.success) {
+      toast.success('Modül aktif edildi');
+      loadModules();
+      // Header'ı güncelle
+      window.dispatchEvent(new Event('modulesUpdated'));
+    } else {
+      toast.error('İşlem başarısız');
+    }
+  };
+
+  const loadUserIntegration = async () => {
+    if (!token) return;
+    try {
+      const response = await api.get<any>('/api/ai/integrations', token);
+      if (response.success && response.data && response.data.integrations && response.data.integrations.length > 0) {
+        const integration = response.data.integrations[0];
+        setUserIntegration(integration);
+        setAiProvider(integration.provider);
+        setModel(integration.model || '');
+      }
+    } catch (error) {
+      console.error('AI entegrasyon yükleme hatası:', error);
+    } finally {
+      setLoadingIntegration(false);
+    }
+  };
+
+  const handleSaveApiKey = async () => {
+    if (!apiKey.trim()) {
+      toast.error('Lütfen API anahtarı girin');
+      return;
+    }
+
+    setSavingApiKey(true);
+
+    try {
+      const response = await api.post('/api/ai/integrations', {
+        provider: 'gemini',
+        apiKey: apiKey,
+        model: model || undefined
+      }, token || '');
+
+      if (response.success) {
+        toast.success('API anahtarı kaydedildi!');
+        setApiKey('');
+        await loadUserIntegration();
+      } else {
+        toast.error((response as any).message || 'Bir hata oluştu');
+      }
+    } catch (error) {
+      console.error('API anahtarı kaydetme hatası:', error);
+      toast.error('Bir hata oluştu');
+    } finally {
+      setSavingApiKey(false);
+    }
+  };
+
+  const handleDeleteIntegration = async () => {
+    if (!userIntegration) return;
+
+    if (!confirm('API entegrasyonunu silmek istediğinize emin misiniz?')) {
+      return;
+    }
+
+    try {
+      const response = await api.delete(`/api/ai/integrations/${userIntegration.id}`, token || '');
+
+      if (response.success) {
+        toast.success('API entegrasyonu silindi');
+        setUserIntegration(null);
+        setApiKey('');
+        setModel('');
+      } else {
+        toast.error((response as any).message || 'Bir hata oluştu');
+      }
+    } catch (error) {
+      console.error('API entegrasyon silme hatası:', error);
+      toast.error('Bir hata oluştu');
+    }
+  };
 
   const loadProfile = async () => {
     if (!token) {
@@ -205,8 +302,8 @@ export default function ProfilePage() {
   };
 
   const coreModules = modules.filter(m => m.isCore);
-  const additionalModules = modules.filter(m => !m.isCore && !m.locked);
-  const comingSoonModules = modules.filter(m => m.locked);
+  const additionalModules = modules.filter((m: any) => !m.isCore && m.pricingType === 'free');
+  const premiumModules = modules.filter((m: any) => !m.isCore && m.pricingType !== 'free');
 
   const handleJoinKitchen = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -319,6 +416,16 @@ export default function ProfilePage() {
             }`}
           >
             <p className="text-sm font-bold leading-normal tracking-[0.015em]">Modüller</p>
+          </button>
+          <button
+            onClick={() => setActiveTab('ai-settings')}
+            className={`flex flex-col items-center justify-center border-b-[3px] pb-[13px] pt-4 flex-1 ${
+              activeTab === 'ai-settings'
+                ? 'border-b-[#30D158] text-[#30D158]'
+                : 'border-b-transparent text-[#A0A0A0]'
+            }`}
+          >
+            <p className="text-sm font-bold leading-normal tracking-[0.015em]">AI Ayarları</p>
           </button>
         </div>
       </div>
@@ -624,7 +731,7 @@ export default function ProfilePage() {
             Deneyiminizi kişiselleştirmek için bu modülleri etkinleştirin veya devre dışı bırakın.
           </p>
           <div className="flex flex-col gap-2">
-            {additionalModules.map((module) => (
+            {additionalModules.map((module: any) => (
               <div
                 key={module.id}
                 className="flex items-center gap-4 bg-[#1E1E1E] rounded-xl px-4 min-h-[72px] py-3 justify-between"
@@ -661,46 +768,65 @@ export default function ProfilePage() {
             <div className="h-px bg-[#1E1E1E]"></div>
           </div>
 
-          {/* Coming Soon */}
+          {/* Premium Modules */}
           <h3 className="text-white text-lg font-bold leading-tight tracking-[-0.015em] pb-2">
-            Yakında Gelecek
+            Premium Modüller
           </h3>
           <p className="text-[#A0A0A0] text-sm pb-3">
-            Cookify'ı daha da iyi hale getirmek için üzerinde çalıştığımız yeni özellikler.
+            Cookify deneyiminizi geliştiren premium özellikler.
           </p>
           <div className="flex flex-col gap-2 pb-8">
-            {comingSoonModules.map((module: any) => (
+            {premiumModules.map((module: any) => (
               <div
                 key={module.id}
-                className="flex items-center gap-4 bg-[#1E1E1E] rounded-xl px-4 min-h-[72px] py-3 justify-between opacity-50"
+                className="flex items-center gap-4 bg-[#1E1E1E] rounded-xl px-4 min-h-[72px] py-3 justify-between"
               >
                 <div className="flex items-center gap-4">
-                  <div className="text-[#A0A0A0] flex items-center justify-center rounded-lg bg-gray-700/50 shrink-0 size-12">
-                    <span className="material-symbols-outlined text-2xl">{module.icon}</span>
+                  <div className="text-[#FF9500] flex items-center justify-center rounded-lg bg-[#FF9500]/20 shrink-0 size-12">
+                    <span className="text-2xl">{module.icon}</span>
                   </div>
                   <div className="flex flex-col justify-center">
                     <div className="flex items-center gap-2">
                       <p className="text-white text-base font-medium leading-normal line-clamp-1">
                         {module.name}
                       </p>
-                      {module.badge === 'new' && (
-                        <span className="rounded-full bg-[#4ECDC4] px-2 py-0.5 text-xs font-semibold text-[#121212]">
-                          Yeni
-                        </span>
-                      )}
-                      {module.badge === 'premium' && (
-                        <span className="rounded-full bg-[#30D158] px-2 py-0.5 text-xs font-semibold text-white">
-                          Premium
+                      {module.badge && (
+                        <span className="rounded-full bg-[#FF9500] px-2 py-0.5 text-xs font-semibold text-white">
+                          {module.badge}
                         </span>
                       )}
                     </div>
                     <p className="text-[#A0A0A0] text-sm font-normal leading-normal line-clamp-2">
                       {module.description}
                     </p>
+                    {module.price && (
+                      <p className="text-[#FF9500] text-xs font-medium mt-1">
+                        {module.price} TL/ay
+                        {module.trialDays && ` • ${module.trialDays} gün deneme`}
+                      </p>
+                    )}
                   </div>
                 </div>
-                <div className="shrink-0 text-[#A0A0A0]">
-                  <span className="material-symbols-outlined">lock</span>
+                <div className="shrink-0">
+                  {module.status === 'active' ? (
+                    <p className="text-[#30D158] text-sm font-medium">Aktif</p>
+                  ) : module.status === 'trial' ? (
+                    <div className="text-right">
+                      <p className="text-[#FF9500] text-sm font-medium">Deneme</p>
+                      {module.trialEndsAt && (
+                        <p className="text-[#A0A0A0] text-xs">
+                          {new Date(module.trialEndsAt).toLocaleDateString('tr-TR')}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => handleActivateModule(module.id)}
+                      className="bg-[#FF9500] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#e68a00]"
+                    >
+                      {module.pricingType === 'trial' ? 'Dene' : module.pricingType === 'free' ? 'Aktif Et' : 'Satın Al'}
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -769,6 +895,134 @@ export default function ProfilePage() {
               </form>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* AI Settings Tab */}
+      {activeTab === 'ai-settings' && (
+        <div className="flex flex-col p-4 pb-24 gap-6">
+          {loadingIntegration ? (
+            <div className="text-center py-8">
+              <div className="animate-spin text-4xl mb-3">⏳</div>
+              <p className="text-[#A0A0A0]">Yükleniyor...</p>
+            </div>
+          ) : userIntegration ? (
+            // Mevcut Entegrasyon
+            <div className="space-y-4">
+              <div className="bg-[#1E1E1E] rounded-xl p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-white font-bold text-lg mb-1">
+                      {userIntegration.provider === 'openai' && '🤖 OpenAI'}
+                      {userIntegration.provider === 'gemini' && '✨ Google Gemini'}
+                      {userIntegration.provider === 'claude' && '🧠 Anthropic Claude'}
+                    </h3>
+                    <p className="text-[#A0A0A0] text-sm">
+                      Model: {userIntegration.model || 'Varsayılan'}
+                    </p>
+                  </div>
+                  <span className="bg-[#30D158] text-white text-xs px-3 py-1 rounded-full">
+                    Aktif
+                  </span>
+                </div>
+                <button
+                  onClick={handleDeleteIntegration}
+                  className="w-full bg-red-500/10 text-red-500 py-3 rounded-lg font-medium hover:bg-red-500/20 transition"
+                >
+                  🗑️ Entegrasyonu Sil
+                </button>
+              </div>
+              <div className="bg-[#30D158]/10 border border-[#30D158]/20 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">✅</span>
+                  <div>
+                    <h4 className="text-white font-bold mb-1">Kendi AI'nız Aktif</h4>
+                    <p className="text-[#A0A0A0] text-sm">
+                      Artık kendi {userIntegration.provider.toUpperCase()} API anahtarınız kullanılıyor.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            // Yeni Entegrasyon Formu
+            <div className="space-y-6">
+              <p className="text-[#A0A0A0]">
+                Kendi OpenAI, Gemini veya Claude API anahtarınızı ekleyebilirsiniz.
+              </p>
+
+              {/* API Key Input */}
+              <div>
+                <label className="text-white font-medium mb-2 block">
+                  Gemini API Anahtarı
+                </label>
+                <input
+                  type="password"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="AIza..."
+                  className="w-full bg-[#2C2C2C] text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#30D158]"
+                />
+                <p className="text-[#666] text-xs mt-2">
+                  🔗 aistudio.google.com/app/apikey adresinden alabilirsiniz
+                </p>
+              </div>
+
+              {/* Model Seçimi */}
+              <div>
+                <label className="text-white font-medium mb-2 block">
+                  Model
+                </label>
+                <select
+                  value={model}
+                  onChange={(e) => setModel(e.target.value)}
+                  className="w-full bg-[#2C2C2C] text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#30D158]"
+                >
+                  <option value="">Varsayılan (gemini-pro)</option>
+                  <option value="gemini-pro">gemini-pro</option>
+                  <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                  <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+                </select>
+                <p className="text-[#666] text-xs mt-2">
+                  Varsayılan model önerilir
+                </p>
+              </div>
+
+              {/* Kaydet Butonu */}
+              <button
+                onClick={handleSaveApiKey}
+                disabled={savingApiKey || !apiKey.trim()}
+                className="w-full bg-[#30D158] text-white py-4 rounded-xl font-bold hover:bg-[#28a745] transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {savingApiKey ? '💾 Kaydediliyor...' : '💾 API Anahtarını Kaydet'}
+              </button>
+
+              {/* Güvenlik Bilgisi */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-[#2C2C2C] rounded-xl p-4">
+                  <div className="text-3xl mb-2">🔒</div>
+                  <h4 className="text-white font-bold mb-1 text-sm">Güvenli</h4>
+                  <p className="text-[#666] text-xs">
+                    Şifrelenmiş saklanır
+                  </p>
+                </div>
+                <div className="bg-[#2C2C2C] rounded-xl p-4">
+                  <div className="text-3xl mb-2">💰</div>
+                  <h4 className="text-white font-bold mb-1 text-sm">Kendi Bütçeniz</h4>
+                  <p className="text-[#666] text-xs">
+                    Kendi API'nizi kullanın
+                  </p>
+                </div>
+                <div className="bg-[#2C2C2C] rounded-xl p-4">
+                  <div className="text-3xl mb-2">⚡</div>
+                  <h4 className="text-white font-bold mb-1 text-sm">Hızlı</h4>
+                  <p className="text-[#666] text-xs">
+                    Doğrudan bağlanın
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

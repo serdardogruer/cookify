@@ -133,6 +133,7 @@ async function main() {
   console.log('🧩 Creating core modules...');
   
   const modules = await Promise.all([
+    // Temel Modüller (Ücretsiz)
     prisma.module.upsert({
       where: { slug: 'pantry' },
       update: {},
@@ -143,6 +144,7 @@ async function main() {
         icon: '🏠',
         isCore: true,
         isActive: true,
+        pricingType: 'free',
       },
     }),
     prisma.module.upsert({
@@ -155,6 +157,7 @@ async function main() {
         icon: '🛒',
         isCore: true,
         isActive: true,
+        pricingType: 'free',
       },
     }),
     prisma.module.upsert({
@@ -167,11 +170,113 @@ async function main() {
         icon: '👤',
         isCore: true,
         isActive: true,
+        pricingType: 'free',
+      },
+    }),
+    prisma.module.upsert({
+      where: { slug: 'recipes' },
+      update: {},
+      create: {
+        name: 'Tarifler',
+        slug: 'recipes',
+        description: 'Lezzetli tarifleri keşfedin',
+        icon: '📖',
+        isCore: true,
+        isActive: true,
+        pricingType: 'free',
+      },
+    }),
+    prisma.module.upsert({
+      where: { slug: 'recipe-search' },
+      update: {},
+      create: {
+        name: 'Tarif Ara',
+        slug: 'recipe-search',
+        description: 'Tariflerde arama yapın',
+        icon: '🔍',
+        isCore: true,
+        isActive: true,
+        pricingType: 'free',
+      },
+    }),
+    prisma.module.upsert({
+      where: { slug: 'recipe-add' },
+      update: {},
+      create: {
+        name: 'Tarif Ekle',
+        slug: 'recipe-add',
+        description: 'Kendi tariflerinizi ekleyin',
+        icon: '➕',
+        isCore: true,
+        isActive: true,
+        pricingType: 'free',
+      },
+    }),
+    
+    // Premium Modüller
+    prisma.module.upsert({
+      where: { slug: 'ai-assistant' },
+      update: {},
+      create: {
+        name: 'AI Asistan',
+        slug: 'ai-assistant',
+        description: 'Yapay zeka ile akıllı tarif önerileri, fotoğraf ve sesli malzeme ekleme',
+        icon: '🤖',
+        isCore: false,
+        isActive: true,
+        pricingType: 'trial',
+        price: 49.99,
+        trialDays: 30,
+        badge: 'new',
+      },
+    }),
+    prisma.module.upsert({
+      where: { slug: 'meal-planner' },
+      update: { name: 'Yemek Planlayıcı' },
+      create: {
+        name: 'Yemek Planlayıcı',
+        slug: 'meal-planner',
+        description: 'Haftalık yemek planı oluşturun, bütçenize göre optimize edin',
+        icon: '📅',
+        isCore: false,
+        isActive: true,
+        pricingType: 'paid',
+        price: 29.99,
+        badge: 'popular',
+      },
+    }),
+    prisma.module.upsert({
+      where: { slug: 'diet-tracker' },
+      update: {},
+      create: {
+        name: 'Diyet Takibi',
+        slug: 'diet-tracker',
+        description: 'Kalori ve besin değeri takibi, kişiselleştirilmiş diyet önerileri',
+        icon: '🥗',
+        isCore: false,
+        isActive: true,
+        pricingType: 'trial',
+        price: 39.99,
+        trialDays: 14,
+      },
+    }),
+    prisma.module.upsert({
+      where: { slug: 'smart-shopping' },
+      update: {},
+      create: {
+        name: 'Akıllı Alışveriş',
+        slug: 'smart-shopping',
+        description: 'Market fişi tarama, fiyat karşılaştırma, tasarruf önerileri',
+        icon: '💰',
+        isCore: false,
+        isActive: true,
+        pricingType: 'freemium',
+        badge: 'new',
       },
     }),
   ]);
 
-  console.log(`✅ Created ${modules.length} core modules`);
+  console.log(`✅ Created ${modules.length} modules (6 core + 4 premium)`);
 
   // 4. Birim dönüşümlerini oluştur
   console.log('⚖️ Creating unit conversions...');

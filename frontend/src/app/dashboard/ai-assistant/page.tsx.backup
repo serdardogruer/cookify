@@ -1,0 +1,572 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { toast } from 'react-hot-toast';
+import DashboardHeader from '@/components/DashboardHeader';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+interface AIIntegration {
+  id: number;
+  provider: string;
+  model: string | null;
+  isActive: boolean;
+  createdAt: string;
+}
+
+const AI_PROVIDERS = [
+  { 
+    id: 'openai', 
+    name: 'OpenAI', 
+    icon: '🤖',
+    models: ['gpt-4', 'gpt-3.5-turbo', 'gpt-4-turbo'],
+    description: 'Tarif önerileri, malzeme tanıma'
+  },
+  { 
+    id: 'gemini', 
+    name: 'Google Gemini', 
+    icon: '✨',
+    models: ['gemini-pro', 'gemini-pro-vision'],
+    description: 'Görsel analiz, tarif önerileri'
+  },
+  { 
+    id: 'anthropic', 
+    name: 'Claude (Anthropic)', 
+    icon: '🧠',
+    models: ['claude-3-opus', 'claude-3-sonnet'],
+    description: 'Detaylı tarif açıklamaları'
+  },
+];
+
+export default function AIAssistantPage() {
+  const [integrations, setIntegrations] = useState<AIIntegration[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState('');
+  const [apiKey, setApiKey] = useState('');
+  const [selectedModel, setSelectedModel] = useState('');
+  const [activeTab, setActiveTab] = useState<'recipe' | 'settings'>('recipe');
+  
+  // Tarif önerisi için
+  const [ingredients, setIngredients] = useState<string[]>([]);
+  const [newIngredient, setNewIngredient] = useState('');
+  const [suggestions, setSuggestions] = useState('');
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+
+  useEffect(() => {
+    loadIntegrations();
+  }, []);
+
+  const loadIntegrations = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/ai/integrations`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await response.json();
+      if (data.success) {
+        // Kullanıcının kendi entegrasyonları
+        const userIntegrations = data.integrations || [];
+        
+        // Eğer hiç entegrasyon yoksa, ücretsiz Gemini'yi göster
+        if (userIntegrations.length === 0) {
+          setIntegrations([
+            {
+              id: 0,
+              provider: 'gemini',
+              model: 'gemini-pro',
+              isActive: true,
+              createdAt: new Date().toISOString(),
+              isFree: true, // Ücretsiz olduğunu işaretle
+            }
+          ]);
+        } else {
+          setIntegrations(userIntegrations);
+        }
+      }
+    } catch (error) {
+      console.error('AI entegrasyonları yükleme hatası:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddIntegration = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!selectedProvider || !apiKey) {
+      toast.error('Lütfen tüm alanları doldurun');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/ai/integrations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          provider: selectedProvider,
+          apiKey,
+          model: selectedModel || null
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success('AI entegrasyonu eklendi');
+        setShowAddModal(false);
+        setSelectedProvider('');
+        setApiKey('');
+        setSelectedModel('');
+        loadIntegrations();
+      } else {
+        toast.error(data.message || 'Hata oluştu');
+      }
+    } catch (error) {
+      console.error('AI entegrasyonu ekleme hatası:', error);
+      toast.error('Bir hata oluştu');
+    }
+  };
+
+  const handleToggleActive = async (id: number, isActive: boolean) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/ai/integrations/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ isActive: !isActive })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success(isActive ? 'Devre dışı bırakıldı' : 'Aktif edildi');
+        loadIntegrations();
+      }
+    } catch (error) {
+      console.error('AI entegrasyonu güncelleme hatası:', error);
+      toast.error('Bir hata oluştu');
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Bu AI entegrasyonunu silmek istediğinize emin misiniz?')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/ai/integrations/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success('AI entegrasyonu silindi');
+        loadIntegrations();
+      }
+    } catch (error) {
+      console.error('AI entegrasyonu silme hatası:', error);
+      toast.error('Bir hata oluştu');
+    }
+  };
+
+  const getProviderInfo = (provider: string) => {
+    return AI_PROVIDERS.find(p => p.id === provider);
+  };
+
+  const handleAddIngredient = () => {
+    if (newIngredient.trim()) {
+      setIngredients([...ingredients, newIngredient.trim()]);
+      setNewIngredient('');
+    }
+  };
+
+  const handleRemoveIngredient = (index: number) => {
+    setIngredients(ingredients.filter((_, i) => i !== index));
+  };
+
+  const handleGetSuggestions = async () => {
+    if (ingredients.length === 0) {
+      toast.error('Lütfen en az bir malzeme ekleyin');
+      return;
+    }
+
+    setLoadingSuggestions(true);
+    setSuggestions('');
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/ai/recipe-suggestions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ ingredients })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSuggestions(data.suggestions);
+        toast.success('Tarif önerileri alındı!');
+      } else {
+        toast.error(data.message || 'Bir hata oluştu');
+      }
+    } catch (error) {
+      console.error('Tarif önerisi hatası:', error);
+      toast.error('Bir hata oluştu');
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#111111]">
+        <DashboardHeader />
+        <div className="flex items-center justify-center h-[calc(100vh-80px)]">
+          <div className="text-white">Yükleniyor...</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#111111]">
+      <DashboardHeader />
+      
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-white text-3xl font-bold mb-2">🤖 AI Asistan</h1>
+          <p className="text-[#A0A0A0]">
+            Yapay zeka ile akıllı tarif önerileri alın
+          </p>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex gap-4 mb-8 border-b border-white/10">
+          <button
+            onClick={() => setActiveTab('recipe')}
+            className={`pb-4 px-2 font-medium transition-colors relative ${
+              activeTab === 'recipe'
+                ? 'text-[#30D158]'
+                : 'text-[#A0A0A0] hover:text-white'
+            }`}
+          >
+            Tarif Önerisi
+            {activeTab === 'recipe' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#30D158]" />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('settings')}
+            className={`pb-4 px-2 font-medium transition-colors relative ${
+              activeTab === 'settings'
+                ? 'text-[#30D158]'
+                : 'text-[#A0A0A0] hover:text-white'
+            }`}
+          >
+            AI Ayarları
+            {activeTab === 'settings' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#30D158]" />
+            )}
+          </button>
+        </div>
+
+        {/* Tab: Tarif Önerisi */}
+        {activeTab === 'recipe' && (
+          <div className="space-y-6">
+            {/* Malzeme Ekleme */}
+            <div className="bg-[#1E1E1E] rounded-xl p-6">
+              <h2 className="text-white text-xl font-bold mb-4">Malzemeleriniz</h2>
+              <div className="flex gap-3 mb-4">
+                <input
+                  type="text"
+                  value={newIngredient}
+                  onChange={(e) => setNewIngredient(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleAddIngredient()}
+                  placeholder="Malzeme ekle (örn: domates, soğan)"
+                  className="flex-1 bg-[#2C2C2C] text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#30D158]"
+                />
+                <button
+                  onClick={handleAddIngredient}
+                  className="bg-[#30D158] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#28a745] transition"
+                >
+                  Ekle
+                </button>
+              </div>
+
+              {/* Malzeme Listesi */}
+              {ingredients.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {ingredients.map((ingredient, index) => (
+                    <div
+                      key={index}
+                      className="bg-[#2C2C2C] text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                    >
+                      <span>{ingredient}</span>
+                      <button
+                        onClick={() => handleRemoveIngredient(index)}
+                        className="text-red-500 hover:text-red-400"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Öneri Al Butonu */}
+              <button
+                onClick={handleGetSuggestions}
+                disabled={loadingSuggestions || ingredients.length === 0}
+                className="w-full mt-6 bg-[#30D158] text-white py-4 rounded-xl font-bold hover:bg-[#28a745] transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loadingSuggestions ? 'AI düşünüyor...' : '✨ Tarif Önerisi Al'}
+              </button>
+            </div>
+
+            {/* Öneriler */}
+            {suggestions && (
+              <div className="bg-[#1E1E1E] rounded-xl p-6">
+                <h2 className="text-white text-xl font-bold mb-4">AI Önerileri</h2>
+                <div className="text-[#A0A0A0] whitespace-pre-wrap leading-relaxed">
+                  {suggestions}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tab: AI Ayarları */}
+        {activeTab === 'settings' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-white text-xl font-bold mb-2">AI Entegrasyonları</h2>
+                <p className="text-[#A0A0A0]">
+                  Kendi yapay zeka API'lerinizi entegre edin
+                </p>
+              </div>
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="bg-[#30D158] text-white px-6 py-3 rounded-xl font-medium hover:bg-[#28a745] transition"
+              >
+                + AI Ekle
+              </button>
+            </div>
+
+        {/* Entegrasyonlar */}
+        {integrations.length === 0 ? (
+          <div className="bg-[#1E1E1E] rounded-xl p-8 text-center">
+            <div className="text-6xl mb-4">🤖</div>
+            <h3 className="text-white text-xl font-bold mb-2">
+              Henüz AI entegrasyonu yok
+            </h3>
+            <p className="text-[#A0A0A0] mb-6">
+              Kendi OpenAI, Gemini veya Claude API anahtarınızı ekleyerek başlayın
+            </p>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="bg-[#30D158] text-white px-6 py-3 rounded-xl font-medium hover:bg-[#28a745] transition"
+            >
+              İlk AI'ı Ekle
+            </button>
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {integrations.map((integration) => {
+              const providerInfo = getProviderInfo(integration.provider);
+              const isFree = (integration as any).isFree;
+              
+              return (
+                <div
+                  key={integration.id}
+                  className={`bg-[#1E1E1E] rounded-xl p-6 flex items-center justify-between ${
+                    isFree ? 'border-2 border-[#30D158]' : ''
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="text-4xl">{providerInfo?.icon}</div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-white text-lg font-bold">
+                          {providerInfo?.name}
+                        </h3>
+                        {isFree && (
+                          <span className="bg-[#30D158] text-[#121212] text-xs font-bold px-2 py-1 rounded">
+                            ÜCRETSİZ
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[#A0A0A0] text-sm">
+                        {integration.model || 'Model seçilmedi'}
+                      </p>
+                      <p className="text-[#666] text-xs mt-1">
+                        {isFree 
+                          ? 'Cookify tarafından sağlanan ücretsiz AI hizmeti' 
+                          : providerInfo?.description
+                        }
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {!isFree && (
+                      <>
+                        <button
+                          onClick={() => handleToggleActive(integration.id, integration.isActive)}
+                          className={`px-4 py-2 rounded-lg font-medium transition ${
+                            integration.isActive
+                              ? 'bg-[#30D158] text-white'
+                              : 'bg-[#2C2C2C] text-[#A0A0A0]'
+                          }`}
+                        >
+                          {integration.isActive ? 'Aktif' : 'Pasif'}
+                        </button>
+                        <button
+                          onClick={() => handleDelete(integration.id)}
+                          className="text-red-500 hover:text-red-400 transition"
+                        >
+                          <span className="material-symbols-outlined">delete</span>
+                        </button>
+                      </>
+                    )}
+                    {isFree && (
+                      <div className="text-[#30D158] text-sm font-medium">
+                        ✓ Varsayılan AI
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+            {/* Bilgi Kartları */}
+            <div className="grid md:grid-cols-3 gap-4 mt-8">
+          <div className="bg-[#1E1E1E] rounded-xl p-6">
+            <div className="text-3xl mb-3">🔒</div>
+            <h3 className="text-white font-bold mb-2">Güvenli</h3>
+            <p className="text-[#A0A0A0] text-sm">
+              API anahtarlarınız şifrelenmiş olarak saklanır
+            </p>
+          </div>
+          <div className="bg-[#1E1E1E] rounded-xl p-6">
+            <div className="text-3xl mb-3">💰</div>
+            <h3 className="text-white font-bold mb-2">Kendi Bütçeniz</h3>
+            <p className="text-[#A0A0A0] text-sm">
+              Kendi API anahtarınızı kullanın, kendi bütçenizi kontrol edin
+            </p>
+          </div>
+          <div className="bg-[#1E1E1E] rounded-xl p-6">
+            <div className="text-3xl mb-3">⚡</div>
+            <h3 className="text-white font-bold mb-2">Hızlı</h3>
+            <p className="text-[#A0A0A0] text-sm">
+              Doğrudan AI sağlayıcısına bağlanın, aracı yok
+            </p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Add Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1E1E1E] rounded-xl p-6 max-w-md w-full">
+            <h2 className="text-white text-xl font-bold mb-4">AI Entegrasyonu Ekle</h2>
+            
+            <form onSubmit={handleAddIntegration}>
+              <div className="mb-4">
+                <label className="text-white text-sm font-medium mb-2 block">
+                  AI Sağlayıcısı
+                </label>
+                <select
+                  value={selectedProvider}
+                  onChange={(e) => {
+                    setSelectedProvider(e.target.value);
+                    setSelectedModel('');
+                  }}
+                  className="w-full bg-[#2C2C2C] text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#30D158]"
+                  required
+                >
+                  <option value="">Seçin...</option>
+                  {AI_PROVIDERS.map((provider) => (
+                    <option key={provider.id} value={provider.id}>
+                      {provider.icon} {provider.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {selectedProvider && (
+                <div className="mb-4">
+                  <label className="text-white text-sm font-medium mb-2 block">
+                    Model (Opsiyonel)
+                  </label>
+                  <select
+                    value={selectedModel}
+                    onChange={(e) => setSelectedModel(e.target.value)}
+                    className="w-full bg-[#2C2C2C] text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#30D158]"
+                  >
+                    <option value="">Varsayılan</option>
+                    {AI_PROVIDERS.find(p => p.id === selectedProvider)?.models.map((model) => (
+                      <option key={model} value={model}>
+                        {model}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div className="mb-6">
+                <label className="text-white text-sm font-medium mb-2 block">
+                  API Anahtarı
+                </label>
+                <input
+                  type="password"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="sk-..."
+                  className="w-full bg-[#2C2C2C] text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#30D158]"
+                  required
+                />
+                <p className="text-[#666] text-xs mt-2">
+                  API anahtarınız şifrelenmiş olarak saklanır
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="flex-1 bg-[#2C2C2C] text-white py-3 rounded-xl font-medium hover:bg-[#3C3C3C] transition"
+                >
+                  İptal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-[#30D158] text-white py-3 rounded-xl font-medium hover:bg-[#28a745] transition"
+                >
+                  Ekle
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

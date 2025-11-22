@@ -179,3 +179,95 @@ export const deleteIngredient = async (req: AuthRequest, res: Response) => {
     });
   }
 };
+
+
+// Modül Yönetimi
+export const getAllModulesAdmin = async (req: AuthRequest, res: Response) => {
+  try {
+    const modules = await prisma.module.findMany({
+      orderBy: [
+        { isCore: 'desc' },
+        { createdAt: 'desc' }
+      ]
+    });
+
+    return res.json({ success: true, data: modules });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const createModule = async (req: AuthRequest, res: Response) => {
+  try {
+    const { name, slug, description, icon, isCore, pricingType, price, trialDays, badge } = req.body;
+
+    const module = await prisma.module.create({
+      data: {
+        name,
+        slug,
+        description,
+        icon,
+        isCore: isCore || false,
+        pricingType: pricingType || 'free',
+        price: price ? parseFloat(price) : null,
+        trialDays: trialDays ? parseInt(trialDays) : null,
+        badge: badge || null,
+        isActive: true
+      }
+    });
+
+    return res.json({ success: true, data: module });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const updateModule = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { name, slug, description, icon, isCore, pricingType, price, trialDays, badge, isActive } = req.body;
+
+    const module = await prisma.module.update({
+      where: { id: parseInt(id) },
+      data: {
+        name,
+        slug,
+        description,
+        icon,
+        isCore,
+        pricingType,
+        price: price ? parseFloat(price) : null,
+        trialDays: trialDays ? parseInt(trialDays) : null,
+        badge: badge || null,
+        isActive
+      }
+    });
+
+    return res.json({ success: true, data: module });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteModule = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    // Temel modüller silinemez
+    const module = await prisma.module.findUnique({
+      where: { id: parseInt(id) }
+    });
+
+    if (module?.isCore) {
+      return res.status(400).json({ success: false, message: 'Temel modüller silinemez' });
+    }
+
+    await prisma.module.delete({
+      where: { id: parseInt(id) }
+    });
+
+    return res.json({ success: true, message: 'Modül silindi' });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};

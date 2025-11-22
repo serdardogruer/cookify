@@ -31,6 +31,8 @@ model User {
   customMeals     CustomMeal[]
   systemLogs      SystemLog[]
   settingsUpdates SystemSettings[]
+  notifications   Notification[]
+  aiIntegrations  AIIntegration[]
   createdAt       DateTime              @default(now())
   updatedAt       DateTime              @updatedAt
 
@@ -164,29 +166,40 @@ model MarketItem {
 
 // Module Model
 model Module {
-  id          Int             @id @default(autoincrement())
-  name        String          @unique
-  slug        String          @unique
-  description String
-  icon        String
-  isCore      Boolean         @default(false)
-  isActive    Boolean         @default(true)
-  kitchens    KitchenModule[]
-  createdAt   DateTime        @default(now())
+  id            Int             @id @default(autoincrement())
+  name          String          @unique
+  slug          String          @unique
+  description   String
+  icon          String
+  isCore        Boolean         @default(false) // Temel modül mü (ücretsiz)
+  isActive      Boolean         @default(true)  // Admin tarafından aktif/pasif
+  pricingType   String          @default("free") // free, paid, trial, freemium
+  price         Float?          // Aylık fiyat (TL)
+  trialDays     Int?            // Deneme süresi (gün)
+  badge         String?         // new, premium, popular vb.
+  kitchens      KitchenModule[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @default(now()) @updatedAt
 
   @@map("modules")
 }
 
-// Kitchen Module Model
+// Kitchen Module Model (Kullanıcı-Modül İlişkisi)
 model KitchenModule {
-  id        Int      @id @default(autoincrement())
-  kitchenId Int
-  kitchen   Kitchen  @relation(fields: [kitchenId], references: [id])
-  moduleId  Int
-  module    Module   @relation(fields: [moduleId], references: [id])
-  isEnabled Boolean  @default(true)
-  enabledAt DateTime @default(now())
+  id            Int       @id @default(autoincrement())
+  kitchenId     Int
+  kitchen       Kitchen   @relation(fields: [kitchenId], references: [id])
+  moduleId      Int
+  module        Module    @relation(fields: [moduleId], references: [id])
+  isEnabled     Boolean   @default(true)
+  status        String    @default("active") // active, trial, expired, locked
+  trialEndsAt   DateTime? // Deneme bitiş tarihi
+  paidUntil     DateTime? // Ödeme bitiş tarihi
+  enabledAt     DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
+  @@unique([kitchenId, moduleId])
   @@map("kitchen_modules")
 }
 
@@ -315,4 +328,40 @@ model SystemSettings {
   updatedByUser     User?    @relation(fields: [updatedBy], references: [id], onDelete: SetNull)
 
   @@map("system_settings")
+}
+
+// Notification Model (Bildirim Sistemi)
+model Notification {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String    // module_trial_ending, module_expired, new_module, payment_reminder
+  title       String
+  message     String
+  data        String?   // JSON string (moduleId, trialEndsAt vb.)
+  isRead      Boolean   @default(false)
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+// AI Integration Model (Kullanıcı AI API Entegrasyonları)
+model AIIntegration {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider    String   // openai, google_vision, gemini, anthropic
+  apiKey      String   // Şifrelenmiş API key
+  isActive    Boolean  @default(true)
+  model       String?  // gpt-4, gpt-3.5-turbo, gemini-pro vb.
+  settings    String?  // JSON string (temperature, max_tokens vb.)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, provider])
+  @@index([userId])
+  @@map("ai_integrations")
 }

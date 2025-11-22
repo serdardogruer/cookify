@@ -186,6 +186,13 @@ export default function AdminPage() {
                 <span>Malzemeler</span>
                 <span className="ml-auto text-xs bg-[#3A3A3C] px-2 py-1 rounded">{ingredients.length}</span>
               </button>
+              <Link
+                href="/admin/modules"
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors text-[#E0E0E0] hover:bg-[#2A2A2A]"
+              >
+                <span className="material-symbols-outlined text-xl">extension</span>
+                <span>Modüller</span>
+              </Link>
             </nav>
           </div>
 

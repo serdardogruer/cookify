@@ -62,4 +62,10 @@ router.get('/settings', settingsController.getSettings);
 router.put('/settings', settingsController.updateSettings);
 router.post('/settings/maintenance', settingsController.toggleMaintenanceMode);
 
+// Modül Yönetimi (YENİ)
+router.get('/modules', adminController.getAllModulesAdmin);
+router.post('/modules', adminController.createModule);
+router.put('/modules/:id', adminController.updateModule);
+router.delete('/modules/:id', adminController.deleteModule);
+
 export default router;

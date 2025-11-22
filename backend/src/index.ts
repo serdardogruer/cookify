@@ -11,7 +11,9 @@ import moduleRoutes from './routes/module.routes';
 import recipeRoutes from './routes/recipe.routes';
 import consumptionRoutes from './routes/consumption.routes';
 import customMealRoutes from './routes/custom-meal.routes';
+import notificationRoutes from './routes/notification.routes';
 import adminRoutes from './routes/admin.routes';
+import aiRoutes from './routes/ai.routes';
 
 // Load environment variables
 dotenv.config();
@@ -22,6 +24,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://192.168.1.8:3000', // Mobil erişim için
   'http://80.253.246.134',
   'http://80.253.246.134:3000',
   'https://cookify.tr',
@@ -65,12 +68,15 @@ app.use('/api/modules', moduleRoutes);
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/consumption', consumptionRoutes);
 app.use('/api/custom-meals', customMealRoutes);
+app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Start server
-app.listen(PORT, () => {
+app.listen(Number(PORT), '0.0.0.0', () => {
   console.log(`🚀 Server is running on port ${PORT}`);
   console.log(`📡 API URL: http://localhost:${PORT}`);
+  console.log(`📱 Mobile URL: http://192.168.1.8:${PORT}`);
 });
 
 export default app;

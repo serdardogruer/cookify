@@ -10,8 +10,8 @@ export default function BottomNav() {
     { href: '/dashboard', icon: 'home', label: 'Anasayfa', filled: true },
     { href: '/dashboard/pantry', icon: 'kitchen', label: 'Dolabım' },
     { href: '/dashboard/market', icon: 'shopping_cart', label: 'Market' },
-    { href: '/dashboard/recipe-add', icon: 'add_circle', label: 'Tarif Ekle', size: 'text-2xl' },
-    { href: '/dashboard/recipe-search', icon: 'search', label: 'Tarif Ara', size: 'text-3xl' },
+    { href: '/dashboard/ai-assistant', icon: 'smart_toy', label: 'AI', size: 'text-2xl' },
+    { href: '/dashboard/recipe-search', icon: 'search', label: 'Ara', size: 'text-2xl' },
   ];
 
   const isActive = (href: string) => {
