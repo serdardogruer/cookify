@@ -92,16 +92,22 @@ export class UnitConversionService {
           where: { name: ingredientName },
         });
 
+        console.log(`Malzeme arama: ${ingredientName}`, ingredient);
+
         // @ts-ignore - Prisma type cache issue
         if (ingredient?.averageWeightPerUnit) {
           // @ts-ignore
           const gramsPerUnit = ingredient.averageWeightPerUnit;
           const totalGrams = quantity * gramsPerUnit;
 
+          console.log(`Dönüşüm: ${quantity} adet × ${gramsPerUnit}gr = ${totalGrams}gr`);
+
           if (normalizedTo === 'kg') {
             return { quantity: totalGrams / 1000, unit: 'kg' };
           }
           return { quantity: totalGrams, unit: 'gr' };
+        } else {
+          console.log(`${ingredientName} için averageWeightPerUnit yok!`);
         }
       }
     }

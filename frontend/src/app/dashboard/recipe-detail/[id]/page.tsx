@@ -167,8 +167,10 @@ export default function RecipeDetailPage() {
   const handleMarkAsDone = async () => {
     if (!token || !recipe) return;
 
-    // Tarifte kullanılan malzemeleri dolabımdan düş
-    const ingredientsToConsume = recipe.ingredients.map((ing) => {
+    // Tarifte kullanılan malzemeleri dolabımdan düş (birim dönüşümü ile)
+    const ingredientsToConsume = [];
+    
+    for (const ing of recipe.ingredients) {
       // Miktarı parse et (örn: "4 adet" -> 4)
       const quantityMatch = ing.amount.match(/^([\d.]+)/);
       const quantity = quantityMatch ? parseFloat(quantityMatch[1]) : 1;
@@ -177,12 +179,45 @@ export default function RecipeDetailPage() {
       const unitMatch = ing.amount.match(/[\d.]+\s*(.+)$/);
       const unit = unitMatch ? unitMatch[1].trim() : 'adet';
       
-      return {
+      // Malzeme veritabanından default unit bilgisini al
+      const ingredientResponse = await api.get<any[]>(
+        `/api/categories/ingredients/search?q=${encodeURIComponent(ing.name)}&limit=1`
+      );
+
+      let defaultUnit = unit;
+      
+      if (ingredientResponse.success && ingredientResponse.data && ingredientResponse.data.length > 0) {
+        defaultUnit = ingredientResponse.data[0].defaultUnit;
+      }
+
+      // Birim dönüşümü yap (tarif birimi → dolap birimi)
+      let finalQuantity = quantity;
+      let finalUnit = unit;
+      
+      if (unit !== defaultUnit) {
+        const conversionResponse = await api.post(
+          '/api/unit-conversion/convert',
+          {
+            quantity,
+            fromUnit: unit,
+            toUnit: defaultUnit,
+            ingredientName: ing.name
+          },
+          token
+        );
+        
+        if (conversionResponse.success && conversionResponse.data) {
+          finalQuantity = (conversionResponse.data as any).quantity;
+          finalUnit = (conversionResponse.data as any).unit;
+        }
+      }
+      
+      ingredientsToConsume.push({
         name: ing.name,
-        quantity,
-        unit,
-      };
-    });
+        quantity: finalQuantity,
+        unit: finalUnit,
+      });
+    }
 
     const response = await api.post(
       '/api/pantry/consume-recipe',
@@ -219,29 +254,106 @@ export default function RecipeDetailPage() {
       const unitMatch = ingredient.amount.match(/[\d.]+\s*(.+)$/);
       const unit = unitMatch ? unitMatch[1].trim() : 'adet';
 
-      // Malzeme veritabanından kategori bilgisini al
+      // Malzeme veritabanından kategori ve default unit bilgisini al
       const ingredientResponse = await api.get<any[]>(
         `/api/categories/ingredients/search?q=${encodeURIComponent(ingredient.name)}&limit=1`
       );
 
       let category = 'SEBZELER'; // Varsayılan kategori
+      let defaultUnit = unit;
+      
       if (ingredientResponse.success && ingredientResponse.data && ingredientResponse.data.length > 0) {
-        category = ingredientResponse.data[0].category.name;
+        let categoryName = ingredientResponse.data[0].category.name.toUpperCase();
+        
+        // Türkçe karakter dönüşümleri
+        const turkishMap: { [key: string]: string } = {
+          'SEBZELER': 'SEBZELER',
+          'MEYVELER': 'MEYVELER',
+          'ET ÜRÜNLERİ': 'ET_URUNLERI',
+          'SÜT ÜRÜNLERİ': 'SUT_URUNLERI',
+          'TAHILLAR': 'TAHILLAR',
+          'BAHARATLAR': 'BAHARATLAR',
+          'İÇECEKLER': 'ICECEKLER',
+          'ATIŞTIRMALIKLAR': 'ATISTIRMALIKLAR',
+        };
+        
+        category = turkishMap[categoryName] || categoryName;
+        defaultUnit = ingredientResponse.data[0].defaultUnit;
       }
 
-      const response = await api.post(
-        '/api/market',
-        {
-          name: ingredient.name,
-          quantity,
-          unit,
-          category,
-        },
-        token
-      );
+      // Birim dönüşümü yap (tarif birimi → dolap/market birimi)
+      let finalQuantity = quantity;
+      let finalUnit = unit;
+      
+      console.log(`${ingredient.name}: unit=${unit}, defaultUnit=${defaultUnit}`);
+      
+      if (unit !== defaultUnit) {
+        console.log(`Dönüşüm yapılıyor: ${quantity} ${unit} → ${defaultUnit}`);
+        
+        const conversionResponse = await api.post(
+          '/api/unit-conversion/convert',
+          {
+            quantity,
+            fromUnit: unit,
+            toUnit: defaultUnit,
+            ingredientName: ingredient.name
+          },
+          token
+        );
+        
+        console.log('Dönüşüm yanıtı:', conversionResponse);
+        
+        if (conversionResponse.success && conversionResponse.data) {
+          finalQuantity = (conversionResponse.data as any).quantity;
+          finalUnit = (conversionResponse.data as any).unit;
+          console.log(`Dönüşüm başarılı: ${finalQuantity} ${finalUnit}`);
+        } else {
+          console.log('Dönüşüm başarısız, orijinal değerler kullanılıyor');
+        }
+      } else {
+        console.log('Birimler aynı, dönüşüm gerekmiyor');
+      }
+
+      // Miktar 0 ise atla
+      if (finalQuantity <= 0) {
+        console.log('Miktar 0, atlanıyor:', ingredient.name);
+        continue;
+      }
+
+      // Geçerli kategoriler listesi (veritabanındaki kategori isimleri)
+      const validCategories = ['Sebzeler', 'Meyveler', 'Et Ürünleri', 'Süt Ürünleri', 'Tahıllar', 'Baharatlar', 'İçecekler', 'Atıştırmalıklar', 'Diğer'];
+      
+      // Kategori mapping (BÜYÜK_HARF → Normal İsim)
+      const categoryMap: { [key: string]: string } = {
+        'SEBZELER': 'Sebzeler',
+        'MEYVELER': 'Meyveler',
+        'ET_URUNLERI': 'Et Ürünleri',
+        'SUT_URUNLERI': 'Süt Ürünleri',
+        'TAHILLAR': 'Tahıllar',
+        'BAHARATLAR': 'Baharatlar',
+        'ICECEKLER': 'İçecekler',
+        'ATISTIRMALIKLAR': 'Atıştırmalıklar',
+        'DIGER': 'Diğer',
+      };
+      
+      // Kategoriyi normal isme çevir
+      category = categoryMap[category] || 'Diğer';
+
+      const marketData = {
+        name: ingredient.name,
+        quantity: finalQuantity,
+        unit: finalUnit,
+        category,
+      };
+      
+      console.log('Market\'e ekleniyor:', marketData);
+
+      const response = await api.post('/api/market', marketData, token);
 
       if (response.success) {
         addedCount++;
+      } else {
+        console.error('Market ekleme hatası:', response);
       }
     }
 

@@ -467,20 +467,8 @@ export default function AIAssistantPage() {
                   </p>
                 </div>
 
-                {/* Fotoğraf, Fiş ve Sesli Komut */}
-                <div className="grid grid-cols-3 gap-3 mb-6">
-                  <label className="bg-[#2C2C2C] text-white px-4 py-3 rounded-lg font-medium hover:bg-[#3C3C3C] transition cursor-pointer flex flex-col items-center justify-center gap-2">
-                    <span className="text-2xl">📸</span>
-                    <span className="text-xs text-center">Fotoğraf</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      onChange={handlePhotoUpload}
-                      className="hidden"
-                      disabled={uploadingPhoto}
-                    />
-                  </label>
+                {/* Fiş ve Sesli Komut */}
+                <div className="grid grid-cols-2 gap-3 mb-6">
                   <label className="bg-[#2C2C2C] text-white px-4 py-3 rounded-lg font-medium hover:bg-[#3C3C3C] transition cursor-pointer flex flex-col items-center justify-center gap-2">
                     <span className="text-2xl">📄</span>
                     <span className="text-xs text-center">Fiş Yükle</span>
@@ -555,20 +543,8 @@ export default function AIAssistantPage() {
                   </button>
                 </div>
 
-                {/* Fotoğraf, Fiş ve Sesli Komut */}
-                <div className="grid grid-cols-3 gap-3 mb-4">
-                  <label className="bg-[#2C2C2C] text-white px-4 py-3 rounded-lg font-medium hover:bg-[#3C3C3C] transition cursor-pointer flex flex-col items-center justify-center gap-2">
-                    <span className="text-2xl">📸</span>
-                    <span className="text-xs text-center">Fotoğraf</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      onChange={handlePhotoUpload}
-                      className="hidden"
-                      disabled={uploadingPhoto}
-                    />
-                  </label>
+                {/* Fiş ve Sesli Komut */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
                   <label className="bg-[#2C2C2C] text-white px-4 py-3 rounded-lg font-medium hover:bg-[#3C3C3C] transition cursor-pointer flex flex-col items-center justify-center gap-2">
                     <span className="text-2xl">📄</span>
                     <span className="text-xs text-center">Fiş Yükle</span>

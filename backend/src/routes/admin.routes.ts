@@ -8,6 +8,7 @@ import { categoriesController } from '../controllers/admin/categories.controller
 import { kitchensController } from '../controllers/admin/kitchens.controller';
 import { logsController } from '../controllers/admin/logs.controller';
 import { settingsController } from '../controllers/admin/settings.controller';
+import * as unitConversionController from '../controllers/admin/unit-conversion.controller';
 
 const router = Router();
 
@@ -67,5 +68,11 @@ router.get('/modules', adminController.getAllModulesAdmin);
 router.post('/modules', adminController.createModule);
 router.put('/modules/:id', adminController.updateModule);
 router.delete('/modules/:id', adminController.deleteModule);
+
+// Birim Dönüşüm Yönetimi (YENİ)
+router.get('/unit-conversions', unitConversionController.getAllConversions);
+router.post('/unit-conversions', unitConversionController.createConversion);
+router.put('/unit-conversions/:id', unitConversionController.updateConversion);
+router.delete('/unit-conversions/:id', unitConversionController.deleteConversion);
 
 export default router;

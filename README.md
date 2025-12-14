@@ -39,8 +39,7 @@ Cookify, evinizdeki malzemeleri takip eden, tarif paylaşmanıza olanak sağlaya
 
 ## 🚀 Canlı Demo
 
-**Web Sitesi:** https://cookify-ecru-alpha.vercel.app
-
+ 
 **Test Hesabı:**
 - Email: test@example.com
 - Şifre: test123
@@ -51,21 +50,20 @@ Cookify, evinizdeki malzemeleri takip eden, tarif paylaşmanıza olanak sağlaya
 - **Next.js 14** - React framework
 - **TypeScript** - Tip güvenliği
 - **Tailwind CSS** - Modern styling
-- **Vercel** - Hosting
+
 
 ### Backend
 - **Node.js + Express** - API server
 - **TypeScript** - Tip güvenliği
-- **Prisma ORM** - Veritabanı yönetimi
+- **portgresql** - Veritabanı yönetimi
 - **SQLite** - Veritabanı
 - **JWT** - Authentication
-- **Render** - Hosting
 
 ## 📦 Kurulum
 
 ### Gereksinimler
 - Node.js 18+
-- npm veya yarn
+- npm  
 
 ### Backend Kurulumu
 

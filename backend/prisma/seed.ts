@@ -57,21 +57,21 @@ async function main() {
   
   const ingredientsData = [
     // Sebzeler
-    { name: 'Domates', categoryName: 'Sebzeler', defaultUnit: 'kg' },
-    { name: 'Salatalık', categoryName: 'Sebzeler', defaultUnit: 'adet' },
-    { name: 'Soğan', categoryName: 'Sebzeler', defaultUnit: 'kg' },
-    { name: 'Patates', categoryName: 'Sebzeler', defaultUnit: 'kg' },
-    { name: 'Havuç', categoryName: 'Sebzeler', defaultUnit: 'kg' },
-    { name: 'Biber', categoryName: 'Sebzeler', defaultUnit: 'kg' },
-    { name: 'Patlıcan', categoryName: 'Sebzeler', defaultUnit: 'kg' },
-    { name: 'Kabak', categoryName: 'Sebzeler', defaultUnit: 'kg' },
+    { name: 'Domates', categoryName: 'Sebzeler', defaultUnit: 'kg', averageWeightPerUnit: 100 },
+    { name: 'Salatalık', categoryName: 'Sebzeler', defaultUnit: 'adet', averageWeightPerUnit: 200 },
+    { name: 'Soğan', categoryName: 'Sebzeler', defaultUnit: 'kg', averageWeightPerUnit: 150 },
+    { name: 'Patates', categoryName: 'Sebzeler', defaultUnit: 'kg', averageWeightPerUnit: 120 },
+    { name: 'Havuç', categoryName: 'Sebzeler', defaultUnit: 'kg', averageWeightPerUnit: 80 },
+    { name: 'Biber', categoryName: 'Sebzeler', defaultUnit: 'kg', averageWeightPerUnit: 150 },
+    { name: 'Patlıcan', categoryName: 'Sebzeler', defaultUnit: 'kg', averageWeightPerUnit: 250 },
+    { name: 'Kabak', categoryName: 'Sebzeler', defaultUnit: 'kg', averageWeightPerUnit: 300 },
     
     // Meyveler
-    { name: 'Elma', categoryName: 'Meyveler', defaultUnit: 'kg' },
-    { name: 'Muz', categoryName: 'Meyveler', defaultUnit: 'kg' },
-    { name: 'Portakal', categoryName: 'Meyveler', defaultUnit: 'kg' },
-    { name: 'Mandalina', categoryName: 'Meyveler', defaultUnit: 'kg' },
-    { name: 'Üzüm', categoryName: 'Meyveler', defaultUnit: 'kg' },
+    { name: 'Elma', categoryName: 'Meyveler', defaultUnit: 'kg', averageWeightPerUnit: 150 },
+    { name: 'Muz', categoryName: 'Meyveler', defaultUnit: 'kg', averageWeightPerUnit: 120 },
+    { name: 'Portakal', categoryName: 'Meyveler', defaultUnit: 'kg', averageWeightPerUnit: 180 },
+    { name: 'Mandalina', categoryName: 'Meyveler', defaultUnit: 'kg', averageWeightPerUnit: 80 },
+    { name: 'Üzüm', categoryName: 'Meyveler', defaultUnit: 'kg', averageWeightPerUnit: 5 },
     
     // Et Ürünleri
     { name: 'Tavuk', categoryName: 'Et Ürünleri', defaultUnit: 'kg' },

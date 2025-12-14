@@ -14,6 +14,7 @@ import customMealRoutes from './routes/custom-meal.routes';
 import notificationRoutes from './routes/notification.routes';
 import adminRoutes from './routes/admin.routes';
 import aiRoutes from './routes/ai.routes';
+import unitConversionRoutes from './routes/unit-conversion.routes';
 
 // Load environment variables
 dotenv.config();
@@ -71,6 +72,7 @@ app.use('/api/custom-meals', customMealRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/unit-conversion', unitConversionRoutes);
 
 // Start server
 app.listen(Number(PORT), '0.0.0.0', () => {

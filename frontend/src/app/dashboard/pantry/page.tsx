@@ -177,9 +177,35 @@ export default function PantryPage() {
 
   const selectIngredient = (ingredient: any) => {
     setNewItemName(ingredient.name);
-    // Backend'den gelen kategori zaten doğru formatta (SEBZELER, MEYVELER, vb.)
-    setNewItemCategory(ingredient.category.name);
+    
+    // Kategori adını büyük harfe çevir ve Türkçe karakterleri düzelt
+    let categoryName = ingredient.category.name.toUpperCase();
+    
+    // Türkçe karakter dönüşümleri
+    const turkishMap: { [key: string]: string } = {
+      'SEBZELER': 'SEBZELER',
+      'MEYVELER': 'MEYVELER',
+      'ET ÜRÜNLERİ': 'ET_URUNLERI',
+      'SÜT ÜRÜNLERİ': 'SUT_URUNLERI',
+      'TAHILLAR': 'TAHILLAR',
+      'BAHARATLAR': 'BAHARATLAR',
+      'İÇECEKLER': 'ICECEKLER',
+      'ATIŞTIRMALIKLAR': 'ATISTIRMALIKLAR',
+    };
+    
+    categoryName = turkishMap[categoryName] || categoryName;
+    
+    setNewItemCategory(categoryName);
     setNewItemUnit(ingredient.defaultUnit);
+    
+    // Minimum miktar otomatik hesapla (mevcut miktarın %20'si)
+    if (newItemQuantity) {
+      const quantity = parseFloat(newItemQuantity);
+      if (!isNaN(quantity) && quantity > 0) {
+        const minQty = Math.round(quantity * 0.2 * 10) / 10;
+        setNewItemMinQuantity(minQty.toString());
+      }
+    }
     
     // Tahmini SKT hesapla
     if (ingredient.shelfLifeDays) {
